@@ -99,6 +99,8 @@ INSERT INTO items VALUES (4, 'Opciones de Grupos', 'administracion/opciones_grup
 INSERT INTO items VALUES (5, 'Items de Grupos', 'administracion/items_grupos', 1, 6, 1, 'admin');
 INSERT INTO items VALUES (6, 'Opciones', 'administracion/opciones', 1, 2, 1, 'admin');
 
+SELECT pg_catalog.setval('items_id_seq', 6, true);
+
 
 INSERT INTO grupos_opciones VALUES (1,1);
 INSERT INTO grupos_items VALUES(1,1);
