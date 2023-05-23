@@ -5,8 +5,8 @@ include("inc/conexion.php");
 conectar();
 
 if (!isset($_SESSION['userid'])) {
-   echo "<script>document.location='login.php';</script>";
-   exit();
+ echo "<script>document.location='login.php';</script>";
+ exit();
 }
 ?>
 
@@ -101,6 +101,16 @@ if (!isset($_SESSION['userid'])) {
         });
     }
     
+
+    function showLightbox() {
+      $('#over').css('display','block');
+      $('#fade').css('display','block');
+  }
+  function hideLightbox() {
+      $('#over').css('display','none');
+      $('#fade').css('display','none');
+  }
+
 </script>
 
 </head>
@@ -128,21 +138,21 @@ if (!isset($_SESSION['userid'])) {
                     <?php
                     if(isset($_GET['pagina'])){
 
-                       $enlace=base64_decode($_GET['pagina']);     
+                     $enlace=base64_decode($_GET['pagina']);     
 
-                       $sqlc="SELECT i.*
-                       FROM items i
-                       join grupos_items g on g.id_item=i.id and g.id_grupo=".$_SESSION['id_grupo'] ."
-                       WHERE i.enlace='".$enlace."' 
-                       ORDER BY i.orden";
+                     $sqlc="SELECT i.*
+                     FROM items i
+                     join grupos_items g on g.id_item=i.id and g.id_grupo=".$_SESSION['id_grupo'] ."
+                     WHERE i.enlace='".$enlace."' 
+                     ORDER BY i.orden";
 
-                       $sqlc = pg_query($con, $sqlc);
-                       if(pg_num_rows($sqlc)!=0){
+                     $sqlc = pg_query($con, $sqlc);
+                     if(pg_num_rows($sqlc)!=0){
                         //echo "<span class='breadcrums'>".$enlace."</span>";
-                           include("modulos/".$enlace.".php");
-                           $it=str_replace('/', '_',$enlace);
-                           if(!isset($_GET['op']))
-                           {
+                         include("modulos/".$enlace.".php");
+                         $it=str_replace('/', '_',$enlace);
+                         if(!isset($_GET['op']))
+                         {
                             $_GET['op']=0;
                         }
                         echo "<script>$('#op_".$_GET['op']."').removeClass('collapse').addClass('collapse show');</script>";

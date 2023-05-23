@@ -23,15 +23,16 @@ function editar($con){
   $nombre_apellido = $_POST['nombre_apellido'];
   $id_grupo = $_POST['id_grupo'];
   $clave = password_hash($usuario, PASSWORD_DEFAULT);
+  $usuario_abm=$_SESSION['username']; 
 
   if ($id > 0) {
 //update
-    $sql = "UPDATE usuarios SET usuario = '$usuario',nombre_apellido='$nombre_apellido', id_grupo = $id_grupo, usuario_abm='admin' WHERE id = $id";
+    $sql = "UPDATE usuarios SET usuario = '$usuario',nombre_apellido='$nombre_apellido', id_grupo = $id_grupo, usuario_abm='$usuario_abm' WHERE id = $id";
     $mesaje="El registro se modificó con éxito";
   }else {
 // insert
 
-    $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, usuario_abm) VALUES ('$usuario','$nombre_apellido',$id_grupo,'$clave', 'admin');";
+    $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, usuario_abm) VALUES ('$usuario','$nombre_apellido',$id_grupo,'$clave', '$usuario_abm');";
     $mesaje="El registro se creó con éxito";
   }
 
