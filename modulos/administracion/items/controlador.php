@@ -23,14 +23,15 @@ function editar($con){
   $enlace = $_POST['enlace'];
   $id_opcion = $_POST['id_opcion'];
   $orden = $_POST['orden'];
+  $usuario_abm=$_SESSION['username']; 
 
   if ($id > 0) {
 //update
-    $sql = "UPDATE items SET descripcion = '$descripcion', enlace = '$enlace',id_opcion = $id_opcion,orden = $orden, usuario_abm='admin' WHERE id = $id";
+    $sql = "UPDATE items SET descripcion = '$descripcion', enlace = '$enlace',id_opcion = $id_opcion,orden = $orden, usuario_abm='$usuario_abm' WHERE id = $id";
     $mesaje="El registro se modificó con éxito";
   }else {
 // insert
-    $sql = "INSERT INTO items (descripcion,enlace,id_opcion, orden, usuario_abm) VALUES ('$descripcion','$enlace',$id_opcion,$orden, 'admin');";
+    $sql = "INSERT INTO items (descripcion,enlace,id_opcion, orden, usuario_abm) VALUES ('$descripcion','$enlace',$id_opcion,$orden, '$usuario_abm');";
     $mesaje="El registro se creó con éxito";
   }
 
