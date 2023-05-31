@@ -115,7 +115,6 @@ if (!isset($_SESSION['userid'])) {
             $("#mensaje").html(dato);
             $('#mensaje').fadeIn('slow');
         });
-        }
 
 
         function showLightbox() {

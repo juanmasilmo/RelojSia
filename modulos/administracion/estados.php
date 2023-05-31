@@ -23,6 +23,7 @@
   <br />
   <hr>
 </div>
+
 <script>listado();</script>
 <div id="formulario" style="display: none;"></div>
 <div id="mensaje" style="display: none;"></div>
