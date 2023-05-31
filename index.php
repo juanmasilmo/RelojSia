@@ -24,7 +24,7 @@ if (!isset($_SESSION['userid'])) {
     <title>Plantillas</title>
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">   
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
     <!-- Custom styles for this template-->
     <link href="inc/css/sb-admin-2.min.css" rel="stylesheet">
@@ -35,10 +35,19 @@ if (!isset($_SESSION['userid'])) {
     <link rel="stylesheet" href="inc/css/jquery-confirm.min.css">
     <script src="vendor/jquery/jquery.min.js"></script>
 
+    <!--css de calendar-->
+    <!-- <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet" /> -->
+    <link rel="stylesheet" href="inc/css/js-year-calendar.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://unpkg.com/bootstrap-datepicker@1.8.0/dist/css/bootstrap-datepicker.standalone.min.css"> -->
+    <!-- Bootstrap Date-Picker Plugin -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" /> -->
+
+
     <script type="text/javascript">
-        function alertas(msj){
+        function alertas(msj) {
             $.alert({
-                title: 'Alerta!',        
+                title: 'Alerta!',
                 content: msj,
                 icon: 'fas fa-bell',
                 animation: 'scale',
@@ -52,66 +61,73 @@ if (!isset($_SESSION['userid'])) {
             });
         }
 
-        function cambiar_clave_pass()
-        {
-            $.get("modulos/administracion/cambiar_clave/formulario.php",function(dato){
+        function cambiar_clave_pass() {
+            $.get("modulos/administracion/cambiar_clave/formulario.php", function (dato) {
 
                 $("#popup").html(dato);
-                $('#popup').fadeIn('slow');            
+                $('#popup').fadeIn('slow');
                 return false;
             });
         }
-        function cerrar_pass(){
+
+        function cerrar_pass() {
 
             $('#popup').fadeOut('slow');
             $('.popup-overlay').fadeOut('slow');
         }
 
-        function validar_pass(){
+        function validar_pass() {
 
             if ($("#clave_actual").val().length < 3) {
-                $("#clave_actual").focus();          
+                $("#clave_actual").focus();
                 return 0;
             }
             if ($("#clave_nueva").val().length < 3) {
-                $("#clave_nueva").focus();          
+                $("#clave_nueva").focus();
                 return 0;
             }
             if ($("#clave_nueva_1").val().length < 3) {
-                $("#clave_nueva_1").focus();                 
+                $("#clave_nueva_1").focus();
                 return 0;
             }
 
-            if($("#clave_nueva_1").val() != $("#clave_nueva").val()){
+            if ($("#clave_nueva_1").val() != $("#clave_nueva").val()) {
                 alertas("Las claves nuevas no coinciden");
                 $("#clave_nueva").focus();
                 clave_nueva.value = "";
-                clave_nueva_1.value="";        
+                clave_nueva_1.value = "";
                 return 0;
             }
         }
-        function controlar_pass(){
-          if(validar_pass()==0){
-            $("#formulario").addClass('was-validated');
-            return;
+
+        function controlar_pass() {
+            if (validar_pass() == 0) {
+                $("#formulario").addClass('was-validated');
+                return;
+            }
+            $.post("modulos/administracion/cambiar_clave/controlador.php", $("#formulario").serialize(), function (
+                dato) {
+                $("#mensaje").html(dato);
+                $('#mensaje').fadeIn('slow');
+            });
         }
-        $.post("modulos/administracion/cambiar_clave/controlador.php",$("#formulario").serialize(),function(dato){
+        $.post("modulos/administracion/cambiar_clave/controlador.php", $("#formulario").serialize(), function (dato) {
             $("#mensaje").html(dato);
             $('#mensaje').fadeIn('slow');
         });
-    }
-    
+        }
 
-    function showLightbox() {
-      $('#over').css('display','block');
-      $('#fade').css('display','block');
-  }
-  function hideLightbox() {
-      $('#over').css('display','none');
-      $('#fade').css('display','none');
-  }
 
-</script>
+        function showLightbox() {
+            $('#over').css('display', 'block');
+            $('#fade').css('display', 'block');
+        }
+
+        function hideLightbox() {
+            $('#over').css('display', 'none');
+            $('#fade').css('display', 'none');
+        }
+    </script>
 
 </head>
 
@@ -133,8 +149,8 @@ if (!isset($_SESSION['userid'])) {
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    
-                    
+
+
                     <?php
                     if(isset($_GET['pagina'])){
 
@@ -167,55 +183,63 @@ if (!isset($_SESSION['userid'])) {
                 }
                 ?>
 
+                </div>
+                <!-- End of Main Content -->
             </div>
-            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <?php include('footer.php'); ?>
+            <!-- End of Footer -->
+
+            <!-- End of Content Wrapper -->
+
+        </div>
+        <!-- End of Page Wrapper -->
+
+        <!-- Scroll to Top Button-->
+        <a class="scroll-to-top rounded" href="#page-top">
+            <i class="fas fa-angle-up"></i>
+        </a>
+
+        <!-- Logout Modal-->
+        <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Salir?</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su
+                        sesión actual.</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                        <a class="btn btn-primary" href="logout.php">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Footer -->
-        <?php include('footer.php'); ?>
-        <!-- End of Footer -->
+        <!-- Bootstrap core JavaScript-->
 
-        <!-- End of Content Wrapper -->
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- Core plugin JavaScript-->
+        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Salir?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                <a class="btn btn-primary" href="logout.php">Cerrar sesión</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Bootstrap core JavaScript-->
-
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- Core plugin JavaScript-->
-<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-<!-- Custom scripts for all pages-->
-<script src="inc/js/sb-admin-2.min.js"></script>
-<script src="inc/js/jquery.js"></script>
-<script src="inc/js/jquery-confirm.js"></script>
-<script src="inc/js/jquery.dataTables.min.js"></script>
+        <!-- Custom scripts for all pages-->
+        <script src="inc/js/sb-admin-2.min.js"></script>
+        <script src="inc/js/jquery.js"></script>
+        <script src="inc/js/jquery-confirm.js"></script>
+        <script src="inc/js/jquery.dataTables.min.js"></script>
+        <script src="inc/js/bootstrap4.min.js"></script>
+        <script src="vendor/fullcalendar/dist/index.global.js"></script>
+        <script src="vendor/fullcalendar/packages/bootstrap4/index.global.js"></script>
+        <!-- <script src="inc/js/js-year-calendar.js"></script> -->
+        <script src="inc/js/popper.min.js"></script>
+        <script src="inc/js/bootstrap-datepicker.min.js">
+        </script>
 </body>
 
 </html>

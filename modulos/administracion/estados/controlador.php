@@ -17,6 +17,12 @@ if (function_exists($function)) {
 }
 
 
+
+
+
+
+
+
 function editar($con){
 
 
@@ -76,4 +82,35 @@ function eliminar($con){
     </div>';
   }
 
+}
+
+/**
+ * Agentes
+ */
+function agentes($con)
+{
+  $sql = "SELECT * FROM personas";
+}
+
+/**
+ * Articulos
+ */
+function articulos($con)
+{
+  $sql = "SELECT * FROM articulos";
+  $rs = pg_query($con, $sql);
+  $res = pg_fetch_all($rs);
+
+}
+
+/**
+ * Estados
+ */
+function estados($con)
+{
+  $sql = "SELECT * FROM estados";
+  $rs = pg_query($con, $sql);
+  $res = pg_fetch_all($rs);
+  
+  return json_encode(['result' => $res]);
 }
