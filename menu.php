@@ -6,7 +6,7 @@
         <div class="sidebar-brand-icon">
             <i class='fas fa-balance-scale'></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Plantilla <sup>25</sup></div>
+        <div class="sidebar-brand-text mx-3">Reloj <sup>2</sup></div>
     </a>
 
     <!-- Divider -->
