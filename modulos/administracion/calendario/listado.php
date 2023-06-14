@@ -12,8 +12,6 @@ $rs = pg_query($sql);
 $estados = pg_fetch_all($rs);
 ?>
 
-
-
 <!-- Button trigger modal -->
 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
   Launch demo modal
@@ -313,7 +311,6 @@ $estados = pg_fetch_all($rs);
 
   function eliminarEvento(arg) {
 
-    
     if (confirm('Eliminar Evento actual  ' + arg.title + ' ?')) {
       // console.log(arg.id);
       var id_evento = arg.id;
