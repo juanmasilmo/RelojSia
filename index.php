@@ -233,6 +233,7 @@ if (!isset($_SESSION['userid'])) {
         <script src="inc/js/jquery-confirm.js"></script>
         <script src="inc/js/jquery.dataTables.min.js"></script>
         <script src="inc/js/bootstrap4.min.js"></script>
+        <script src="inc/js/moment.js"></script>
         <script src="vendor/fullcalendar/dist/index.global.js"></script>
         <script src="vendor/fullcalendar/packages/bootstrap4/index.global.js"></script>
         <!-- <script src="inc/js/js-year-calendar.js"></script> -->

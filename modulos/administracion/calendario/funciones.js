@@ -10,6 +10,16 @@ function editar(id)
     });
 }
 
+// function showLightbox() {
+//     document.getElementById('over').style.display = 'block';
+//     document.getElementById('fade').style.display = 'block';
+// }
+
+// function hideLightbox() {
+//     document.getElementById('over').style.display = 'none';
+//     document.getElementById('fade').style.display = 'none';
+// }
+
 function cerrar_formulario()
 {
     $("#formulario").css('display', 'none');
@@ -36,7 +46,6 @@ function listado()
     });
 }
 
-window.registros = [];
 function getRegistros() {
     fetch('modulos/administracion/calendario/controlador.php?f=getRegistros',{
         type: 'post',
@@ -53,27 +62,8 @@ function getRegistros() {
             //   }
         }
     });
-
-//     $.ajax({ 
-//             url:'modulos/administracion/calendario/controlador.php?f=getRegistros',
-//             dataType:'json',
-//             success: function
-//         });
-
-//    return  [{
-//         title: 'All Day Event',
-//         start: '2023-01-01'
-//       },
-//       {
-//         title: 'Long Event',
-//         start: '2023-01-07'
-//       },
-//       {
-//         title: 'Click for Google',
-//         url: 'http://google.com/',
-//         start: '2023-01-28'
-//       }];
 }
+
 
 function validar_formulario(){
 
@@ -83,6 +73,7 @@ function validar_formulario(){
     }  
     
 }
+
 
 function guardar()
 {
