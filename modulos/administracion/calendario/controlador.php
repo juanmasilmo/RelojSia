@@ -65,13 +65,13 @@ function calendarioDia($con){
   $id_estado_configurado = $_POST['id_estado_configurado'];
   
   if($id_estado_configurado == 0){
-    echo $sql = "INSERT INTO calendario_anual 
+    $sql = "INSERT INTO calendario_anual 
             (id_estado, fecha_inicio, fecha_fin, usuario_abm)
           VALUES 
             ($id_estado, '$start_date', '$end_date', '$ususario_abm')
           RETURNING id";
   }else{
-    echo $sql = "UPDATE calendario_anual 
+    $sql = "UPDATE calendario_anual 
             SET id_estado = $id_estado
                 ,fecha_inicio = '$start_date'
                 ,fecha_fin = '$end_date'
