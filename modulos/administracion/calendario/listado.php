@@ -79,10 +79,6 @@ $estados = pg_fetch_all($rs);
 
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      // height: '100%',
-      // expandRows: true,
-      // slotMinTime: '08:00',
-      // slotMaxTime: '20:00',
       // views: {
       //   listDay: { buttonText: 'list day' },
       //   listWeek: { buttonText: 'list week' }
@@ -96,13 +92,13 @@ $estados = pg_fetch_all($rs);
         //right: 'multiMonthYear,dayGridMonth,timeGridWeek'
       },
       selectMirror: true,
-      hiddenDays: [0], //ocultar dias
+      // hiddenDays: [0], //ocultar dias
       allDayDefault: false,
       selectable: true,
       select: function (arg) {
 
         /**
-         * Verifico que no se ingrese mas de 1 evento por fecha 
+         * Verifico que NO se ingrese mas de 1 evento por fecha 
          */
         var fechaEventoActual = moment(arg.start).format("YYYY-MM-DD");
         $.ajax({
@@ -116,83 +112,29 @@ $estados = pg_fetch_all($rs);
           },
           success: function (response) {
 
+
             // si tiene evento pregunto que quiere hacer
             if (response.id) {
-              optionsEvent(response);
+              optionsEvent(response,calendar);
             } else {
               // si no tiene evento levanto el modal
 
-              // $("#evento_fecha_configurado").val(response.id);
               $("#estadosModal").modal("show");
 
               $("#modal_fecha_inicio").text(moment(arg.start).format("DD-MM-YYYY"));
               $("#modal_fecha_fin").text(moment(arg.end).subtract(1).format("DD-MM-YYYY"));
 
               $("#save-modal").click(function () {
-                guardarEvento(arg);
+                guardarEvento(arg,calendar);
               });
             }
-
-            // if (response.id) {
-            //   /**
-            //    * Si tiene eventos no dejo agregar otro o reemplazo
-            //    */
-            //   $.confirm({
-            //     title: 'Alertas!',
-            //     content: "La fecha Actual tiene el Evento <b><i> " + response.descripcion +
-            //       "</i> </b> configurado! <br> <b> Reemplazar Evento Actual? </b>",
-            //     icon: 'glyphicon glyphicon-question-sign',
-            //     animation: 'scale',
-            //     closeAnimation: 'scale',
-            //     opacity: 0.5,
-            //     buttons: {
-            //       'confirm': {
-            //         text: 'SI',
-            //         btnClass: 'btn-green',
-            //         // envio de datos SIN Dependencia
-            //         action: function () {
-
-            //           $("#evento_fecha_configurado").val(response.id);
-            //           $("#modal_fecha_inicio").text(moment(arg.start).format("DD-MM-YYYY"));
-            //           $("#modal_fecha_fin").text(moment(arg.end).subtract(1).format(
-            //             "DD-MM-YYYY"));
-            //           $("#estadosModal").modal("show");
-
-            //           $("#save-modal").click(function () {
-            //             guardarEvento(arg);
-            //           });
-
-            //         }
-            //       },
-            //       NO: {
-            //         btnClass: 'btn-red',
-            //         action: function () {
-            //           //$.alert('hiciste clic en <strong>NO</strong>');
-            //         }
-            //       },
-            //     }
-            //   });
-            //   /**
-            //    * Fin
-            //    */
-            // } else {
-
-            //   $("#estadosModal").modal("show"); //toggle
-            //   $("#modal_fecha_inicio").text(moment(arg.start).format("DD-MM-YYYY"));
-            //   $("#modal_fecha_fin").text(moment(arg.end).subtract(1).format("DD-MM-YYYY"));
-
-            //   $("#save-modal").click(function () {
-            //     guardarEvento(arg);
-
-            //   });
-
-            // }
           }
         });
         calendar.unselect();
       },
+      
       eventClick: function (arg) {
-        optionsEvent(arg);
+        optionsEvent(arg,calendar);
       },
 
       editable: true, //drag and drop  
@@ -207,7 +149,7 @@ $estados = pg_fetch_all($rs);
       // multiMonthMaxColumns: 1, // muestra los meses en una sola columna (no como almanaque)
       // showNonCurrentDates: true,
       // fixedWeekCount: false,
-      // weekends: false, // no muestra los Sab y Dom
+      weekends: false, // no muestra los Sab y Dom
       //events: getRegistros()
       /**
        * Traigo los registro de la DB
@@ -218,11 +160,12 @@ $estados = pg_fetch_all($rs);
     });
     calendar.render();
   });
+  
   /**
    * Fin Calendar
    */
 
-  function guardarEvento(arg) {
+  function guardarEvento(arg,calendar) {
     var id_estado_configurado = $("#evento_fecha_configurado").val();
     // alert(id_estado_configurado);
     var id_estado = $("#estados").val();
@@ -242,6 +185,7 @@ $estados = pg_fetch_all($rs);
           end_date
         },
         success: function (response) {
+          calendar.refetchEvents();
           $("#estadosModal").modal("hide");
         }
       });
@@ -251,7 +195,7 @@ $estados = pg_fetch_all($rs);
 
   }
 
-  function optionsEvent(arg) {
+  function optionsEvent(arg,calendar) {
 
     // si viene con evento preconfigurado
     if (arg.event) {
@@ -281,13 +225,14 @@ $estados = pg_fetch_all($rs);
               $("#evento_fecha_configurado").val(arg.id);
             }
 
+            // muestro el formulario 
             $("#estadosModal").modal("show");
 
             $("#modal_fecha_inicio").text(moment(arg.start).format("DD-MM-YYYY"));
             $("#modal_fecha_fin").text(moment(arg.end).subtract(1).format("DD-MM-YYYY"));
 
             $("#save-modal").click(function () {
-              guardarEvento(arg);
+              guardarEvento(arg,calendar);
             });
 
           }
@@ -295,7 +240,7 @@ $estados = pg_fetch_all($rs);
         ELIMINAR: {
           btnClass: 'btn-red',
           action: function () {
-            eliminarEvento(arg);
+            eliminarEvento(arg,calendar);
           }
         },
         CANCELAR: {
@@ -308,8 +253,7 @@ $estados = pg_fetch_all($rs);
     });
   }
 
-
-  function eliminarEvento(arg) {
+  function eliminarEvento(arg,calendar) {
 
     if (confirm('Eliminar Evento actual  ' + arg.title + ' ?')) {
       // console.log(arg.id);
@@ -323,6 +267,7 @@ $estados = pg_fetch_all($rs);
           id_evento
         },
         success: function (response) {
+          calendar.refetchEvents();
           $("#estadosModal").modal("hide");
         }
       });
