@@ -34,19 +34,19 @@ $rs = pg_query($con, $sql);
 $res = pg_fetch_all($rs);
 
   
-  foreach ($res as $row) {
-    $r[] = [ 
-            'id' => $row['id'],
-            'title' => $row['title'] . '(' . $row['letra'] . ')',
-            'start' => $row['fecha_inicio'],
-            'end' => $row['fecha_fin'],
-            'color' => '#fff',
-            'textColor' => $row['color']
-          ];
-  }
+foreach ($res as $row) {
+  $r[] = [ 
+          'id' => $row['id'],
+          'title' => $row['title'] . '(' . $row['letra'] . ')',
+          'start' => $row['fecha_inicio'],
+          'end' => $row['fecha_fin'],
+          'color' => $row['color'],
+          
+        ];
+}
 
-  echo json_encode($r);
-  //return json_encode(['result' => $res]);
+echo json_encode($r);
+//return json_encode(['result' => $res]);
 }
 
 function calendarioDia($con){
@@ -64,6 +64,9 @@ function calendarioDia($con){
   $id_estado = $_POST['id_estado'];
   $id_estado_configurado = $_POST['id_estado_configurado'];
   
+  /**
+   * si es 0, viene un evento nuevo
+   */
   if($id_estado_configurado == 0){
     $sql = "INSERT INTO calendario_anual 
             (id_estado, fecha_inicio, fecha_fin, usuario_abm)
@@ -71,6 +74,9 @@ function calendarioDia($con){
             ($id_estado, '$start_date', '$end_date', '$ususario_abm')
           RETURNING id";
   }else{
+    /**
+     * sino, reemplazo el actual por el nuevo evento
+     */
     $sql = "UPDATE calendario_anual 
             SET id_estado = $id_estado
                 ,fecha_inicio = '$start_date'
@@ -79,21 +85,8 @@ function calendarioDia($con){
             WHERE id = $id_estado_configurado";
   }
   $rs = pg_query($con, $sql);
-  // if($rs = pg_query($con, $sql)){
-  //   if($id_estado_configurado == 0){
-  //     $id = $rs['id'];
-  //   }
-  //   $sql = "SELECT * FROM calendario_anual WHERE id = $";
-  // };
-
-
   echo json_encode('ok');
   
-  /**
-   * Guardo la configuracion del calendario 
-   * respecto a los estados de los dias 
-   * << laborales, no laborales, asueto, etc >>
-   */
 }
 
 
@@ -110,26 +103,21 @@ function eliminarEvento($con){
    */
   $id_evento = $_POST['id_evento'];
 
-
   $sql = "DELETE FROM calendario_anual WHERE id = $id_evento";
   $rs = pg_query($con, $sql);
   echo json_encode('ok');
-  
-  /**
-   * Guardo la configuracion del calendario 
-   * respecto a los estados de los dias 
-   * << laborales, no laborales, asueto, etc >>
-   */
+
 }
 
 function verificarDiaEventos($con)
 {
+  /**
+   * se chequea si el dia clickeado tiene algun evento configurado
+   */
   $fecha = $_GET['fecha'];
-  $sql = "SELECT id, (SELECT descripcion FROM estados WHERE id = id_estado) descripcion FROM calendario_anual WHERE fecha_inicio = '$fecha'";
+  $sql = "SELECT id, (SELECT descripcion FROM estados WHERE id = id_estado) descripcion FROM calendario_anual WHERE fecha_inicio = '$fecha' or fecha_inicio = '$fecha'";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_array($rs);
-  // echo pg_num_rows($rs);
-
 
   echo json_encode($res);
 }
