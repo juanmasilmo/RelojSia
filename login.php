@@ -133,6 +133,7 @@ $con = conectar();
         $_SESSION['grupo'] = $row['grupo'];
         $_SESSION['id_grupo'] = $row['id_grupo'];            
         $_SESSION['usuario'] = $row['usuario'];
+        $_SESSION['username'] = $row['nombre_apellido'];    
         $_SESSION['nombre_apellido'] = $row['nombre_apellido'];
 
         if (password_verify($row['usuario'], $row['clave'])) {

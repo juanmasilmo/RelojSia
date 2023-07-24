@@ -1,0 +1,55 @@
+ALTER TABLE articulos ADD COLUMN cobra_presentismo integer DEFAULT 1;
+ALTER TABLE articulos ADD COLUMN usuario_abm character varying;
+
+
+update articulos set cobra_presentismo=0 where id_leu=5;
+update articulos set cobra_presentismo=0 where id_leu=6;
+update articulos set cobra_presentismo=0 where id_leu=9;
+update articulos set cobra_presentismo=1 where id_leu=26;
+update articulos set cobra_presentismo=0 where id_leu=21;
+update articulos set cobra_presentismo=0 where id_leu=17;
+update articulos set cobra_presentismo=0 where id_leu=30;
+update articulos set cobra_presentismo=0 where id_leu=27;
+update articulos set cobra_presentismo=1 where id_leu=15;
+update articulos set cobra_presentismo=0 where id_leu=29;
+update articulos set cobra_presentismo=0 where id_leu=22;
+update articulos set cobra_presentismo=0 where id_leu=23;
+update articulos set cobra_presentismo=0 where id_leu=36;
+update articulos set cobra_presentismo=0 where id_leu=37;
+update articulos set cobra_presentismo=0 where id_leu=39;
+update articulos set cobra_presentismo=0 where id_leu=2;
+update articulos set cobra_presentismo=1 where id_leu=47;
+update articulos set cobra_presentismo=0 where id_leu=16;
+update articulos set cobra_presentismo=0 where id_leu=50;
+update articulos set cobra_presentismo=0 where id_leu=10;
+update articulos set cobra_presentismo=0 where id_leu=11;
+update articulos set cobra_presentismo=0 where id_leu=12;
+update articulos set cobra_presentismo=0 where id_leu=8;
+update articulos set cobra_presentismo=0 where id_leu=1;
+update articulos set cobra_presentismo=0 where id_leu=31;
+update articulos set cobra_presentismo=1 where id_leu=25;
+update articulos set cobra_presentismo=0 where id_leu=28;
+update articulos set cobra_presentismo=0 where id_leu=13;
+update articulos set cobra_presentismo=0 where id_leu=20;
+update articulos set cobra_presentismo=1 where id_leu=34;
+update articulos set cobra_presentismo=0 where id_leu=35;
+update articulos set cobra_presentismo=0 where id_leu=14;
+update articulos set cobra_presentismo=0 where id_leu=18;
+update articulos set cobra_presentismo=0 where id_leu=38;
+update articulos set cobra_presentismo=1 where id_leu=42;
+update articulos set cobra_presentismo=0 where id_leu=40;
+update articulos set cobra_presentismo=1 where id_leu=33;
+update articulos set cobra_presentismo=0 where id_leu=32;
+update articulos set cobra_presentismo=1 where id_leu=24;
+update articulos set cobra_presentismo=0 where id_leu=3;
+update articulos set cobra_presentismo=1 where id_leu=44;
+update articulos set cobra_presentismo=1 where id_leu=43;
+update articulos set cobra_presentismo=1 where id_leu=45;
+update articulos set cobra_presentismo=1 where id_leu=48;
+update articulos set cobra_presentismo=0 where id_leu=49;
+update articulos set cobra_presentismo=1 where id_leu=46;
+update articulos set cobra_presentismo=0 where id_leu=7;
+update articulos set cobra_presentismo=0 where id_leu=4;
+
+
+SELECT pg_catalog.setval('articulos_id_seq', 48, true);
