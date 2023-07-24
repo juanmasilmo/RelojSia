@@ -13,7 +13,7 @@
     <span class="text">Volver</span>
   </a>
 
-  <a href="#" class="btn btn-primary btn-icon-split" onclick="#">
+  <a href="#" class="btn btn-primary btn-icon-split" onclick="editar(0)">
     <span class="icon text-white-50">
       <i class="fas fa-plus-circle"></i>
     </span>
