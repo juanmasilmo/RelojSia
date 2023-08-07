@@ -41,7 +41,8 @@ foreach ($res as $row) {
           'start' => $row['fecha_inicio'],
           'end' => $row['fecha_fin'],
           'color' => $row['color'],
-          
+          'tipo' => 'evento',
+
         ];
 }
 

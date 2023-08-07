@@ -86,9 +86,9 @@ $estados = pg_fetch_all($rs);
 
       headerToolbar: {
         //left: 'prev,next today',
-        left: ' ',
+        left: '',
         center: 'title',
-        right: ' '
+        right: ''
         //right: 'multiMonthYear,dayGridMonth,timeGridWeek'
       },
       selectMirror: true,
