@@ -150,37 +150,45 @@ function eliminar(id){
 }
 
 function guardarEvento(arg,calendar) {
+
     var id_estado_configurado = $("#evento_fecha_configurado").val();
     // alert(id_estado_configurado);
     var id_estado = $("#estados").val();
     var start_date = moment(arg.start).format("YYYY-MM-DD");
     var end_date = moment(arg.end).format("YYYY-MM-DD");
 
-    if (confirm('Desea guardar la configuración del  ' + moment(arg.start).format("DD-MM-YYYY") + ' ?')) {
-      // arg.event.remove();
-      $.ajax({
-        url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
-        type: "POST",
-        dataType: "JSON",
-        data: {
-          id_estado_configurado,
-          id_estado,
-          start_date,
-          end_date
-        },
-        success: function (response) {
-          calendar.refetchEvents();
-          $("#estadosModal").modal("hide");
-        }
-      });
-    } else {
-      $("#estadosModal").modal("hide");
+    if(id_estado != 0){
+      $("#estados").css("border","1px solid ");
+      $("#div_msj_estados").css("display","none");
+      if (confirm('Desea guardar la configuración del  ' + moment(arg.start).format("DD-MM-YYYY") + ' ?')) {
+        // arg.event.remove();
+        $.ajax({
+          url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
+          type: "POST",
+          dataType: "JSON",
+          data: {
+            id_estado_configurado,
+            id_estado,
+            start_date,
+            end_date
+          },
+          success: function (response) {
+            calendar.refetchEvents();
+            $("#estadosModal").modal("hide");
+          }
+        });
+      } else {
+        $("#estadosModal").modal("hide");
+      }
+      
+    }else{
+      $("#estados").css("border","1px solid red");
+      $("#div_msj_estados").css("display","block");
     }
-
   }
 
   function optionsEvent(arg,calendar) {
-
+    
     // si viene con evento preconfigurado
     if (arg.event) {
       var arg = arg.event;

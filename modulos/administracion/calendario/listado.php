@@ -1,8 +1,5 @@
 <?php
 // session_start();
-include("../../../inc/conexion.php");
-conectar();
-
 
 /**
  * Estados
@@ -50,7 +47,7 @@ $estados = pg_fetch_all($rs);
             </div>
           </div>
           <!-- Estados -->
-          <label for="estados">Estados</label>
+          <label for="estados">(*) Estados</label>
           <select class="form-control" name="estados" id="estados">
             <option value="0">Seleccionar ...</option>
             <?php foreach ($estados as $value) { ?>
@@ -59,6 +56,7 @@ $estados = pg_fetch_all($rs);
             </option>
             <?php } ?>
           </select>
+          <div class="div_msj_estados" id="div_msj_estados" style="display:none;color:red">Campo Obligatorio</div>
         </form>
       </div>
       <div class="modal-footer">
@@ -94,9 +92,9 @@ $estados = pg_fetch_all($rs);
       selectMirror: true,
       // hiddenDays: [0], //ocultar dias
       allDayDefault: false,
+      eventLimit: 1,
       selectable: true,
       select: function (arg) {
-
         /**
          * Verifico que NO se ingrese mas de 1 evento por fecha 
          */
