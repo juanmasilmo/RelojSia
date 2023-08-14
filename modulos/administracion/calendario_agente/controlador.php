@@ -13,7 +13,7 @@ $con = conectar();
 if (function_exists($function)) {
   $function($con);
 }else {
-  echo "La funcion" . $function . "no exite...";
+  echo "La funcion" . $function . "no existe...";
 }
 
 
@@ -126,19 +126,24 @@ function get_articulos($con)
 	              ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
                 ,(SELECT descripcion FROM articulos WHERE id = id_articulo)
           FROM calendario_agente
-          WHERE legajo = $id_agente and id_articulo is not null";
+          WHERE legajo = $id_agente 
+              and id_articulo is not null
+              and borrado is null
+              ";
   $rs = pg_query($con, $sql);
-  $res = pg_fetch_all($rs);
-   
-  foreach ($res as $row) {
-      $r[] = [ 
-              'start' => $row['fecha'],
-              'title' => $row['nro_articulo'] . ' - ' .$row['descripcion'],
-            ];
-  }
   
-  // si no tiene registro no envio nada, para evitar complicaciones con el js
-  if(!is_null($r)){
+  if(pg_num_rows($rs) != 0){
+    // si no tiene registro no envio nada, para evitar complicaciones con el js
+    
+    $res = pg_fetch_all($rs);
+    foreach ($res as $row) {
+      $r[] = [ 
+        'start' => $row['fecha'],
+        'title' => $row['nro_articulo'] . ' - ' .$row['descripcion'],
+        'overlap' => 'false'
+      ];
+    }
+    
     echo json_encode($r);
   }
 
@@ -147,6 +152,7 @@ function get_articulos($con)
 function get_articulos_agente($con)
 {
 
+  // Estos datos se envia para cargar la tabla al pie del calendario
   $id_agente = $_GET['id_agente'];
   $month = $_GET['month'];
   $year = $_GET['year'];
@@ -157,7 +163,8 @@ function get_articulos_agente($con)
             WHERE legajo = $id_agente
               and id_articulo is not null 
               and  EXTRACT(YEAR FROM registro) = $year
-              and  EXTRACT(MONTH FROM registro) = $month               
+              and  EXTRACT(MONTH FROM registro) = $month
+              and borrado is null              
             GROUP BY id_articulo ";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_all($rs);
@@ -177,4 +184,90 @@ function get_articulos_agente($con)
     echo json_encode(0);
   }
   
+}
+
+function verificarDia($con){
+
+  /**
+   * Verifica que no haya algun articulo cargado previamente
+   */
+  $fecha = $_GET['fecha'];
+  $legajo = $_GET['legajo'];
+
+  $sql = "SELECT id
+                ,id_articulo
+                ,(SELECT CONCAT(nro_articulo, ' ' ,descripcion) FROM articulos WHERE id = id_articulo) as descripcion 
+          FROM calendario_agente
+          WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'
+                and legajo = $legajo
+                and borrado is null";
+  $rs = pg_query($con,$sql);
+  $res = pg_fetch_array($rs);
+
+  if(!empty($res['id_articulo'])){
+    echo json_encode([$res['id_articulo'], $res['descripcion'], $res['id']]);
+  }else {
+    echo json_encode(0);
+  }
+}
+
+function guardarArticulo($con){
+  
+  // SESSION
+  $usuario_abm = $_SESSION["usuario"];
+  
+  // POST
+  $serialize_form = $_POST['form'];
+  $form = explode("&",$serialize_form);
+  foreach ($form as $key => $value) {
+    $form = explode("=",$value);
+    $array_datos[$form[0]] = $form[1];
+  }
+
+  $id_articulo = $array_datos["id_articulo"];
+ 
+  if(isset($array_datos['fecha_registro']) and !empty($array_datos['fecha_registro']))
+    $fecha = $array_datos['fecha_registro'];
+ 
+  if(isset($_POST['legajo']) and !empty($_POST['legajo']))
+    $legajo = $_POST['legajo'];
+
+  $id = 0;
+  if(isset($array_datos["id_db_articulo_configurado"]) and !empty($array_datos["id_db_articulo_configurado"])){
+    $id = $array_datos["id_db_articulo_configurado"];
+  }
+
+
+  if($id != 0 and !empty($id)){
+    $sql = "UPDATE calendario_agente SET id_articulo = $id_articulo, registro_modificado = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id";
+  }else{
+    $sql = "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_articulo, $legajo, '$fecha', 'now()', '$usuario_abm')";
+  }
+  if(pg_query($con, $sql)){
+    echo json_encode("Se actualizo el registro");
+  }else{
+    echo json_encode("Error al actualizar el registro");
+  }
+}
+
+function eliminarArticulo($con){
+  
+  /**
+   * Genera un borrado logico, no elimina el registro de la DB
+   */
+
+
+  // SESSION
+  $usuario_abm = $_SESSION["usuario"];
+  
+  // POST
+  $id = $_POST["id"];
+  $id_articulo = $_POST["id_articulo"];
+
+  $sql = "UPDATE calendario_agente SET borrado = 1, registro_modificado = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id";
+  if(pg_query($con, $sql)){
+    echo json_encode("Se actualizo el registro");
+  }else{
+    echo json_encode("Error al actualizar el registro");
+  }
 }
