@@ -1,3 +1,212 @@
+let calendar = '';
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+
+  var calendarEl = document.getElementById('calendar');
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    // views: {
+    //   listDay: { buttonText: 'list day' },
+    //   listWeek: { buttonText: 'list week' }
+    // },
+
+    headerToolbar: {
+      //left: 'prev,next today',
+      left: '',
+      center: 'title',
+      right: ''
+      //right: 'multiMonthYear,dayGridMonth,timeGridWeek'
+    },
+    selectMirror: true,
+    // hiddenDays: [0], //ocultar dias
+    allDayDefault: false,
+    eventLimit: 1,
+    // selectable: true,
+    dateClick: function (event) {
+
+      console.log(event);
+      
+      /**
+       * Verifico que NO se ingrese mas de 1 evento por fecha 
+       */
+      var fechaEventoActual = moment(event.date).format("YYYY-MM-DD");
+      
+      $.ajax({
+        url: "modulos/administracion/calendario/controlador.php?f=verificarDiaEventos&fecha=" + fechaEventoActual,
+        type: 'post',
+        dataType: 'JSON',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        success: function (response) {
+         
+          // si tiene evento pregunto que quiere hacer
+          if (response.id) {
+            // se envia el id / descripcion / fecha inicio / fecha fin
+            optionsEvent(response);
+          } else {
+            // si no tiene evento levanto el modal
+
+            $("#estadosModal").modal("show");
+
+            $("#modal_fecha_inicio").text(moment(event.date).format("DD-MM-YYYY"));
+            $("#modal_fecha_fin").text(moment(event.date).format("DD-MM-YYYY"));
+            
+            // console.log(moment(event.start).format("YYYY-MM-DD"));
+            $("#input_fecha_inicio").val(moment(event.date).format("YYYY-MM-DD"));
+            $("#input_fecha_fin").val(moment(event.date).format("YYYY-MM-DD"));
+
+            // $("#save-modal").click(function () {
+            //   guardarEvento(event);
+            // });
+          }
+        }
+      });
+      calendar.unselect();
+    },
+    // dateClick: function(){
+    //   alert();
+    // },
+    
+    eventClick: function (arg) {
+      // console.log(arg.event.extendedProps);
+      //envio el id / descripcion
+      optionsEvent(arg.event.extendedProps);
+    },
+
+    // editable: true, //drag and drop  
+    initialDate: '2023-01-01',
+    // navLinks: true, // can click day/week names to navigate views
+    businessHours: true, // display business hours
+    // droppable: true, // this allows things to be dropped onto the calendar
+    initialView: 'multiMonthYear',
+    themeSystem: 'bootstrap',
+    locale: 'es', //
+    dayMaxEvents: true, // allow "more" link when too many events
+    // multiMonthMaxColumns: 1, // muestra los meses en una sola columna (no como almanaque)
+    // showNonCurrentDates: true,
+    // fixedWeekCount: false,
+    weekends: false, // no muestra los Sab y Dom
+    //events: getRegistros()
+    /**
+     * Traigo los registro de la DB
+     */
+    eventSources: [
+      'modulos/administracion/calendario/controlador.php?f=registros'
+    ]
+  });
+  calendar.render();
+});
+
+
+
+function optionsEvent(event) {
+
+  var descripcion = event.descripcion;
+  if(event.id)
+    var id  = event.id;
+  if(event.event_id)
+    var id = event.event_id;
+  var fecha_inicio = event.fecha_inicio;
+  var fecha_fin = event.fecha_fin;
+  var id_estado = event.id_estado;
+ 
+  $.confirm({
+    title: 'Alertas!',
+    content: "Evento <b><i> " + descripcion + "</i></b> configurado!",
+    icon: 'glyphicon glyphicon-question-sign',
+    animation: 'scale',
+    closeAnimation: 'scale',
+    opacity: 0.5,
+    buttons: {
+      'confirm': {
+        text: 'REEMPLAZAR',
+        btnClass: 'btn-green',
+        // envio de datos SIN Dependencia
+        action: function () {
+
+          $("#evento_fecha_configurado").val(id);
+          $("#id_estado").val(id_estado).change();
+
+          // muestro el formulario 
+          $("#estadosModal").modal("show");
+
+          $("#modal_fecha_inicio").text(fecha_inicio);
+          $("#modal_fecha_fin").text(fecha_fin);
+
+          // console.log(moment(event.start).format("YYYY-MM-DD"));
+          $("#input_fecha_inicio").val(fecha_inicio);
+          $("#input_fecha_fin").val(fecha_fin);
+
+
+          // $("#save-modal").click(function () {
+          //   guardarEvento(arg);
+          // });
+
+        }
+      },
+      ELIMINAR: {
+        btnClass: 'btn-red',
+        action: function () {
+          eliminarEvento(id,descripcion);
+        }
+      },
+      CANCELAR: {
+        btnClass: 'btn-default',
+        action: function () {
+          //$.alert('hiciste clic en <strong>NO</strong>');
+        }
+      }
+    }
+  });
+}
+
+
+function guardarEvento() {
+
+  var id_estado_configurado = $("#evento_fecha_configurado").val();
+  // alert(id_estado_configurado);
+  var id_estado = $("#id_estado").val();
+  var start_date = $("#input_fecha_inicio").val();
+  var end_date = $("#input_fecha_fin").val();
+
+  if(id_estado != 0){
+    $("#id_estado").css("border","1px solid ");
+    $("#div_msj_estados").css("display","none");
+    if (confirm('Desea guardar la configuración del  ' + start_date + ' ?')) {
+      
+      $.ajax({
+        url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          id_estado_configurado,
+          id_estado,
+          start_date,
+          end_date
+        },
+        success: function (response) {
+          
+          document.getElementById("form_setting_calendar").reset();
+          
+          calendar.refetchEvents();
+          $("#estadosModal").modal("hide");
+        }
+      });
+    } else {
+      $("#estadosModal").modal("hide");
+    }
+    
+  }else{
+    $("#id_estado").css("border","1px solid red");
+    $("#div_msj_estados").css("display","block");
+  }
+}
+
+
+
 function editar(id)
 {
      $('html').animate({
@@ -146,110 +355,16 @@ function eliminar(id){
             }
         }
     }
-});
+  });
 }
 
-function guardarEvento(arg,calendar) {
 
-    var id_estado_configurado = $("#evento_fecha_configurado").val();
-    // alert(id_estado_configurado);
-    var id_estado = $("#estados").val();
-    var start_date = moment(arg.start).format("YYYY-MM-DD");
-    var end_date = moment(arg.end).format("YYYY-MM-DD");
+  function eliminarEvento(id,title) {
 
-    if(id_estado != 0){
-      $("#estados").css("border","1px solid ");
-      $("#div_msj_estados").css("display","none");
-      if (confirm('Desea guardar la configuración del  ' + moment(arg.start).format("DD-MM-YYYY") + ' ?')) {
-        // arg.event.remove();
-        $.ajax({
-          url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
-          type: "POST",
-          dataType: "JSON",
-          data: {
-            id_estado_configurado,
-            id_estado,
-            start_date,
-            end_date
-          },
-          success: function (response) {
-            calendar.refetchEvents();
-            $("#estadosModal").modal("hide");
-          }
-        });
-      } else {
-        $("#estadosModal").modal("hide");
-      }
-      
-    }else{
-      $("#estados").css("border","1px solid red");
-      $("#div_msj_estados").css("display","block");
-    }
-  }
-
-  function optionsEvent(arg,calendar) {
-    
-    // si viene con evento preconfigurado
-    if (arg.event) {
-      var arg = arg.event;
-    } else {
-      // si viene un evento nuevo
-      var arg = arg
-    }
-
-    // console.log(arg);
-    $.confirm({
-      title: 'Alertas!',
-      content: "Evento <b><i> " + arg.title +
-        "</i></b> configurado!",
-      icon: 'glyphicon glyphicon-question-sign',
-      animation: 'scale',
-      closeAnimation: 'scale',
-      opacity: 0.5,
-      buttons: {
-        'confirm': {
-          text: 'REEMPLAZAR',
-          btnClass: 'btn-green',
-          // envio de datos SIN Dependencia
-          action: function () {
-
-            if (arg.id) {
-              $("#evento_fecha_configurado").val(arg.id);
-            }
-
-            // muestro el formulario 
-            $("#estadosModal").modal("show");
-
-            $("#modal_fecha_inicio").text(moment(arg.start).format("DD-MM-YYYY"));
-            $("#modal_fecha_fin").text(moment(arg.end).subtract(1).format("DD-MM-YYYY"));
-
-            $("#save-modal").click(function () {
-              guardarEvento(arg,calendar);
-            });
-
-          }
-        },
-        ELIMINAR: {
-          btnClass: 'btn-red',
-          action: function () {
-            eliminarEvento(arg,calendar);
-          }
-        },
-        CANCELAR: {
-          btnClass: 'btn-default',
-          action: function () {
-            //$.alert('hiciste clic en <strong>NO</strong>');
-          }
-        }
-      }
-    });
-  }
-
-  function eliminarEvento(arg,calendar) {
-
-    if (confirm('Eliminar Evento actual  ' + arg.title + ' ?')) {
+    console.log(id,' ',title);
+    if (confirm('Eliminar Evento actual  ' + title + ' ?')) {
       // console.log(arg.id);
-      var id_evento = arg.id;
+      var id_evento = id;
       // arg.event.remove();
       $.ajax({
         url: 'modulos/administracion/calendario/controlador.php?f=eliminarEvento',

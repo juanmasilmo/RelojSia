@@ -24,6 +24,7 @@ function registros($con)
 {
 
 $sql = "SELECT id
+            ,id_estado
             ,(SELECT descripcion FROM estados WHERE id = id_estado) title
             ,(SELECT letra FROM estados WHERE id = id_estado) letra
             ,(SELECT color FROM estados WHERE id = id_estado) color 
@@ -41,7 +42,13 @@ foreach ($res as $row) {
           'start' => $row['fecha_inicio'],
           'end' => $row['fecha_fin'],
           'color' => $row['color'],
+          'id_estado' => $row['id_estado'],
+          // extendedProps
           'tipo' => 'evento',
+          'event_id' => $row['id'],
+          'descripcion' => $row['title'] . '(' . $row['letra'] . ')',
+          'fecha_inicio' => $row['fecha_inicio'],
+          'fecha_fin' => $row['fecha_fin'],
 
         ];
 }
@@ -55,7 +62,7 @@ function calendarioDia($con){
   /**
    * Session
    */
-  $ususario_abm = $_SESSION['usuario'];
+  $usuario_abm = $_SESSION['usuario'];
 
   /**
    * Post
@@ -72,7 +79,7 @@ function calendarioDia($con){
     $sql = "INSERT INTO calendario_anual 
             (id_estado, fecha_inicio, fecha_fin, usuario_abm)
           VALUES 
-            ($id_estado, '$start_date', '$end_date', '$ususario_abm')
+            ($id_estado, '$start_date', '$end_date', '$usuario_abm')
           RETURNING id";
   }else{
     /**
@@ -116,7 +123,13 @@ function verificarDiaEventos($con)
    * se chequea si el dia clickeado tiene algun evento configurado
    */
   $fecha = $_GET['fecha'];
-  $sql = "SELECT id, (SELECT descripcion FROM estados WHERE id = id_estado) descripcion FROM calendario_anual WHERE fecha_inicio = '$fecha' or fecha_inicio = '$fecha'";
+  $sql = "SELECT id
+                  ,id_estado
+                  ,(SELECT descripcion FROM estados WHERE id = id_estado) descripcion 
+                  ,TO_CHAR(fecha_inicio, 'YYYY-MM-DD') as fecha_inicio
+                  ,TO_CHAR(fecha_fin, 'YYYY-MM-DD') as fecha_fin
+          FROM calendario_anual 
+          WHERE fecha_inicio = '$fecha' ";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_array($rs);
 
