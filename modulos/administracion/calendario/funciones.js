@@ -22,18 +22,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // hiddenDays: [0], //ocultar dias
     allDayDefault: false,
     eventLimit: 1,
-    // selectable: true,
-    dateClick: function (event) {
+    selectable: true,
+    select: function (event) {
 
       console.log(event);
-      
+
       /**
        * Verifico que NO se ingrese mas de 1 evento por fecha 
        */
-      var fechaEventoActual = moment(event.date).format("YYYY-MM-DD");
-      
+      var fechaInicioEventoActual = moment(event.start).format("YYYY-MM-DD");
+      var fechaFinEventoActual = moment(event.end).format("YYYY-MM-DD");
+
       $.ajax({
-        url: "modulos/administracion/calendario/controlador.php?f=verificarDiaEventos&fecha=" + fechaEventoActual,
+        url: "modulos/administracion/calendario/controlador.php?f=verificarDiaEventos&fechaInicio=" + fechaInicioEventoActual + "&fechaFin=" + fechaFinEventoActual,
         type: 'post',
         dataType: 'JSON',
         headers: {
@@ -51,12 +52,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             $("#estadosModal").modal("show");
 
-            $("#modal_fecha_inicio").text(moment(event.date).format("DD-MM-YYYY"));
-            $("#modal_fecha_fin").text(moment(event.date).format("DD-MM-YYYY"));
+            $("#modal_fecha_inicio").text(fechaInicioEventoActual);
+            $("#modal_fecha_fin").text(fechaFinEventoActual);
             
             // console.log(moment(event.start).format("YYYY-MM-DD"));
-            $("#input_fecha_inicio").val(moment(event.date).format("YYYY-MM-DD"));
-            $("#input_fecha_fin").val(moment(event.date).format("YYYY-MM-DD"));
+            $("#input_fecha_inicio").val(fechaInicioEventoActual);
+            $("#input_fecha_fin").val(fechaFinEventoActual);
 
             // $("#save-modal").click(function () {
             //   guardarEvento(event);
