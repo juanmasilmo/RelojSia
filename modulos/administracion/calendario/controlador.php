@@ -39,7 +39,7 @@ foreach ($res as $row) {
   $r[] = [ 
          
           'id' => $row['id'],
-          'title' => $row['title'] . '(' . $row['letra'] . ')',
+          'title' => '(' . $row['letra'] . ')',
           'start' => $row['fecha_inicio'],
           'end' => $row['fecha_fin'],
           'color' => $row['color'],
@@ -73,28 +73,41 @@ function calendarioDia($con){
   $id_estado = $_POST['id_estado'];
   $id_estado_configurado = $_POST['id_estado_configurado'];
   
-  /**
-   * si es 0, viene un evento nuevo
-   */
-   if($id_estado_configurado == 0){
-    $sql = "INSERT INTO calendario_anual 
-            (id_estado, fecha_inicio, fecha_fin, usuario_abm)
-          VALUES 
-            ($id_estado, '$start_date', '$end_date', '$usuario_abm')
-          RETURNING id";
-  }else{
+  
+  $sql = '';
+  $dia_inicial = explode('-', $start_date);
+  $dia_fin = explode('-', $end_date);  
+
+  //recorro los dias para ir guardando el evento.-
+  for ($i=$dia_inicial[2]; $i <= $dia_fin[2]; $i++) { 
+
+    //armo dia
+    $dia = $dia_inicial[0] . '-' . $dia_inicial[1]  . '-' . $i;
+    
     /**
-     * sino, reemplazo el actual por el nuevo evento
+     * si es 0, viene un evento nuevo
      */
-    $sql = "UPDATE calendario_anual 
-            SET id_estado = $id_estado
-                ,fecha_inicio = '$start_date'
-                ,fecha_fin = '$end_date'
-                ,usuario_abm = '$usuario_abm'
-            WHERE id = $id_estado_configurado";
+    if($id_estado_configurado == 0){
+      $sql .= "INSERT INTO calendario_anual 
+              (id_estado, fecha_inicio, fecha_fin, usuario_abm)
+            VALUES 
+              ($id_estado, '$dia', '$dia', '$usuario_abm');";
+    }else{
+      /**
+       * sino, reemplazo el actual por el nuevo evento
+       */
+      $sql .= "UPDATE calendario_anual 
+              SET id_estado = $id_estado
+                  ,fecha_inicio = '$dia'
+                  ,fecha_fin = '$dia'
+                  ,usuario_abm = '$usuario_abm'
+              WHERE id = $id_estado_configurado;";
+    }
   }
-  $rs = pg_query($con, $sql);
-  echo json_encode('ok');
+
+  if(pg_query($con, $sql)){
+    echo json_encode('ok');
+  }
   
 }
 
@@ -125,6 +138,9 @@ function verificarDiaEventos($con)
    */
   $fechaInicio = $_GET['fechaInicio'];
   $fechaFin = $_GET['fechaFin'];
+
+  // var_dump($_REQUEST);die();
+
   $sql = "SELECT id
                   ,id_estado
                   ,(SELECT descripcion FROM estados WHERE id = id_estado) descripcion 

@@ -34,6 +34,10 @@ if (!isset($_SESSION['userid'])) {
     <!--css de alert-->
     <link rel="stylesheet" href="inc/css/jquery-confirm.min.css">
     <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="inc/js/jquery.js"></script>
+    <script src="inc/js/jquery-confirm.js"></script>
+    <script src="inc/js/jquery.dataTables.min.js"></script>
+
 
     <!--css de calendar-->
     <!-- <link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet" /> -->
@@ -222,6 +226,8 @@ if (!isset($_SESSION['userid'])) {
         </div>
 
         <!-- Bootstrap core JavaScript-->
+    
+        
 
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Core plugin JavaScript-->
@@ -229,9 +235,6 @@ if (!isset($_SESSION['userid'])) {
 
         <!-- Custom scripts for all pages-->
         <script src="inc/js/sb-admin-2.min.js"></script>
-        <script src="inc/js/jquery.js"></script>
-        <script src="inc/js/jquery-confirm.js"></script>
-        <script src="inc/js/jquery.dataTables.min.js"></script>
         <!-- <script src="inc/js/bootstrap4.min.js"></script> -->
         <script src="vendor/bootstrap/js/bootstrap.js"> </script>
         <script src="inc/js/moment.js"></script>

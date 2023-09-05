@@ -1,6 +1,200 @@
 let calendar = '';
 
 
+function listado()
+{
+     $('html').animate({
+      scrollTop: $("html").offset().top
+  }, 0);
+    $.get("modulos/administracion/planilla_mensual/listado.php",function(dato){
+        $("#listado").css('display', 'block');
+        $("#listado").html(dato);
+        $('#listado').fadeIn('slow');
+   
+    });
+}
+
+function listar_dependencia(cadena) {
+  $.get("sistema/dependencias/listado_dependencias.php?cadena=" + cadena, function (dato) {
+    $("#lista_dependencia").html(dato);
+  });
+}
+function seleccionar_dependencia(id) {
+  $.get("sistema/dependencias/dependencia_seleccionada.php?id=" + id, function (dato) {
+   
+    $("#lista_dependencia").html(dato);
+  
+  });
+}
+
+function procesar() {
+  //controlar input dependencia
+  if(!$("#id_dependencia").val() || $("#id_dependencia").val() == 'undefined'){
+    $("#dependencia").css("border","1px solid red");
+    return false;
+  }else{
+    $("#dependencia").css("border","1px solid #6e707e");
+  }
+  
+  var id_dependencia  = $("#id_dependencia").val();
+  // console.log(id_dependencia);
+  //cargar datos en la tabla 
+  let colums = 31;
+  let filas = 0;
+
+  $.get("modulos/administracion/planilla_mensual/controlador.php?f=get_agentes&id_dependencia=" + id_dependencia, function(dato){
+    
+    // console.log(dato);
+    if(dato != 'false'){
+      
+      arma_tabla();
+    
+    }else{
+      
+      //limpio la tabla de agentes
+      $("#div_tabla_agentes_registros").html("");
+
+      alert("La depedencia seleccionada no tiene agentes relacionados");
+      
+    }
+
+  });
+
+}
+
+
+
+function arma_tabla() {
+  
+  var id_dependencia  = $("#id_dependencia").val();
+  var mes = $("#id_mes").val();
+  var anio = $("#id_anio").val();
+
+  let url = 'modulos/administracion/planilla_mensual/controlador.php?f=get_registros_agentes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
+  
+  $.get(url, function(data) {
+
+    if(data != 'false'){
+
+      var marcas = JSON.parse(data);
+
+      var agentes = marcas.legajos;
+      var registros = marcas.registros;
+
+      var total_dias = new Date(anio, mes, 0).getDate(); //obtengo la cantidad de dias del mes para armado de la tabla 
+    
+      /**
+       * Cabecera Tabla
+       */
+      var tabla = "<table id='tabla_agentes_registros' class='table table-responsive table-bordered' ><thead><tr><th rowspan='2'>Agentes</th><th class='text-center' colspan='31'>Dias</th></tr><tr>";
+      
+      for (var i = 1; i < total_dias+1; i++){
+        
+          tabla += "<th style='font-size:8px'>" + i + "</th>";
+        
+      }
+      tabla += "</tr></thead><tbody style='font-size:8.5px'>";
+        
+      /**
+       * Cuerpo Tabla
+       */
+      agentes.forEach(function(agente){
+        
+        tabla += "<tr><td id='agentes'>" + agente.nombre + "</td>";
+
+        if(!registros){
+
+          for (var dia = 1; dia < total_dias+1; dia++){
+            tabla += "<td id='legajo"+agente.legajo+"'> </td>";
+          }
+          tabla += "</tr>";
+
+        }else{
+
+          for (var dia = 1; dia < total_dias+1; dia++){
+            
+            tabla += "<td id='legajo"+agente.legajo+"' style='text-wrap: wrap' ";
+            var registro_marca = '';
+            var background_color = '';
+  
+            //por cada dia recorro los registros 
+            registros.forEach(function(registro){
+              
+              // si el dia tiene registro muestro o articulo
+              if(agente.legajo == registro.legajo && dia == registro.dia){
+
+                //verifico que no este vacio el articulo o no sea null
+                var nro_articulo = '';
+                if(registro.nro_articulo){
+                  
+                  nro_articulo = registro.nro_articulo;
+                  background_color = '#FF7777';
+                 
+                  if(nro_articulo == 293){
+                    background_color = '#6BFF57';
+                  }
+                
+                }
+                
+                //verifico que tenga registro
+                if(registro.hora && registro.hora != 0){
+                
+                  //pregunto si es mayor a 6hs am
+                  if((registro.hora > 6 && registro.minutos > 40) || ((registro.hora > 9) && (registro.hora < 12 && registro.minutos < 30)))
+                    //llega tarde o sale temprano (justificar)
+                    background_color = '#b3b300';
+
+                  registro_marca += nro_articulo + ' ' + registro.hora +':'+ registro.minutos;
+                
+                }else{
+                  if(nro_articulo){
+                    registro_marca += nro_articulo + ' ';
+                  }
+                }
+  
+              }
+              
+              // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
+              
+            }); //fin foreach registros
+            
+            //cierro el td de apertura
+            tabla += 'bgcolor="'+ background_color +'">';
+
+            //imprimo los registros
+            tabla += registro_marca;
+
+            //cierro el td
+            tabla +=  "</td>";
+              
+          } // fin for dias
+  
+          tabla += "</tr>";
+
+        }
+                   
+      }); //fin foreach agentes        
+             
+      tabla += "</tbody></table>";
+      // console.log(tabla);
+
+      $("#div_tabla_agentes_registros").html(tabla);
+
+      // $('#tabla_agentes_registros').DataTable();
+      
+    }
+
+  }); // gin $.get
+
+}
+
+
+//--------------------*--------*---------------------
+
+/**
+ * FullCalendar
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
 
 
@@ -10,26 +204,28 @@ document.addEventListener('DOMContentLoaded', function () {
     //   listDay: { buttonText: 'list day' },
     //   listWeek: { buttonText: 'list week' }
     // },
+
     headerToolbar: {
-      left: 'prev,next',
+      //left: 'prev,next today',
+      left: '',
       center: 'title',
-      right: 'today'
+      right: ''
+      //right: 'multiMonthYear,dayGridMonth,timeGridWeek'
     },
     selectMirror: true,
     // hiddenDays: [0], //ocultar dias
     allDayDefault: false,
     eventLimit: 1,
     selectable: true,
-    locale: 'deLocale',
     select: function (event) {
 
-      // console.log(event);
+      console.log(event);
 
       /**
        * Verifico que NO se ingrese mas de 1 evento por fecha 
        */
       var fechaInicioEventoActual = moment(event.start).format("YYYY-MM-DD");
-      var fechaFinEventoActual = moment(event.end).subtract(1).format("YYYY-MM-DD");
+      var fechaFinEventoActual = moment(event.end).format("YYYY-MM-DD");
 
       $.ajax({
         url: "modulos/administracion/calendario/controlador.php?f=verificarDiaEventos&fechaInicio=" + fechaInicioEventoActual + "&fechaFin=" + fechaFinEventoActual,
@@ -50,8 +246,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             $("#estadosModal").modal("show");
 
-            $("#modal_fecha_inicio").text(moment(event.start).format("DD-MM-YYYY"));
-            $("#modal_fecha_fin").text(moment(event.end).subtract(1).format("DD-MM-YYYY"));
+            $("#modal_fecha_inicio").text(fechaInicioEventoActual);
+            $("#modal_fecha_fin").text(fechaFinEventoActual);
             
             // console.log(moment(event.start).format("YYYY-MM-DD"));
             $("#input_fecha_inicio").val(fechaInicioEventoActual);
@@ -76,38 +272,32 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     // editable: true, //drag and drop  
-    // initialDate: '2023-01-01',
+    initialDate: '2023-01-01',
     // navLinks: true, // can click day/week names to navigate views
     businessHours: true, // display business hours
     // droppable: true, // this allows things to be dropped onto the calendar
-    initialView: 'dayGridMonth',
+    initialView: 'multiMonthYear',
     themeSystem: 'bootstrap',
     locale: 'es', //
     dayMaxEvents: true, // allow "more" link when too many events
     // multiMonthMaxColumns: 1, // muestra los meses en una sola columna (no como almanaque)
     // showNonCurrentDates: true,
     // fixedWeekCount: false,
-    // weekends: false, // no muestra los Sab y Dom
+    weekends: false, // no muestra los Sab y Dom
     //events: getRegistros()
     /**
      * Traigo los registro de la DB
      */
-    // eventRender: function(info) {
-      //   alert();
-      //   // var tooltip = new Tooltip(info.el, {
-        //   //   title: info.event.extendedProps.description,//you can give data for tooltip
-        //   //   placement: 'top',
-        //   //   trigger: 'hover',
-        //   //   container: 'body'
-        //   // });
-        // },
     eventSources: [
-      'modulos/administracion/calendario/controlador.php?f=registros',
-    ],
+      'modulos/administracion/calendario/controlador.php?f=registros'
+    ]
   });
   calendar.render();
 });
-
+/**
+ * 
+ * FIN FullCalendar
+ */
 
 
 function optionsEvent(event) {
@@ -183,7 +373,7 @@ function guardarEvento() {
   if(id_estado != 0){
     $("#id_estado").css("border","1px solid ");
     $("#div_msj_estados").css("display","none");
-    if (confirm('Desea guardar la configuración para la fecha seleccionada ?')) {
+    if (confirm('Desea guardar la configuración del  ' + start_date + ' ?')) {
       
       $.ajax({
         url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
@@ -250,18 +440,6 @@ function cargar_icono()
     $("#icon").addClass($("#icono").val());
 }
 
-function listado()
-{
-     $('html').animate({
-      scrollTop: $("html").offset().top
-  }, 0);
-    $.get("modulos/administracion/calendario/listado.php",function(dato){
-        $("#listado").css('display', 'block');
-        $("#listado").html(dato);
-        $('#listado').fadeIn('slow');
-   
-    });
-}
 
 function getRegistros() {
     fetch('modulos/administracion/calendario/controlador.php?f=getRegistros',{
@@ -284,7 +462,6 @@ function getRegistros() {
 
 function validar_formulario(){
 
-
     if ($("#descripcion").val().length < 3) {
         $("#descripcion").focus();          
         return 0;
@@ -295,40 +472,41 @@ function validar_formulario(){
 
 function guardar()
 {
-  if(validar_formulario()==0){
-      $("#form").addClass('was-validated');
-      return;
-  }
-  $.confirm({
-    title: 'Guardar!',
-    content: 'Desea <b>Guardar</b> el <b> Registro</b>?',
-    icon: 'far fa-question-circle',
-    animation: 'scale',
-    closeAnimation: 'scale',
-    opacity: 0.5,
-    buttons: {
-      'confirm': {
-        text: 'SI',
-        btnClass: 'btn-green',
-        action: function(){
-        //accion
+    if(validar_formulario()==0){
+        $("#form").addClass('was-validated');
+        return;
+    }
+    $.confirm({
+      title: 'Guardar!',
+      content: 'Desea <b>Guardar</b> el <b> Registro</b>?',
+      icon: 'far fa-question-circle',
+      animation: 'scale',
+      closeAnimation: 'scale',
+      opacity: 0.5,
+      buttons: {
+        'confirm': {
+          text: 'SI',
+          btnClass: 'btn-green',
+          action: function(){
+          //accion
+          
           $.post("modulos/administracion/calendario/controlador.php?f=editar",$("#form").serialize(),function(dato){
             $("#mensaje").css('display', 'block');
             $("#mensaje").html(dato);
             $('#mensaje').fadeIn('slow');        
             listado();
-          });
-        //fin de accion
-        }
-      },
-      NO: {
-        btnClass: 'btn-red',
-        action:function(){
-              //$.alert('hiciste clic en <strong>NO</strong>');
-          }
-      },
-    }
-  });
+        });
+          //fin de accion
+      }
+  },
+  NO: {
+    btnClass: 'btn-red',
+    action:function(){
+          //$.alert('hiciste clic en <strong>NO</strong>');
+      }
+  },
+}
+});
 }
 
 
@@ -367,58 +545,27 @@ function eliminar(id){
 }
 
 
-function eliminarEvento(id,title) {
+  function eliminarEvento(id,title) {
 
-  var id_evento = id;
-
-  $.confirm({
-    title: 'Eliminar Evento  ' + title + ' ?',
-    content: 'Desea eliminar el registro?',
-    icon: 'far fa-question-circle',
-    animation: 'scale',
-    closeAnimation: 'scale',
-    opacity: 0.5,
-    buttons: {
-        confirm: {
-            text: 'SI',
-            btnClass: 'btn-green', 
-            action: function () {         
-                //accion de eliminar
-                $.post("modulos/administracion/calendario/controlador.php?f=eliminarEvento",{id_evento:id_evento},function(dato){
-                  calendar.refetchEvents();
-                  $("#estadosModal").modal("hide");                    
-                });
-                //fin de accion eliminar
-            }
+    console.log(id,' ',title);
+    if (confirm('Eliminar Evento actual  ' + title + ' ?')) {
+      // console.log(arg.id);
+      var id_evento = id;
+      // arg.event.remove();
+      $.ajax({
+        url: 'modulos/administracion/calendario/controlador.php?f=eliminarEvento',
+        type: "POST",
+        dataType: "JSON",
+        data: {
+          id_evento
         },
-        cancel: {
-            text: 'NO',
-            btnClass: 'btn-red',
-            action: function () {
-              $("#estadosModal").modal("hide");
-            }
+        success: function (response) {
+          calendar.refetchEvents();
+          $("#estadosModal").modal("hide");
         }
+      });
+    } else {
+      $("#estadosModal").modal("hide");
     }
-  });
 
-  // if (confirm()) {
-  //   // console.log(arg.id);
-    
-  //   // arg.event.remove();
-  //   $.ajax({
-  //     url: 'modulos/administracion/calendario/controlador.php?f=eliminarEvento',
-  //     type: "POST",
-  //     dataType: "JSON",
-  //     data: {
-  //       id_evento
-  //     },
-  //     success: function (response) {
-  //       calendar.refetchEvents();
-  //       $("#estadosModal").modal("hide");
-  //     }
-  //   });
-  // } else {
-  //   $("#estadosModal").modal("hide");
-  // }
-
-}
+  }

@@ -94,7 +94,7 @@ function modificar_registro($con){
   $hora = $_POST['hora_registro'];
   $fecha_modificada = $fecha . ' ' . $hora;
 
-  $sql = "UPDATE calendario_agente SET registro_modificado = '$fecha_modificada', fecha_abm = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id_registro";
+  $sql = "UPDATE calendario_agente SET registro_modificado = '$fecha_modificada', usuario_abm = '$usuario_abm' WHERE id = $id_registro";
   if(pg_query($con, $sql)){
     echo json_encode("Se actualizo el registro");
   }else{
@@ -110,7 +110,7 @@ function eliminar_registro($con){
   // GET
   $id_registro = $_GET["id_registro"];
 
-  $sql = "UPDATE calendario_agente SET borrado = 1, fecha_abm = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id_registro";
+  $sql = "UPDATE calendario_agente SET borrado = 1, registro_modificado = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id_registro";
   if(pg_query($con, $sql)){
     echo json_encode("Se actualizo el registro");
   }else{
