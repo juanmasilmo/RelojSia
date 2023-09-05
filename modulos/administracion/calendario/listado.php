@@ -1,6 +1,6 @@
+
 <?php
 // session_start();
-
 /**
  * Estados
  */
@@ -8,6 +8,7 @@ $sql = "SELECT * FROM estados";
 $rs = pg_query($sql);
 $estados = pg_fetch_all($rs);
 ?>
+
 
 <!-- Button trigger modal -->
 <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
@@ -72,7 +73,38 @@ $estados = pg_fetch_all($rs);
 
 <!-- <div id="over" class="spinner"></div>
 <div id="fade" class="fadebox">&nbsp;</div> -->
-<div id='calendar'></div>
+<div class="conten">
+  <div class="row">
+    <div class="col-md-9" id='calendar'>
+
+    </div>
+    <div class="col-md-3">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th colspan="3" class="text-center">
+              Referencias
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($estados as $value) { ?>
+        <tr ">
+            <td style="width:1%; background-color:<?php echo $value['color'] ?>">
+            </td>
+            <td>
+              <strong>(<?php echo $value['letra'] ?>)</strong>
+            </td>
+            <td>
+            <?php echo $value['descripcion'] ?>
+            </td>
+          </tr>
+          <?php } ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <script type="text/javascript" src="modulos/administracion/calendario/funciones.js"></script>
 <script>
   
