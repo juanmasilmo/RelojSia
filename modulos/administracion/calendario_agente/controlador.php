@@ -71,9 +71,10 @@ function listado_agentes($con)
 
   $id_dependencia = $_GET['id_dependencia'];
   $sql = "SELECT legajo as id
-                ,CONCAT(apellido,' ',nombres) personal
+                ,CONCAT(apellido,' ',nombres) as personal
           FROM personas
-          WHERE id_dependencia = $id_dependencia";
+          WHERE id_dependencia = $id_dependencia
+          ORDER BY personal";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_all($rs);
 
@@ -192,13 +193,14 @@ function verificarDia($con){
    * Verifica que no haya algun articulo cargado previamente
    */
   $fecha = $_GET['fecha'];
+  $fecha_fin = $_GET['fecha_fin'];
   $legajo = $_GET['legajo'];
 
   $sql = "SELECT id
                 ,id_articulo
                 ,(SELECT CONCAT(nro_articulo, ' ' ,descripcion) FROM articulos WHERE id = id_articulo) as descripcion 
           FROM calendario_agente
-          WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'
+          WHERE registro BETWEEN '$fecha' AND '$fecha_fin'
                 and legajo = $legajo
                 and borrado is null";
   $rs = pg_query($con,$sql);
@@ -226,23 +228,43 @@ function guardarArticulo($con){
 
   $id_articulo = $array_datos["id_articulo"];
  
+  // si existe y no esta vacio
   if(isset($array_datos['fecha_registro']) and !empty($array_datos['fecha_registro']))
     $fecha = $array_datos['fecha_registro'];
  
+  // si existe y no esta vacio
   if(isset($_POST['legajo']) and !empty($_POST['legajo']))
     $legajo = $_POST['legajo'];
 
   $id = 0;
+  // si viene in id configurado update
   if(isset($array_datos["id_db_articulo_configurado"]) and !empty($array_datos["id_db_articulo_configurado"])){
     $id = $array_datos["id_db_articulo_configurado"];
   }
 
 
+  $dia_inicial = explode('-', $fecha);
+  $dia_fin = explode('-', $array_datos['fecha_registro_fin']);  
+  $sql = '';
+
+  
   if($id != 0 and !empty($id)){
-    $sql = "UPDATE calendario_agente SET id_articulo = $id_articulo, registro_modificado = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id";
+  
+    $sql .= "UPDATE calendario_agente SET id_articulo = $id_articulo, registro_modificado = 'now()', usuario_abm = '$usuario_abm' WHERE id = $id";
+  
   }else{
-    $sql = "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_articulo, $legajo, '$fecha', 'now()', '$usuario_abm')";
+
+    //recorro los dias para ir guardando el evento.-
+    for ($i=$dia_inicial[2]; $i <= $dia_fin[2]; $i++) {
+
+      //armo dia
+      $dia = $dia_inicial[0] . '-' . $dia_inicial[1]  . '-' . $i;
+
+      $sql .= "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_articulo, $legajo, '$dia', 'now()', '$usuario_abm');";
+    }
+  
   }
+  
   if(pg_query($con, $sql)){
     echo json_encode("Se actualizo el registro");
   }else{

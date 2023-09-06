@@ -100,6 +100,24 @@ $res_art = pg_fetch_all($rs_art);
           <input type="hidden" name="id_db_articulo_configurado" id="id_db_articulo_configurado">
           <!-- fecha del registro -->
           <input type="hidden" name="fecha_registro" id="fecha_registro">
+          <!-- fecha del registro -->
+          <input type="hidden" name="fecha_registro_fin" id="fecha_registro_fin">
+
+          <div class="row">
+            <div class="col-md-6">
+              <label for="fecha_inicio">Inicio</label>
+              <b>
+                <p id="modal_fecha_inicio"></p>
+              </b>
+            </div>
+            <div class="col-md-6">
+              <label for="fecha_fin">Fin</label>
+              <b>
+                <p id="modal_fecha_fin"></p>
+              </b>
+            </div>
+          </div>
+
 
           <!-- Hora -->
           <label for="fecha"> Articulos: </label>
@@ -112,9 +130,9 @@ $res_art = pg_fetch_all($rs_art);
                 <?php } ?>
               </select>
             </div>
-            <div class="col-md-2">
+            <!-- <div class="col-md-2">
               <input type="button" onclick="eliminarEvento()" class="btn btn-danger" value="x">
-            </div>
+            </div> -->
           </div>
 
         </form>
