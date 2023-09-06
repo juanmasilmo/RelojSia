@@ -86,93 +86,59 @@ function calendario_agente() {
     // fixedWeekCount: false,
     // weekends: false, // no muestra los Sab y Dom
     //events: getRegistros()
-    
-    // eventClick: function (arg) {
-    //   alert();
-    //   var tipo = arg.event.extendedProps.tipo;
-    //   if(tipo === 'registro'){
-
-    //     // muestro los horarios por si quiere modificar alguno a manopla (como anoche)
-    //     $("#estadosModalRegistro").modal("show");
-    //     $("#fecha_seleccionada").text(moment(arg.event.start).format("DD-MM-YYYY"));
-    //     $("#fecha_registro").val(moment(arg.event.start).format("YYYY-MM-DD"));
-    //     $("#id_registro").val(arg.event.id);
-    //     $("#hora_registro").val(moment(arg.event.start).format("hh:mm"));
-
-    //   }else{
-    //     alert("No se puede modificar los eventos desde aca");
-    //   }
-    // },
-    // select: function (arg) {
-      
-    //   /**
-    //    * Verifico que NO se ingrese mas de 1 evento por fecha 
-    //    */
-    //   var fechaEventoActual = moment(arg.start).format("YYYY-MM-DD");
-     
-    //   $.ajax({
-    //     url: "modulos/administracion/calendario_agente/controlador.php?f=verificarDia&fecha=" +
-    //     fechaEventoActual,
-    //     type: 'post',
-    //     dataType: 'JSON',
-    //     headers: {
-    //       'Accept': 'application/json',
-    //       'Content-Type': 'application/json'
-    //     },
-    //     success: function (response) {
-
-    //       alert(response);
-          
-    //       // si tiene evento pregunto que quiere hacer
-    //       if (response) {
-    //         optionsEvent(response,calendar);
-    //       } else {
-            
-    //         // si no tiene evento levanto el modal
-    //         $("#modalSaveArticle").modal("show");
-            
-    //         $("#save-article-modal").click(function () {
-    //           guardarArticulo(calendar);
-    //         });
-    //       }
-    //     }
-    //   });
-    //   calendar.unselect();
-    // },
-    dateClick: function (info){
+ 
+    select: function (event) {
 
       $("#id_db_articulo_configurado").val("");
-      document.getElementById("formulario_registros").reset();
-      var fechaEventoActual = info.dateStr;
+      // var fechaEventoActual = info.dateStr;
       var legajo = $("#id_agente").val();
-      // console.log(fechaEventoActual);
-        $.ajax({
-          url: "modulos/administracion/calendario_agente/controlador.php?f=verificarDia&fecha=" + fechaEventoActual + "&legajo=" + legajo,
-          type: 'post',
-          dataType: 'JSON',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          success: function (response) {
-            // si tiene evento pregunto que quiere hacer
-            if (response) {
-              optionsEvent(response,calendar);
-            } else {
+      // document.getElementById("formulario_registros").reset();
 
-              $("#fecha_registro").val(fechaEventoActual);
-              // si no tiene evento levanto el modal
-              $("#modalSaveArticle").modal("show");
-            }
+      /**
+       * Verifico que NO se ingrese mas de 1 evento por fecha 
+       */
+      var fechaInicioEventoActual = moment(event.start).format("YYYY-MM-DD");
+      var fechaFinEventoActual = moment(event.end).subtract(1).format("YYYY-MM-DD");
+
+      $.ajax({
+        url: "modulos/administracion/calendario_agente/controlador.php?f=verificarDia&fecha=" + fechaInicioEventoActual + "&legajo=" + legajo + "&fecha_fin=" + fechaFinEventoActual,
+        type: 'post',
+        dataType: 'JSON',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        success: function (response) {
+          // si tiene evento pregunto que quiere hacer
+          if (response != 0) {
+            // se envia el id / descripcion / fecha inicio / fecha fin
+            optionsEvent(response);
+          } else {
+            // si no tiene evento levanto el modal
+
+            $("#fecha_registro").val(fechaInicioEventoActual);
+            // si no tiene evento levanto el modal
+            $("#modalSaveArticle").modal("show");
+
+            // $("#estadosModal").modal("show");
+
+            $("#modal_fecha_inicio").text(moment(event.start).format("DD-MM-YYYY"));
+            $("#modal_fecha_fin").text(moment(event.end).subtract(1).format("DD-MM-YYYY"));
+            
+            // // console.log(moment(event.start).format("YYYY-MM-DD"));
+            $("#fecha_registro").val(fechaInicioEventoActual);
+            $("#fecha_registro_fin").val(fechaFinEventoActual);
+
+            // $("#save-modal").click(function () {
+            //   guardarEvento(event);
+            // });
           }
-        });
-
+        }
+      });
+      calendar.unselect();
     },
-    // eventClick: function (arg) {
-    //   // console.log(arg);
-    //   // calendar.refetchEvents();
-    // },
-    
+
+
     /**
      * Traigo los registro de la DB
      */
@@ -195,31 +161,17 @@ function calendario_agente() {
 
   //muestro la table de articulos al pie del calendario
   $('#div_articulos_agente').css('display','block');
-
-  
+ 
 
   $('body').on('click', 'button.fc-prev-button', function () {
-    var tglCurrent = calendar.getDate();
-    var date = new Date(tglCurrent);
-    year = date.getFullYear();
-    month = date.getMonth();
-    get_articulos_agente(id_agente,month,year);
+    get_articulos_agente();
   });
 
   $('body').on('click', 'button.fc-next-button', function () {
-    var tglCurrent = calendar.getDate();
-    var date = new Date(tglCurrent);
-    year = date.getFullYear();
-    month = date.getMonth();
-    get_articulos_agente(id_agente,month,year);
+    get_articulos_agente();
   });
-  
-  var tglCurrent = calendar.getDate();
-  var date = new Date(tglCurrent);
-  year = date.getFullYear();
-  month = date.getMonth();
-  get_articulos_agente(id_agente,month,year);
 
+  get_articulos_agente();
 }
 
 
@@ -230,11 +182,11 @@ function modificar_registro(){
   $.post("modulos/administracion/calendario_agente/controlador.php?f=modificar_registro&id_registro=" + id_registro,$("#formulario_registros").serialize(),function(dato){
     $("#estadosModalRegistro").modal("hide");
     calendar.refetchEvents();
+    get_articulos_agente();
   });
 }
 
 function eliminar_registro(){
-
   var id_registro = $('#id_registro').val();
   $.ajax({
     type: 'get',
@@ -244,11 +196,20 @@ function eliminar_registro(){
       // console.log(response[1].id);
       $("#estadosModalRegistro").modal("hide");
       calendar.refetchEvents();
+      get_articulos_agente();
     }
   });
 }
 
-function get_articulos_agente(id_agente,month = null, year = null) {
+function get_articulos_agente() {
+
+  var id_agente = $("#id_agente").val();
+  var tglCurrent = calendar.getDate();
+  var date = new Date(tglCurrent);
+  year = date.getFullYear();
+  month = date.getMonth();
+  
+
   var month = month+1;
   $.ajax({
     type: 'post',
@@ -288,13 +249,9 @@ function get_articulos_agente(id_agente,month = null, year = null) {
   });
 }
 
-function optionsEvent(arg,calendar) {
+function optionsEvent(arg) {
   // si viene con evento preconfigurado
 
-  // arg[0] = id_articulo
-  // arg[1] = descripcion
-  // arg[2] = id (db)
-  calendar.unselect();
   $.confirm({
     title: 'Alertas!',
     content: "Evento <b><i> " + arg[1] +
@@ -320,11 +277,6 @@ function optionsEvent(arg,calendar) {
           $("#modalSaveArticle").modal("show");
           document.querySelector('#id_articulo [value="' + arg[0] + '"]').selected = true;
 
-          // $("#save-article-modal").click(function () {
-          //   // envio un 0 para saber que se va hacer un reemplazo
-          //   guardarArticulo(0,calendar);
-          // });
-
         }
       },
       ELIMINAR: {
@@ -348,6 +300,7 @@ function guardarArticulo() {
   // guardo los datos del formulario
   var form = $("#formulario_registros").serialize();
   //la fecha ya esta seteada dentro del form
+
  
   // y el Legajo
   var legajo = $("#id_agente").val();
@@ -371,6 +324,7 @@ function guardarArticulo() {
       },
       success: function (response) {
         calendar.refetchEvents();
+        get_articulos_agente();
         $("#modalSaveArticle").modal("hide");
       }
     });
@@ -379,11 +333,7 @@ function guardarArticulo() {
   }
 }
 
-function eliminarArticulo(arg,calendar) {
-
-  // arg[0] = id_articulo
-  // arg[1] = descripcion
-  // arg[2] = id (db)
+function eliminarArticulo(arg) {
 
   if (confirm('Eliminar Articulo actual  ' + arg[1] + ' ?')) {
     // console.log(arg.id);
@@ -400,6 +350,7 @@ function eliminarArticulo(arg,calendar) {
       },
       success: function (response) {
         calendar.refetchEvents();
+        get_articulos_agente();
         $("#modalSaveArticle").modal("hide");
       }
     });

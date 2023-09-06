@@ -3,8 +3,6 @@ session_start();
 include("../../../inc/conexion.php");
 conectar();
 
-
-
 /**
  * Anios
  */
