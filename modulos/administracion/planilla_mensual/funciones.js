@@ -100,7 +100,7 @@ function arma_tabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr><td id='agentes'>" + agente.nombre + "</td>";
+        tabla += "<tr><td id='agentes'>"+agente.nombre+"</td>";
 
         if(!registros){
 
@@ -113,7 +113,7 @@ function arma_tabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td id='legajo"+agente.legajo+"' style='text-wrap: no-wrap' ";
+            tabla += "<td id='legajo"+agente.legajo+"' ";
             var registro_marca = '';
             var background_color = '';
   
@@ -127,7 +127,7 @@ function arma_tabla() {
                 var nro_articulo = '';
                 if(registro.nro_articulo){
                   
-                  nro_articulo = registro.nro_articulo;
+                  nro_articulo = registro.nro_articulo + '<br>';
                   // si es del grupo de los 200 (ej: 270)
                   background_color = '#FF7777';
                  
@@ -148,11 +148,11 @@ function arma_tabla() {
                     background_color = '#b3b300';
 
                     //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + ' ' + registro.hora +':'+ registro.minutos;
+                    registro_marca += nro_articulo + registro.hora +':'+ registro.minutos + '<br>';
                 
                 }else{
                   if(nro_articulo){
-                    registro_marca += nro_articulo + ' ';
+                    registro_marca += nro_articulo;
                   }
                 }
   
