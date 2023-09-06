@@ -113,7 +113,7 @@ function arma_tabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td id='legajo"+agente.legajo+"' style='text-wrap: wrap' ";
+            tabla += "<td id='legajo"+agente.legajo+"' style='text-wrap: no-wrap' ";
             var registro_marca = '';
             var background_color = '';
   
@@ -128,8 +128,10 @@ function arma_tabla() {
                 if(registro.nro_articulo){
                   
                   nro_articulo = registro.nro_articulo;
+                  // si es del grupo de los 200 (ej: 270)
                   background_color = '#FF7777';
                  
+                  // si es compensacion de feria
                   if(nro_articulo == 293){
                     background_color = '#6BFF57';
                   }
@@ -141,10 +143,12 @@ function arma_tabla() {
                 
                   //pregunto si es mayor a 6hs am
                   if((registro.hora > 6 && registro.minutos > 40) || ((registro.hora > 9) && (registro.hora < 12 && registro.minutos < 30)))
+                    
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
-                  registro_marca += nro_articulo + ' ' + registro.hora +':'+ registro.minutos;
+                    //preparo un string para imprimir todo junto dsps
+                    registro_marca += nro_articulo + ' ' + registro.hora +':'+ registro.minutos;
                 
                 }else{
                   if(nro_articulo){
@@ -161,7 +165,7 @@ function arma_tabla() {
             //cierro el td de apertura
             tabla += 'bgcolor="'+ background_color +'">';
 
-            //imprimo los registros
+            //imprimo los registros (string preparado)
             tabla += registro_marca;
 
             //cierro el td
