@@ -5,5 +5,5 @@ CREATE TABLE calendario_anual
   fecha_inicio timestamp,
   fecha_fin timestamp NULL,
   usuario_abm character varying,
-  CONSTRAINT fecha_inicio UNIQUE (fecha_inicio);
+  CONSTRAINT fecha_inicio UNIQUE (fecha_inicio)
 );

@@ -181,8 +181,11 @@ function modificar_registro(){
 
   $.post("modulos/administracion/calendario_agente/controlador.php?f=modificar_registro&id_registro=" + id_registro,$("#formulario_registros").serialize(),function(dato){
     $("#estadosModalRegistro").modal("hide");
+   
     calendar.refetchEvents();
+   
     get_articulos_agente();
+  
   });
 }
 
@@ -195,8 +198,10 @@ function eliminar_registro(){
     success: function(response) {
       // console.log(response[1].id);
       $("#estadosModalRegistro").modal("hide");
-      calendar.refetchEvents();
+      
       get_articulos_agente();
+      
+      calendar.refetchEvents();
     }
   });
 }
