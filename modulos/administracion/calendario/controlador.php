@@ -34,28 +34,36 @@ $sql = "SELECT id
 $rs = pg_query($con, $sql);
 $res = pg_fetch_all($rs);
 
-  
-foreach ($res as $row) {
-  $r[] = [ 
-         
-          'id' => $row['id'],
-          'title' => '(' . $row['letra'] . ')',
-          'start' => $row['fecha_inicio'],
-          'end' => $row['fecha_fin'],
-          'color' => $row['color'],
-          'id_estado' => $row['id_estado'],
-          // extendedProps
-          'tipo' => 'evento',
-          'event_id' => $row['id'],
-          'descripcion' => $row['title'] . '(' . $row['letra'] . ')',
-          'fecha_inicio' => $row['fecha_inicio'],
-          'fecha_fin' => $row['fecha_fin'],
+  if(pg_num_rows($rs) > 0) {
 
-        ];
-}
+    foreach ($res as $row) {
 
-echo json_encode($r);
-//return json_encode(['result' => $res]);
+      $r[] = [
+              'id' => $row['id'],
+              'title' => '(' . $row['letra'] . ')',
+              'start' => $row['fecha_inicio'],
+              'end' => $row['fecha_fin'],
+              'color' => $row['color'],
+              'id_estado' => $row['id_estado'],
+              // extendedProps
+              'tipo' => 'evento',
+              'event_id' => $row['id'],
+              'descripcion' => $row['title'] . '(' . $row['letra'] . ')',
+              'fecha_inicio' => $row['fecha_inicio'],
+              'fecha_fin' => $row['fecha_fin'],
+            ];
+    }
+
+    echo json_encode($r);
+  }else{
+
+    // envio un array vcio para que el plugin pueda iterar y no genera error
+    $r[]['id'] = '';
+    $r[]['title'] = '';
+    $r[]['start'] = '';
+    echo json_encode([$r]);
+  }
+
 }
 
 function calendarioDia($con){
@@ -126,7 +134,9 @@ function eliminarEvento($con){
   $id_evento = $_POST['id_evento'];
 
   $sql = "DELETE FROM calendario_anual WHERE id = $id_evento";
+  
   $rs = pg_query($con, $sql);
+  
   echo json_encode('ok');
 
 }
