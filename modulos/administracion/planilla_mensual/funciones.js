@@ -87,11 +87,11 @@ function arma_tabla() {
       /**
        * Cabecera Tabla
        */
-      var tabla = "<table id='tabla_agentes_registros' class='table table-responsive table-bordered' ><thead><tr><th rowspan='2'>Agentes</th><th class='text-center' colspan='31'>Dias</th></tr><tr>";
+      var tabla = "<table id='tabla_agentes_registros'  class='table table-responsive table-striped' ><thead bgcolor='#E6DFCF'><tr><th style='border: 1px solid black' rowspan='2'>Agentes</th><th style='border: 1px solid black' class='text-center' colspan='31'>Dias</th></tr><tr>";
       
       for (var i = 1; i < total_dias+1; i++){
         
-          tabla += "<th style=''>" + i + "</th>";
+          tabla += "<th style='border: 1px solid black'>" + i + "</th>";
         
       }
       tabla += "</tr></thead><tbody style=''>";
@@ -101,7 +101,7 @@ function arma_tabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr><td id='agentes'>"+agente.nombre+"</td>";
+        tabla += "<tr><td style='border: 1px solid black' id='agentes'>"+agente.nombre+"</td>";
 
         if(!registros){
 
@@ -109,9 +109,9 @@ function arma_tabla() {
              
             //verifico si es fin de semana pinto de gris
              var fecha = anio+'/'+mes+'/'+dia;
-             background_color = pinta_domingo_sabado(fecha);
+             background_color = pinta_sabado_domingo(fecha);
             
-            tabla += "<td id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
+            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
           }
           tabla += "</tr>";
 
@@ -119,13 +119,13 @@ function arma_tabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td id='legajo"+agente.legajo+"' ";
+            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' ";
             var registro_marca = '';
             var background_color = '';
 
             //verifico si es fin de semana pinto de gris
             var fecha = anio+'/'+mes+'/'+dia;
-            background_color = pinta_domingo_sabado(fecha);
+            background_color = pinta_sabado_domingo(fecha);
   
             //por cada dia recorro los registros 
             registros.forEach(function(registro){
@@ -202,7 +202,7 @@ function arma_tabla() {
 
 }
 
-function pinta_domingo_sabado(fecha) {
+function pinta_sabado_domingo(fecha) {
 
   var today = new Date(fecha);
 
