@@ -61,7 +61,7 @@ $res = pg_fetch_all($rs);
     $r[]['id'] = '';
     $r[]['title'] = '';
     $r[]['start'] = '';
-    echo json_encode([$r]);
+    echo json_encode($r);
   }
 
 }

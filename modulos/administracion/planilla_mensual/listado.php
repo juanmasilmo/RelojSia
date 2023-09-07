@@ -86,7 +86,9 @@ $month = date('m');
 
         </div>
         <div class="content">
-          <div class="row" id="div_tabla_agentes_registros"></div>
+          <div class="row" >
+            <div class="col-md-12" id="div_tabla_agentes_registros"></div>
+          </div>
         </div>
 
       </form>

@@ -33,33 +33,39 @@ function registros($con)
           WHERE legajo = $id_agente";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_all($rs);
-   
-  foreach ($res as $row) {
-    
-    // si borrado, no muestro el registro
-    if(empty($row['borrado'])){
 
-      //por defecto cardo la marca del reloj
-      $registro = $row['registro'];
+  if(pg_num_rows($rs) > 0){
 
-      //pregunto si se modifico a mano la marca del registro y lo cargo
-      if(!empty($row['registro_modificado'])){
-         $registro = $row['registro_modificado'];
+    foreach ($res as $row) {
+      
+      // si borrado, no muestro el registro
+      if(empty($row['borrado'])){
+
+        //por defecto cardo la marca del reloj
+        $registro = $row['registro'];
+
+        //pregunto si se modifico a mano la marca del registro y lo cargo
+        if(!empty($row['registro_modificado'])){
+          $registro = $row['registro_modificado'];
+        }
+
+        $r[] = [ 
+                'id' => $row['id'],
+                'start' => $registro,
+                'tipo' => 'registro',
+                'title' => $row['nro_articulo']
+              ];
       }
-
-      $r[] = [ 
-              'id' => $row['id'],
-              'start' => $registro,
-              'tipo' => 'registro',
-              'title' => $row['nro_articulo']
-            ];
     }
-  }
-
-  // si no tiene registro no envio nada, para no anular el cargado de eventos anuales mdel calendario
-  if(!is_null($r)){
     echo json_encode($r);
-  }
+  }else{
+      // envio un array vcio para que el plugin pueda iterar y no genera error
+      $r[]['id'] = '';
+      $r[]['title'] = '';
+      $r[]['start'] = '';
+      echo json_encode($r);
+    }
+
 }
 
 
@@ -145,6 +151,12 @@ function get_articulos($con)
       ];
     }
     
+    echo json_encode($r);
+  }else{
+    // envio un array vcio para que el plugin pueda iterar y no genera error
+    $r[]['id'] = '';
+    $r[]['title'] = '';
+    $r[]['start'] = '';
     echo json_encode($r);
   }
 

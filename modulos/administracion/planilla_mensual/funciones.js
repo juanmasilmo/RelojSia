@@ -70,6 +70,7 @@ function arma_tabla() {
   var mes = $("#id_mes").val();
   var anio = $("#id_anio").val();
 
+
   let url = 'modulos/administracion/planilla_mensual/controlador.php?f=get_registros_agentes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
   
   $.get(url, function(data) {
@@ -90,10 +91,10 @@ function arma_tabla() {
       
       for (var i = 1; i < total_dias+1; i++){
         
-          tabla += "<th style='font-size:8px'>" + i + "</th>";
+          tabla += "<th style=''>" + i + "</th>";
         
       }
-      tabla += "</tr></thead><tbody style='font-size:12px'>";
+      tabla += "</tr></thead><tbody style=''>";
         
       /**
        * Cuerpo Tabla
@@ -105,7 +106,12 @@ function arma_tabla() {
         if(!registros){
 
           for (var dia = 1; dia < total_dias+1; dia++){
-            tabla += "<td id='legajo"+agente.legajo+"'> </td>";
+             
+            //verifico si es fin de semana pinto de gris
+             var fecha = anio+'/'+mes+'/'+dia;
+             background_color = pinta_domingo_sabado(fecha);
+            
+            tabla += "<td id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
           }
           tabla += "</tr>";
 
@@ -116,6 +122,10 @@ function arma_tabla() {
             tabla += "<td id='legajo"+agente.legajo+"' ";
             var registro_marca = '';
             var background_color = '';
+
+            //verifico si es fin de semana pinto de gris
+            var fecha = anio+'/'+mes+'/'+dia;
+            background_color = pinta_domingo_sabado(fecha);
   
             //por cada dia recorro los registros 
             registros.forEach(function(registro){
@@ -127,7 +137,7 @@ function arma_tabla() {
                 var nro_articulo = '';
                 if(registro.nro_articulo){
                   
-                  nro_articulo = registro.nro_articulo + '<br>';
+                  nro_articulo = registro.nro_articulo + '<br />';
                   // si es del grupo de los 200 (ej: 270)
                   background_color = '#FF7777';
                  
@@ -142,13 +152,13 @@ function arma_tabla() {
                 if(registro.hora && registro.hora != 0){
                 
                   //pregunto si es mayor a 6hs am
-                  if((registro.hora > 6 && registro.minutos > 40) || ((registro.hora > 9) && (registro.hora < 12 && registro.minutos < 30)))
+                  if((registro.hora >= 6 && registro.minutos > 40) || ((registro.hora > 9) && (registro.hora <= 12 && registro.minutos < 30)))
                     
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
                     //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + registro.hora +':'+ registro.minutos + '<br>';
+                    registro_marca += nro_articulo + registro.hora +':'+ registro.minutos + '<br />';
                 
                 }else{
                   if(nro_articulo){
@@ -161,12 +171,12 @@ function arma_tabla() {
               // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
               
             }); //fin foreach registros
-            
+
             //cierro el td de apertura
             tabla += 'bgcolor="'+ background_color +'">';
 
             //imprimo los registros (string preparado)
-            tabla += registro_marca;
+            tabla += registro_marca.trim();
 
             //cierro el td
             tabla +=  "</td>";
@@ -190,4 +200,16 @@ function arma_tabla() {
 
   }); // fin $.get
 
+}
+
+function pinta_domingo_sabado(fecha) {
+
+  var today = new Date(fecha);
+
+  var bgcolor = '';
+  if(today.getDay() == 0 || today.getDay() == 6){
+    bgcolor = "#C0C0C0"
+  }
+
+  return bgcolor;
 }

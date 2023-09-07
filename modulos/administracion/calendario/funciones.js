@@ -183,29 +183,75 @@ function guardarEvento() {
   if(id_estado != 0){
     $("#id_estado").css("border","1px solid ");
     $("#div_msj_estados").css("display","none");
-    if (confirm('Desea guardar la configuración para la fecha seleccionada ?')) {
-      
-      $.ajax({
-        url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
-        type: "POST",
-        dataType: "JSON",
-        data: {
-          id_estado_configurado,
-          id_estado,
-          start_date,
-          end_date
+
+    $.confirm({
+      title: 'Alertas!',
+      content: 'Desea guardar la configuración para la fecha seleccionada ?',
+      icon: 'glyphicon glyphicon-question-sign',
+      animation: 'scale',
+      closeAnimation: 'scale',
+      opacity: 0.5,
+      buttons: {
+        'confirm': {
+          text: 'Si',
+          btnClass: 'btn-green',
+          // envio de datos SIN Dependencia
+          action: function () {
+            
+            $.ajax({
+              url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
+              type: "POST",
+              dataType: "JSON",
+              data: {
+                id_estado_configurado,
+                id_estado,
+                start_date,
+                end_date
+              },
+              success: function (response) {
+                
+                document.getElementById("form_setting_calendar").reset();
+                
+                calendar.refetchEvents();
+                $("#estadosModal").modal("hide");
+              }
+            });
+  
+          }
         },
-        success: function (response) {
-          
-          document.getElementById("form_setting_calendar").reset();
-          
-          calendar.refetchEvents();
-          $("#estadosModal").modal("hide");
+        No: {
+          btnClass: 'btn-red',
+          action: function () {
+            $("#estadosModal").modal("hide");
+          }
         }
-      });
-    } else {
-      $("#estadosModal").modal("hide");
-    }
+      }
+    });
+
+
+    // if (confirm('Desea guardar la configuración para la fecha seleccionada ?')) {
+      
+    //   $.ajax({
+    //     url: 'modulos/administracion/calendario/controlador.php?f=calendarioDia',
+    //     type: "POST",
+    //     dataType: "JSON",
+    //     data: {
+    //       id_estado_configurado,
+    //       id_estado,
+    //       start_date,
+    //       end_date
+    //     },
+    //     success: function (response) {
+          
+    //       document.getElementById("form_setting_calendar").reset();
+          
+    //       calendar.refetchEvents();
+    //       $("#estadosModal").modal("hide");
+    //     }
+    //   });
+    // } else {
+    //   $("#estadosModal").modal("hide");
+    // }
     
   }else{
     $("#id_estado").css("border","1px solid red");
