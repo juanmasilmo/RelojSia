@@ -318,50 +318,134 @@ function guardarArticulo() {
   // var id_db_articulo_configurado = $("#id_db_articulo_configurado").val();
   // var id_articulo = $("#id_articulo").val();
 
-  if (confirm('Desea guardar la configuración ?')) {
-    $.ajax({
-      url: 'modulos/administracion/calendario_agente/controlador.php?f=guardarArticulo',
-      type: "POST",
-      dataType: "JSON",
-      data: {
-        legajo,
-        form
+  $.confirm({
+    title: 'Alertas!',
+    content: 'Desea guardar la configuración ?',
+    icon: 'glyphicon glyphicon-question-sign',
+    animation: 'scale',
+    closeAnimation: 'scale',
+    opacity: 0.5,
+    buttons: {
+      'confirm': {
+        text: 'Si',
+        btnClass: 'btn-green',
+        // envio de datos SIN Dependencia
+        action: function () {
+          
+          $.ajax({
+            url: 'modulos/administracion/calendario_agente/controlador.php?f=guardarArticulo',
+            type: "POST",
+            dataType: "JSON",
+            data: {
+              legajo,
+              form
+            },
+            success: function (response) {
+              calendar.refetchEvents();
+              get_articulos_agente();
+              $("#modalSaveArticle").modal("hide");
+            }
+          });
+
+        }
       },
-      success: function (response) {
-        calendar.refetchEvents();
-        get_articulos_agente();
-        $("#modalSaveArticle").modal("hide");
+      No: {
+        btnClass: 'btn-red',
+        action: function () {
+          $("#modalSaveArticle").modal("hide");
+        }
       }
-    });
-  } else {
-    $("#modalSaveArticle").modal("hide");
-  }
+    }
+  });
+
+
+  // if (confirm('Desea guardar la configuración ?')) {
+  //   $.ajax({
+  //     url: 'modulos/administracion/calendario_agente/controlador.php?f=guardarArticulo',
+  //     type: "POST",
+  //     dataType: "JSON",
+  //     data: {
+  //       legajo,
+  //       form
+  //     },
+  //     success: function (response) {
+  //       calendar.refetchEvents();
+  //       get_articulos_agente();
+  //       $("#modalSaveArticle").modal("hide");
+  //     }
+  //   });
+  // } else {
+  //   $("#modalSaveArticle").modal("hide");
+  // }
 }
 
 function eliminarArticulo(arg) {
 
-  if (confirm('Eliminar Articulo actual  ' + arg[1] + ' ?')) {
-    // console.log(arg.id);
-    var id_articulo = arg[0];
-    var id = arg[2];
-    
-    $.ajax({
-      url: 'modulos/administracion/calendario_agente/controlador.php?f=eliminarArticulo',
-      type: "POST",
-      dataType: "JSON",
-      data: {
-        id_articulo,
-        id
+  var id_articulo = arg[0];
+  var id = arg[2];
+
+  $.confirm({
+    title: 'Alertas!',
+    content: 'Eliminar Articulo actual  ' + arg[1] + ' ?',
+    icon: 'glyphicon glyphicon-question-sign',
+    animation: 'scale',
+    closeAnimation: 'scale',
+    opacity: 0.5,
+    buttons: {
+      'confirm': {
+        text: 'Si',
+        btnClass: 'btn-green',
+        // envio de datos SIN Dependencia
+        action: function () {
+          
+          $.ajax({
+            url: 'modulos/administracion/calendario_agente/controlador.php?f=eliminarArticulo',
+            type: "POST",
+            dataType: "JSON",
+            data: {
+              id_articulo,
+              id
+            },
+            success: function (response) {
+              calendar.refetchEvents();
+              get_articulos_agente();
+              $("#modalSaveArticle").modal("hide");
+            }
+          });
+
+        }
       },
-      success: function (response) {
-        calendar.refetchEvents();
-        get_articulos_agente();
-        $("#modalSaveArticle").modal("hide");
+      No: {
+        btnClass: 'btn-red',
+        action: function () {
+          $("#modalSaveArticle").modal("hide");
+        }
       }
-    });
-  } else {
-    $("#modalSaveArticle").modal("hide");
-  }
+    }
+  });
+
+  // if (confirm('Eliminar Articulo actual  ' + arg[1] + ' ?')) {
+  //   // console.log(arg.id);
+  //   var id_articulo = arg[0];
+  //   var id = arg[2];
+    
+  //   $.ajax({
+  //     url: 'modulos/administracion/calendario_agente/controlador.php?f=eliminarArticulo',
+  //     type: "POST",
+  //     dataType: "JSON",
+  //     data: {
+  //       id_articulo,
+  //       id
+  //     },
+  //     success: function (response) {
+  //       calendar.refetchEvents();
+  //       get_articulos_agente();
+  //       $("#modalSaveArticle").modal("hide");
+  //     }
+  //   });
+  // } else {
+  //   $("#modalSaveArticle").modal("hide");
+  // }
 
 }
 
