@@ -50,10 +50,64 @@ function editar($con){
   else{
     echo '
     <div class="alert alert-danger" role="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>
-    v    <i class="fas fa-exclamation-triangle"></i> No se pudo crear el registro
+    <i class="fas fa-exclamation-triangle"></i> No se pudo crear el registro
     </div>';
   }
 }
+
+function vincular_usuario_dependencia($con){
+  $id_usuario = $_POST['id_usuario'];
+  $id_dependencia = $_POST['id_dependencia'];   
+  $usuario_abm=$_SESSION['username']; 
+
+// insert
+
+    $sql = "INSERT INTO usuario_dependencias VALUES ($id_usuario,$id_dependencia,'$usuario_abm');";
+    $mesaje="El registro se creó con éxito";  
+
+//ejecuto la consulta
+  $sql=pg_query($con,$sql);
+  if(pg_result_status($sql))  {
+
+    echo '
+    <div class="alert alert-primary animated--grow-in" role="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>
+    <i class="far fa-check-circle"></i> '.$mesaje.'
+    </div>';
+    echo "<script>listado_dependencias_vinculadas();</script>";
+  }
+  else{
+    echo '
+    <div class="alert alert-danger" role="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>
+    <i class="fas fa-exclamation-triangle"></i> No se pudo crear el registro
+    </div>';
+  }
+}
+
+
+
+function quitar_dependencia($con){
+  
+  $id_usuario = $_GET['id_usuario'];
+  $id_dependencia = $_GET['id_dependencia'];   
+
+  $sql = "DELETE FROM usuario_dependencias WHERE id_usuario = ".$id_usuario." AND id_dependencia=".$id_dependencia;
+  $res=@pg_query($con,$sql);
+  if ($res === false) {
+    echo '
+    <div class="alert alert-danger" role="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>
+    <i class="fas fa-exclamation-triangle"></i> No se pudo eliminar el registro
+    </div>';
+  }
+  else{
+    echo '
+    <div class="alert alert-primary" role="alert"><button type="button" class="close" data-dismiss="alert">&times;</button>
+    <i class="far fa-check-circle"></i> El registro se eliminó con éxito
+    </div>';
+  }
+}
+
+
+
 
 
 function eliminar($con){
@@ -73,6 +127,7 @@ function eliminar($con){
     </div>';
   }
 }
+
 
 
 
