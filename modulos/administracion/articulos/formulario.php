@@ -19,7 +19,7 @@ if($_GET['id']!=0){
   </div>  
   <div class="col-md-2 position-relative">
     <label for="nro_articulo" class="form-label">Articulo<?php if($_GET['id']!=0) echo "[".$row['nro_articulo']."]";?></label>
-    <input type="number" class="form-control" id="nro_articulo" name="nro_articulo" minlength="3" value="<?php if($_GET['id']!=0) echo $row['nro_articulo'];?>" >
+    <input type="text" class="form-control" id="nro_articulo" name="nro_articulo" minlength="3" value="<?php if($_GET['id']!=0) echo $row['nro_articulo'];?>" >
 
   </div>  
   <div class="col-md-2 position-relative">
