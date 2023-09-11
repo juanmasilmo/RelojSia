@@ -6,7 +6,7 @@ function listado()
      $('html').animate({
       scrollTop: $("html").offset().top
   }, 0);
-    $.get("modulos/administracion/planilla_mensual/listado.php",function(dato){
+    $.get("modulos/administracion/carga_novedades/listado.php",function(dato){
         $("#listado").css('display', 'block');
         $("#listado").html(dato);
         $('#listado').fadeIn('slow');
@@ -42,7 +42,7 @@ function procesar() {
   let colums = 31;
   let filas = 0;
 
-  $.get("modulos/administracion/planilla_mensual/controlador.php?f=get_agentes&id_dependencia=" + id_dependencia, function(dato){
+  $.get("modulos/administracion/carga_novedades/controlador.php?f=get_agentes&id_dependencia=" + id_dependencia, function(dato){
     
     // console.log(dato);
     if(dato != 'false'){
@@ -71,7 +71,7 @@ function arma_tabla() {
   var anio = $("#id_anio").val();
 
 
-  let url = 'modulos/administracion/planilla_mensual/controlador.php?f=get_registros_agentes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
+  let url = 'modulos/administracion/carga_novedades/controlador.php?f=get_registros_agentes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
   
   $.get(url, function(data) {
 
@@ -83,15 +83,30 @@ function arma_tabla() {
       var registros = marcas.registros;
 
       var total_dias = new Date(anio, mes, 0).getDate(); //obtengo la cantidad de dias del mes para armado de la tabla 
-    
+      
+      /**
+       * chequeo si el mes seleccionado es igual al mes corriente 
+       * si es el mismo dejo agregar registro sino oculto el btn
+       */
+      var btn = '';
+      const month = new Date().getMonth();
+      
+      if(month+1 == mes){
+      
+        //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
+        var btn = '<hr><div><a class="btn btn-success controlar" id="cargar_registros_personal" onclick="cargar_registros_personal()">Agregar Registro </a></div><br>';
+
+      }
+      
       /**
        * Cabecera Tabla
        */
-      var tabla = "<table id='tabla_agentes_registros'  class='table table-responsive table-striped' ><thead bgcolor='#E6DFCF'><tr><th style='border: 1px solid black' rowspan='2'>Agentes</th><th style='border: 1px solid black' class='text-center' colspan='31'>Dias</th></tr><tr>";
+      var tabla = btn + "<table id='tabla_agentes_registros'  class='table table-responsive table-striped' ><thead bgcolor='#E6DFCF'><tr><th style='border: 1px solid black' rowspan='2'>Agentes</th><th style='border: 1px solid black' class='text-center' colspan='31'>Dias</th></tr><tr>";
       
       for (var i = 1; i < total_dias+1; i++){
         
-          tabla += "<th style='border: 1px solid black'>" + i + "</th>";
+        //agrego los dias
+        tabla += "<th style='border: 1px solid black;font-size:10px'>" + i + "</th>";
         
       }
       tabla += "</tr></thead><tbody style=''>";
@@ -101,7 +116,7 @@ function arma_tabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr><td style='border: 1px solid black' id='agentes'>"+agente.nombre+"</td>";
+        tabla += "<tr><td style='border: 1px solid black;font-size:10px' id='agentes'>"+agente.nombre+"</td>";
 
         if(!registros){
 
@@ -217,4 +232,41 @@ function pinta_sabado_domingo(fecha) {
   }
 
   return bgcolor;
+}
+
+
+function cargar_registros_personal() {
+  
+  $("#modalCargaNovedades").modal("show");
+}
+
+function guardarRegistroCompleto() {
+  
+  var fecha =  $("#registro_fecha").val();
+  //control de fecha vacia
+  // if(!fecha){
+  
+  //   $("#registro_fecha").css('border', '1px solid red');
+  //   $("#msj_registro_fecha").css('display', 'block');
+  //   return false;
+  
+  // }else{
+  
+  //   $("#registro_fecha").css('border','1px solid #d1d3e2');
+  //   $("#msj_registro_fecha").css('display', 'none');
+
+  // }
+
+  var opcion = $("input[type='radio'][name='registro_completo']:checked").val();
+  var id_dependencia  = $("#id_dependencia").val();
+
+  $.get("modulos/administracion/carga_novedades/controlador.php?f=guardar_registro_completo&fecha=" + fecha + "&opcion=" + opcion + "&id_dependencia=" + id_dependencia, function(dato){
+    
+    $("#modalCargaNovedades").modal("hide");
+    arma_tabla();
+
+  });
+  
+
+  
 }
