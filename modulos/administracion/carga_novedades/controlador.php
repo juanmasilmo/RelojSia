@@ -167,61 +167,56 @@ function guardar_registro_completo($con){
 
 
   //verifico que la fecha ya no tenga nada cargado
-  $sql_fecha = "SELECT * FROM calendario_agente WHERE registro = '$fecha'";
+  $sql_fecha = "SELECT * FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
   $rs_fecha = pg_query($con, $sql_fecha);
   $res_fecha = pg_fetch_all($rs_fecha);
 
-  if(!pg_num_rows($rs_fecha) > 0){
+  if(pg_num_rows($rs_fecha)){
+    $sql = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
+    pg_query($con,$sql);
+  }
+
   
-    if(pg_num_rows($rs) > 0){
-      
-      $query = '';
-      
-      // id_articulo Firma Planilla
-      if($opcion == 'fp') {
-        
-        //ontego el id del articulo Firma Planilla
-        $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
-        $rs_art = pg_query($con, $sql_art);
-        $res_art = pg_fetch_array($rs_art);
-        $id_articulo = $res_art['id'];
-
-        // creo un strin query con la fecha y el articulo x legajo
-        foreach ($res_legajos as $legajo) {
-          
-          $legajo = $legajo['legajo'];
-          $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo', now(), '$usuario_abm');";
+  if(pg_num_rows($rs) > 0){
     
-        }
-
-      }else{
-        
-        // creo un strin query con la fecha entrada y salida x legajo
-        foreach ($res_legajos as $legajo) {
-          
-          $fecha1 = $fecha.' 6:30:00';
-          $fecha2 = $fecha.' 12:30:00';
-          $legajo = $legajo['legajo'];
-
-          $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
-          $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+    $query = '';
     
-        } //fin foreach legajos
-        
-      } // fin if opfcion
-
+    // id_articulo Firma Planilla
+    if($opcion == 'fp') {
       
-      pg_query($con,$query);
+      //ontego el id del articulo Firma Planilla
+      $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
+      $rs_art = pg_query($con, $sql_art);
+      $res_art = pg_fetch_array($rs_art);
+      $id_articulo = $res_art['id'];
 
-    } // fin num_rows legajos result
+      // creo un strin query con la fecha y el articulo x legajo
+      foreach ($res_legajos as $legajo) {
+        
+        $legajo = $legajo['legajo'];
+        $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo', now(), '$usuario_abm');";
+  
+      }
 
-  }else{
-    // updateo los datos en caso de que haya puesto FP y quiera agregar hora
+    }else{
+      
+      // creo un strin query con la fecha entrada y salida x legajo
+      foreach ($res_legajos as $legajo) {
+        
+        $fecha1 = $fecha.' 6:30:00';
+        $fecha2 = $fecha.' 12:30:00';
+        $legajo = $legajo['legajo'];
+
+        $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
+        $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+
+      } //fin foreach legajos
+      
+    } // fin if opfcion
     
+    pg_query($con,$query);
 
-
-
-  } // fin num_rows regsitros dia result
+  } // fin num_rows legajos result
   
   echo json_encode("ok");
 }
