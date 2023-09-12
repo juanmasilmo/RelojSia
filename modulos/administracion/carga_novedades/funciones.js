@@ -171,14 +171,18 @@ function armaTabla() {
                 
                 //verifico que tenga registro
                 if(registro.hora && registro.hora != 0){
-                
+                  
+                  var minutos = registro.minutos;
+                  if(minutos < 9){
+                    minutos = '0'+minutos;
+                  }
                   //pregunto si es mayor a 6hs am
-                  if(registro.hora+registro.minutos > 640 && registro.hora+registro.minutos < 1230 )
+                  if(registro.hora+minutos > 640 && registro.hora+minutos < 1230 )
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
                     //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + registro.hora +':'+ registro.minutos + '<br />';
+                    registro_marca += nro_articulo + registro.hora +':'+ minutos + '<br />';
                 
                 }else{
                   if(nro_articulo){
