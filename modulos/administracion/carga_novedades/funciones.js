@@ -279,7 +279,7 @@ function guardarRegistroCompleto() {
 function modificarRegistroLegajo(dia,legajo){
 
   if(dia < 10){
-    dia += '0'+dia;
+    dia = '0'+dia;
   }
   var mes = $("#id_mes").val();
   var anio = $("#id_anio").val();
