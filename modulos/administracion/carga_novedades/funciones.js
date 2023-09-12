@@ -47,7 +47,7 @@ function procesar() {
     // console.log(dato);
     if(dato != 'false'){
       
-      arma_tabla();
+      armaTabla();
     
     }else{
       
@@ -64,7 +64,7 @@ function procesar() {
 
 
 
-function arma_tabla() {
+function armaTabla() {
   
   var id_dependencia  = $("#id_dependencia").val();
   var mes = $("#id_mes").val();
@@ -94,7 +94,7 @@ function arma_tabla() {
       if(month+1 == mes){
       
         //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
-        var btn = '<hr><div><a class="btn btn-success controlar" id="cargar_registros_personal" onclick="cargar_registros_personal()">Agregar Registro </a></div><br>';
+        var btn = '<hr><div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
 
       }
       
@@ -116,17 +116,18 @@ function arma_tabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr><td style='border: 1px solid black;font-size:10px' id='agentes'>"+agente.nombre+"</td>";
+        tabla += "<tr><td style='border: 1px solid black;font-size:10px' id='agentes_"+agente.legajo+"' >"+agente.nombre+"</td>";
 
         if(!registros){
-
+          
+          //sino hay registro para mostrar cargo las celdas con vacio
           for (var dia = 1; dia < total_dias+1; dia++){
              
             //verifico si es fin de semana pinto de gris
              var fecha = anio+'/'+mes+'/'+dia;
-             background_color = pinta_sabado_domingo(fecha);
+             background_color = pintaSabadoDomingo(fecha);
             
-            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
+            tabla += "<td style='border: 1px solid black' id='"+agente.legajo+"' bgcolor='"+background_color+"' ondblclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")'> </td>";
           }
           tabla += "</tr>";
 
@@ -134,13 +135,13 @@ function arma_tabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' ";
+            tabla += "<td style='border: 1px solid black' id='"+agente.legajo+"' ondblclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
 
             //verifico si es fin de semana pinto de gris
             var fecha = anio+'/'+mes+'/'+dia;
-            background_color = pinta_sabado_domingo(fecha);
+            background_color = pintaSabadoDomingo(fecha);
   
             //por cada dia recorro los registros 
             registros.forEach(function(registro){
@@ -172,8 +173,7 @@ function arma_tabla() {
                 if(registro.hora && registro.hora != 0){
                 
                   //pregunto si es mayor a 6hs am
-                  if((registro.hora >= 6 && registro.minutos > 40) || ((registro.hora > 9) && (registro.hora <= 12 && registro.minutos < 30)))
-                    
+                  if(registro.hora+registro.minutos > 640 && registro.hora+registro.minutos < 1230 )
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
@@ -194,6 +194,7 @@ function arma_tabla() {
 
             //cierro el td de apertura
             tabla += 'bgcolor="'+ background_color +'">';
+            background_color = '';
 
             //imprimo los registros (string preparado)
             tabla += registro_marca.trim();
@@ -222,7 +223,7 @@ function arma_tabla() {
 
 }
 
-function pinta_sabado_domingo(fecha) {
+function pintaSabadoDomingo(fecha) {
 
   var today = new Date(fecha);
 
@@ -235,7 +236,7 @@ function pinta_sabado_domingo(fecha) {
 }
 
 
-function cargar_registros_personal() {
+function cargarRegistrosPersonal() {
   
   $("#modalCargaNovedades").modal("show");
 }
@@ -263,10 +264,55 @@ function guardarRegistroCompleto() {
   $.get("modulos/administracion/carga_novedades/controlador.php?f=guardar_registro_completo&fecha=" + fecha + "&opcion=" + opcion + "&id_dependencia=" + id_dependencia, function(dato){
     
     $("#modalCargaNovedades").modal("hide");
-    arma_tabla();
+    armaTabla();
 
   });
   
 
   
+}
+
+function modificarRegistroLegajo(dia,legajo){
+
+  if(dia < 10){
+    dia += '0'+dia;
+  }
+  var mes = $("#id_mes").val();
+  var anio = $("#id_anio").val();
+  var agente = $("#agentes_"+legajo).text();
+
+  $("#modificacion_registro_nombre_agente").text(agente);
+  $("#input_modificacion_registro_legajo").val(legajo);
+  
+  $("#modificacion_registro_fecha").text(dia+'-'+mes+'-'+anio);
+  $("#input_modificacion_registro_fecha").val(anio+'-'+mes+'-'+dia);
+
+  $("#modalModificacionNovedades").modal("show");
+}
+
+function cambiarVisibilidadInputsFechas() {
+
+  var checkeds = document.getElementById('checked_fp_modificacion_registro');
+  //si checked disabled sino enabled
+  if (checkeds.checked){
+    $(".inputs_fechas").attr('disabled','disabled');
+  }else{
+    $(".inputs_fechas").removeAttr('disabled');
+  }
+}
+
+function modificarRegistroCompleto() {
+  
+  $.ajax({
+    type: 'post',
+    url: "modulos/administracion/carga_novedades/controlador.php?f=modificar_registro_legajo",
+    dataType: 'json',
+    data : $('#formulario_modificacion_registros').serialize(),
+    success: function(response) {
+      
+      $("#modalModificacionNovedades").modal("hide");
+      armaTabla();
+    }
+  });
+
 }

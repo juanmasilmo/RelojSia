@@ -61,17 +61,3 @@ margin-left: 15px;
 .item_seleccionado {
   background-color: #eaecf4;
 }
-
-h4 {
-  margin: 0px 0 10px 0;
-  font-weight: normal;       
-  font-size: 12px;
-  line-height: 30px;
-  background: #00B1D9;
-  padding: 1px 1px 1px 15px; 
-  color: white;   
-  font-family: 'Roboto';
-  float: left;
-  text-align: left;
-  width: 100%;
-}
