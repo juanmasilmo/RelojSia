@@ -100,6 +100,48 @@ $con = conectar();
 </head>
 
 <body class="bg-gradient-primary">
+
+<?php 
+
+  $date_nueva = date('Y-m-d');  
+  $date_nueva = strtotime($date_nueva);
+
+  ///si es el mundial
+  if(($date_nueva>=strtotime('2022-12-08')) && ($date_nueva <= strtotime('2022-12-18')))
+  {
+    $video=4;
+  }else{
+
+    $año=date('Y');
+    if(date('m')==12){
+      $date_inicio = date('Y-12-08');
+      $año++;
+    }else{
+      $año_inicio=$año-1;
+      $date_inicio = date($año_inicio.'-12-08');
+    }
+
+    $date_fin = date($año.'-01-06');
+
+    $date_inicio = strtotime($date_inicio);
+    $date_fin = strtotime($date_fin);
+
+    if (($date_nueva >= $date_inicio) && ($date_nueva <= $date_fin)){
+      $video=3;
+    }else{
+      $video=2;
+    }
+  }
+  ?>
+
+
+    
+    <div class="contenido_video">
+        <video class="video" autoplay="autoplay" loop="loop" muted="muted">
+           <source src="inc/img/login<?php echo $video;?>.mp4" type="video/mp4" />
+       </video>
+   </div> 
+
    <div id="popup" style="display: none;"></div>
    <div id="mensaje" style="display: none;"></div>
    <?php 
@@ -328,5 +370,22 @@ t>
       opacity: 1;
   }
 
+ /* FONDO VIDEO */
+  .contenido_video{
+   overflow: hidden;
+   position: fixed;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   z-index: 0;
+}
+
+/* Estilos para la etiqueta "video" con la calse (.video)  */
+.video{
+   /*position: absolute;*/
+   max-width: 300%;
+   width: 100%;
+}
 </style>
 </html>
