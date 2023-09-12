@@ -211,6 +211,7 @@ function guardarEvento() {
               success: function (response) {
                 
                 document.getElementById("form_setting_calendar").reset();
+                $("#evento_fecha_configurado").val(0);
                 
                 calendar.refetchEvents();
                 $("#estadosModal").modal("hide");
