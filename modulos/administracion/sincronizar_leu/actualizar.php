@@ -7,12 +7,12 @@ $bandera=0;
 $fecha_actual=date("Y-m-d");
 
 $fecha_desde= strtotime('-15 day', strtotime($fecha_actual));
-$fecha_desde = date('Y-m-d', $fecha_desde);
+$fecha_desdea = date('Y-m-d', $fecha_desde);
 
 $fecha_hasta= strtotime('+30 day', strtotime($fecha_actual));
 $fecha_hasta = date('Y-m-d', $fecha_hasta);
 
-$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desde."?fecha_hasta=".$fecha_hasta;
+$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
 
 $username = 'notificaciones-sia';
 $password = 'hEFPNu89bT';
@@ -30,7 +30,7 @@ $vector=$items;
 
 pg_query("BEGIN") or die("Could not start transaction\n");
 
-$sql="delete from calendario_agente where registro >='$fecha_desde' and registro <='$fecha_hasta' and leu=1";
+$sql="delete from calendario_agente where registro >='$fecha_desdea' and registro <='$fecha_hasta' and leu=1";
 $res=pg_query($con, $sql);
 
 for ($i=0;$i<count($vector);$i++){
@@ -73,7 +73,7 @@ for ($i=0;$i<count($vector);$i++){
 }
 if ($bandera==0){
 	pg_query("COMMIT") or die("Transaction commit failed\n");
-	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las dependencias con &eacute;xito</div>';?>
+	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las licencias desde '.$fecha_desdea.' hasta '.$fecha_hasta.'</div>';?>
 	<script>listado()</script>
 	<?php
 }
