@@ -161,6 +161,9 @@ function calendario_agente() {
 
   //muestro la table de articulos al pie del calendario
   $('#div_articulos_agente').css('display','block');
+
+  //muestro referencia de los registros del calendario anual
+  $('#tabla_estados_calendario_agente').css('display','block');
  
 
   $('body').on('click', 'button.fc-prev-button', function () {
