@@ -41,6 +41,13 @@ $sql_art = "SELECT id
 $rs_art = pg_query($con, $sql_art);
 $res_art = pg_fetch_all($rs_art);
 
+/**
+ * Estados
+ */
+$sql = "SELECT * FROM estados";
+$rs = pg_query($sql);
+$estados = pg_fetch_all($rs);
+
 ?>
 
 <!-- Cabecera -->
@@ -234,29 +241,63 @@ $res_art = pg_fetch_all($rs_art);
     border: 1px solid #9b9a9a;
   }
 </style>
-<div class="content">
+<!-- <div class="content">
   <div class="row">
     <div class=" col-md-10 offset-md-1">
       <div id='calendar'></div>
     </div>
   </div>
+</div> -->
+
+<div class="conten">
+  <div class="row">
+    <div class="col-md-10" id='calendar'>
+
+    </div>
+    <div class="col-md-2" id="tabla_estados_calendario_agente" style="display:none">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th colspan="3" class="text-center">
+              Referencias
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($estados as $value) { ?>
+        <tr>
+            <td style="width:1%; background-color:<?php echo $value['color'] ?>">
+            </td>
+            <td>
+              <strong>(<?php echo $value['letra'] ?>)</strong>
+            </td>
+            <td>
+            <?php echo $value['descripcion'] ?>
+            </td>
+          </tr>
+          <?php } ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+
 <!-- FIN Calendario -->
 
 <!-- Tabla Detalle Articulos -->
 <div class="content"  >
   <div class="row">
-    <div class="col-md-12" id="div_msj_articulo_agente" style="display:none">
+    <div class="col-md-10" id="div_msj_articulo_agente" style="display:none">
       <hr>
       <br>
       <div class="alert alert-warning">
         <strong id="msj_articulo_agente"></strong>
       </div>
     </div>
-    <div class="col-md-12" id="div_articulos_agente" style="display:none">
-      <table class="table table-striped">
+    <div class="col-md-10" id="div_articulos_agente" style="display:none">
+      <table class="table table-striped table-bordered">
         <thead>
-          <tr>
+          <tr bgcolor="#E6DFCF">
             <th>
               Articulo
             </th>

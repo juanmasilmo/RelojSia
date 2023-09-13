@@ -75,10 +75,10 @@ $estados = pg_fetch_all($rs);
 <div id="fade" class="fadebox">&nbsp;</div> -->
 <div class="conten">
   <div class="row">
-    <div class="col-md-9" id='calendar'>
+    <div class="col-md-10" id='calendar'>
 
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -89,7 +89,7 @@ $estados = pg_fetch_all($rs);
         </thead>
         <tbody>
         <?php foreach ($estados as $value) { ?>
-        <tr ">
+        <tr>
             <td style="width:1%; background-color:<?php echo $value['color'] ?>">
             </td>
             <td>
