@@ -31,4 +31,4 @@ INSERT INTO grupos_opciones (id_grupo, id_opcion,usuario_abm) values (1,(select 
 -- Se crea el primer items del instrucctivo
 INSERT INTO items(descripcion, enlace, id_opcion, orden,usuario_abm) VALUES ('Listado', 'administracion/instructivo', (select id from opciones where descripcion='Instructivo'), 1, 'admin');
 -- Se relaciona el items al admin
-INSERT INTO grupos_items VALUES (1,(select id from opciones where descripcion='Listado'),'admin');
+INSERT INTO grupos_items VALUES (1,(select id from items where descripcion='Listado'),'admin');
