@@ -75,6 +75,31 @@
 
         <?php } ?>
     
+        <!-- FIN VERSIONES -->
+        <?php
+            $sql = "SELECT tag FROM sistema_versiones WHERE id=(select max(id) from sistema_versiones)";
+            $rs=pg_query($con,$sql);
+            $row=pg_fetch_array($rs);
+        ?>
+
+        <!-- VERSIONES -->
+        <script>
+
+            function controlar_version(tag) {    
+                storageversion = localStorage.getItem("version");
+                if(storageversion != tag){           	
+                    // $(".version_tag").css('color','#ffc107');
+                    document.getElementById('version_tag').className ='parpadea';
+                    $('.parpadea').tooltip('show');
+                }else{
+                    // $(".parpadea").css('color','#ffffff');
+                    document.getElementById('version_tag').className ='sin_efecto';
+                    $('.sin_efecto').tooltip('disable');
+
+                }		
+            }
+        </script>
+        <!-- FIN VERSIONES -->
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
@@ -86,9 +111,8 @@
 
         <!-- Sidebar Message -->
         <div class="sidebar-card d-none d-lg-flex">
-            <img class="sidebar-card-illustration mb-2" src="inc/img/test.svg" alt="...">
-            <p class="text-center mb-2"><strong>Texto para rellenar</strong></p>
-            <a class="btn btn-success btn-sm" href="#">Información Extra</a>
+            <span class="fa fa-exclamation-circle"></span>
+            <a class="version_tag " onclick="abrir_version('<?php echo $row['tag'];?>')" href="#" data-toggle="tooltip" data-html="true" data-placement="top" title="Nueva Actualización Disponible" style="margin-left: 10px; color: #1cc88a" id="version_tag" ></i> <strong>Versión <?php if (pg_num_rows($rs) > 0) echo $row['tag']; ?></strong></a>
         </div>
 
     </ul>

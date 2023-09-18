@@ -1,7 +1,6 @@
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Secretaría de Tecnología &copy; STI</span>
-        </div>
+        <!-- VERSIONES -->
+        <script>controlar_version('<?php echo $row['tag'];?>');</script>
     </div>
 </footer>
