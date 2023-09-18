@@ -49,6 +49,10 @@ if (!isset($_SESSION['userid'])) {
 
 
     <script type="text/javascript">
+        function cerrar(){
+            $('#popup').fadeOut('slow');
+            $('.popup-overlay').fadeOut('slow');
+        }
         function alertas(msj) {
             $.alert({
                 title: 'Alerta!',
@@ -78,6 +82,16 @@ if (!isset($_SESSION['userid'])) {
 
             $('#popup').fadeOut('slow');
             $('.popup-overlay').fadeOut('slow');
+        }
+
+        //fin Abrir configuracion
+        function abrir_version(tag) {    
+        localStorage.setItem("version", tag);
+        $.get("versiones.php", function(dato) {
+            $('#popup').html(dato);
+            $('#popup').fadeIn('slow');        
+            controlar_version(tag);
+        });
         }
 
         function validar_pass() {
@@ -229,6 +243,8 @@ if (!isset($_SESSION['userid'])) {
     
         
 
+        <script src="inc/js/popper.min.js"></script>
+        <script src="inc/js/moment.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <!-- Core plugin JavaScript-->
         <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -237,11 +253,9 @@ if (!isset($_SESSION['userid'])) {
         <script src="inc/js/sb-admin-2.min.js"></script>
         <!-- <script src="inc/js/bootstrap4.min.js"></script> -->
         <script src="vendor/bootstrap/js/bootstrap.js"> </script>
-        <script src="inc/js/moment.js"></script>
         <script src="vendor/fullcalendar/dist/index.global.js"></script>
         <script src="vendor/fullcalendar/packages/bootstrap4/index.global.js"></script>
         <!-- <script src="inc/js/js-year-calendar.js"></script> -->
-        <script src="inc/js/popper.min.js"></script>
         <script src="inc/js/bootstrap-datepicker.min.js">
         </script>
 </body>
