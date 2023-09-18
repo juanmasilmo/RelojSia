@@ -166,15 +166,18 @@ function guardar_registro_completo($con){
   $res_legajos = pg_fetch_all($rs);
 
 
+  /**
+   * se comenta segun issues 28
+   */
   //verifico que la fecha ya no tenga nada cargado
-  $sql_fecha = "SELECT * FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
-  $rs_fecha = pg_query($con, $sql_fecha);
-  $res_fecha = pg_fetch_all($rs_fecha);
+  // $sql_fecha = "SELECT * FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
+  // $rs_fecha = pg_query($con, $sql_fecha);
+  // $res_fecha = pg_fetch_all($rs_fecha);
 
-  if(pg_num_rows($rs_fecha)){
-    $sql = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
-    pg_query($con,$sql);
-  }
+  // if(pg_num_rows($rs_fecha)){
+  //   $sql = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
+  //   pg_query($con,$sql); 
+  // }
 
   
   if(pg_num_rows($rs) > 0){
@@ -231,7 +234,7 @@ function modificar_registro_legajo($con){
 
   // elimino registro y cargo nuevamente
   $sql_dlt = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo";
-  pg_query($con,$sql_dlt);
+  // pg_query($con,$sql_dlt); se comenta segun issues 28
 
   // pregunto si viene el check de FP
   if(isset($_POST['checked_fp_modificacion_registro'])){

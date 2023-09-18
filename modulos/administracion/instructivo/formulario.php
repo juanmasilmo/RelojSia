@@ -48,7 +48,7 @@ if($id!=0){
 
 
         <div class="col-md-6">
-          <p>(*) ID Video (Youtuve)</p>
+          <p>(*) ID Video (Youtube)</p>
           <?php if($id != 0 and $row['url_video']){
               $onblur =  "onblur='getUrl();'";
               $url_video = $row['url_video'];
