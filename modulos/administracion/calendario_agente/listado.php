@@ -37,6 +37,7 @@ $sql_art = "SELECT id
                     ,nro_articulo
                     ,descripcion
             FROM articulos
+            WHERE c_manual = 1
             ORDER BY nro_articulo";
 $rs_art = pg_query($con, $sql_art);
 $res_art = pg_fetch_all($rs_art);
