@@ -58,13 +58,26 @@ $meses = [
             '12' => 'Diciembre'
           ];
 
-//traigo el año actual para mostrar por defecto
+//obtengo el año actual
 $year = date('Y');
-//traigo el mes actual para mostrar por defecto
+//obtengo el mes actual
 $month = date('m');
+//obtengo el ultimo dia del mes
+$ultimo_dia = date('t');
 
+//value por defecto del input date
 $dt = new DateTime();
 $hoy = $dt->format('Y-m-d');
+
+//le agrego un 0 en caso de la resta.-
+$month_min = $month - 1;
+if($month_min < 10)
+$month_min = '0'.$month_min;
+
+//seteo los atributos del input
+$min = $year.'-'. $month_min .'-25';
+$max = $year.'-'.$month.'-'.$ultimo_dia;
+
 
 ?>
 
@@ -154,7 +167,7 @@ $hoy = $dt->format('Y-m-d');
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalCargaNovedadesLabel">Cargar Articulo <small id='fecha_seleccionada'></small>
+        <h5 class="modal-title" id="modalCargaNovedadesLabel">Cargar Asistencia <small id='fecha_seleccionada'></small>
         </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -168,9 +181,7 @@ $hoy = $dt->format('Y-m-d');
 
             <div class="col-md-6">
               <label for="fecha"> Cargar Asistencia de la Fecha : </label>
-              <input type="date" class="form-control" name="registro_fecha" id="registro_fecha" value="<?php echo $hoy; ?>">
-              
-
+              <input type="date" class="form-control" name="registro_fecha" min="<?php echo $min ?>" max="<?php echo $max ?>" id="registro_fecha" value="<?php echo $hoy; ?>">
               <div id="msj_registro_fecha" style="display:none;color:red">Campo Obligatorio</div>
             </div>
 
@@ -181,7 +192,7 @@ $hoy = $dt->format('Y-m-d');
 
           <div class="row">
             <div class="col-md-12">
-              <h5> Seleccionar la opcion a cargar en el dia Completo </h5>
+              <h5> Seleccionar marca </h5>
             </div>
           </div>
           
@@ -198,7 +209,9 @@ $hoy = $dt->format('Y-m-d');
               <label for="fecha_inicio">Hora (6:30 - 12:30)</label>
               <input type="radio" class="form-control" name="registro_completo" id="registro_hora" value="hs">
             </div>
-
+            <div class="col-md-12 ">
+              <small><strong><i>PD: El registro impactara en todo el personal de la Dependencia.</i>-</strong></small>
+            </div>
           </div>
           
         </form>
