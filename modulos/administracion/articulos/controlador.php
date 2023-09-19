@@ -69,16 +69,17 @@ function editar($con){
   $tipo_licencias = $_POST['tipo_licencias'];
   $sin_fecha_fin = $_POST['sin_fecha_fin'];
   $cobra_presentismo=$_POST['cobra_presentismo'];
+  $carga_manual=$_POST['c_manual'];
   $usuario_abm=$_SESSION['username'];
   $id=$_POST['id'];
 
   if ($id > 0) {
 //update
-    $sql = "update articulos set id_leu=".$id_leu.",nro_articulo='".$nro_articulo."', inciso='".$inciso."',descripcion='".$descripcion ."', cantidad_mensual=".$cantidad_mensual.",cantitad_anual=".$cantitad_anual.",observacion='".$observacion."',inasistencias=".$inasistencias.",licencias=".$licencias.",retiro=".$retiro.",tardanza=".$tardanza.",excluye_feria=".$excluye_feria.",tipo_licencias='".$tipo_licencias."',sin_fecha_fin=".$sin_fecha_fin.",cobra_presentismo=".$cobra_presentismo.",usuario_abm='".$usuario_abm."' where id=".$id;
+    $sql = "update articulos set id_leu=".$id_leu.",nro_articulo='".$nro_articulo."', inciso='".$inciso."',descripcion='".$descripcion ."', cantidad_mensual=".$cantidad_mensual.",cantitad_anual=".$cantitad_anual.",observacion='".$observacion."',inasistencias=".$inasistencias.",licencias=".$licencias.",retiro=".$retiro.",tardanza=".$tardanza.",excluye_feria=".$excluye_feria.",tipo_licencias='".$tipo_licencias."',sin_fecha_fin=".$sin_fecha_fin.",cobra_presentismo=".$cobra_presentismo.",c_manual=".$carga_manual.",usuario_abm='".$usuario_abm."' where id=".$id;
     $mesaje="El registro se modificó con éxito";
   }else {
 // insert
-    $sql = "INSERT INTO articulos(id_leu,nro_articulo,inciso,descripcion,cantidad_mensual,cantitad_anual,observacion,inasistencias,licencias,retiro,tardanza,excluye_feria,tipo_licencias,sin_fecha_fin,cobra_presentismo,usuario_abm) VALUES (".$id_leu.",'".$nro_articulo."','".$inciso ."','".$descripcion."',".$cantidad_mensual.",".$cantitad_anual.",'".$observacion."',".$inasistencias.",".$licencias.",".$retiro.",".$tardanza.",".$excluye_feria.",'".$tipo_licencias."',".$sin_fecha_fin.",".$cobra_presentismo.",'".$usuario_abm."')";
+    $sql = "INSERT INTO articulos(id_leu,nro_articulo,inciso,descripcion,cantidad_mensual,cantitad_anual,observacion,inasistencias,licencias,retiro,tardanza,excluye_feria,tipo_licencias,sin_fecha_fin,cobra_presentismo,c_manual,usuario_abm) VALUES (".$id_leu.",'".$nro_articulo."','".$inciso ."','".$descripcion."',".$cantidad_mensual.",".$cantitad_anual.",'".$observacion."',".$inasistencias.",".$licencias.",".$retiro.",".$tardanza.",".$excluye_feria.",'".$tipo_licencias."',".$sin_fecha_fin.",".$cobra_presentismo.",$carga_manual,'".$usuario_abm."')";
       $mesaje="El registro se creó con éxito";
     }
 

@@ -4,7 +4,7 @@ include("../../../inc/conexion.php");
 conectar();
 
 if($_GET['id']!=0){
-  $sql="select * from articulos where id=".$_GET['id'];
+  echo $sql="select * from articulos where id=".$_GET['id'];
   $sql=pg_query($con,$sql);
   $row=pg_fetch_array($sql);  
 }
@@ -56,8 +56,8 @@ if($_GET['id']!=0){
     <label for="inasistencias" class="form-label">Inasistencias<?php if($_GET['id']!=0) echo "[".$row['inasistencias']."]";?></label>
     <select class="form-control" id="inasistencias" name="inasistencias" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['inasistencias'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['inasistencias'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['inasistencias']) && $row['inasistencias'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['inasistencias']) && $row['inasistencias'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -68,8 +68,8 @@ if($_GET['id']!=0){
     <label for="licencias" class="form-label">Licencias<?php if($_GET['id']!=0) echo "[".$row['licencias']."]";?></label>
     <select class="form-control" id="licencias" name="licencias" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['licencias'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['licencias'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['licencias']) && $row['licencias'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['licencias']) && $row['licencias'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -80,8 +80,8 @@ if($_GET['id']!=0){
     <label for="retiro" class="form-label">Retiro<?php if($_GET['id']!=0) echo "[".$row['retiro']."]";?></label>
     <select class="form-control" id="retiro" name="retiro" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['retiro'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['retiro'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['retiro']) && $row['retiro'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['retiro']) && $row['retiro'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -92,8 +92,8 @@ if($_GET['id']!=0){
     <label for="tardanza" class="form-label">Tardanza<?php if($_GET['id']!=0) echo "[".$row['tardanza']."]";?></label>
     <select class="form-control" id="tardanza" name="tardanza" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['tardanza'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['tardanza'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['tardanza']) && $row['tardanza'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['tardanza']) && $row['tardanza'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -104,8 +104,8 @@ if($_GET['id']!=0){
     <label for="excluye_feria" class="form-label">Excluye Feria<?php if($_GET['id']!=0) echo "[".$row['excluye_feria']."]";?></label>
     <select class="form-control" id="excluye_feria" name="excluye_feria" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['excluye_feria'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['excluye_feria'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['excluye_feria']) && $row['excluye_feria'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['excluye_feria']) && $row['excluye_feria'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -116,9 +116,9 @@ if($_GET['id']!=0){
     <label for="tipo_licencias" class="form-label">Tipo Licencias<?php if($_GET['id']!=0) echo "[".$row['tipo_licencias']."]";?></label>
     <select class="form-control" id="tipo_licencias" name="tipo_licencias" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="ORDINARIAS" <?php if($row['tipo_licencias'] == 'ORDINARIAS'){ echo "selected";}?>>ORDINARIAS</option>
-      <option value="EXTRAORDINARIAS" <?php if($row['tipo_licencias'] == 'EXTRAORDINARIAS'){ echo "selected";}?>>EXTRAORDINARIAS</option>    
-      <option value="MEDICAS" <?php if($row['tipo_licencias'] == 'MEDICAS'){ echo "selected";}?>>MEDICAS</option>   
+      <option value="ORDINARIAS" <?php if(isset($row['tipo_licencias']) && $row['tipo_licencias'] == 'ORDINARIAS'){ echo "selected";}?>>ORDINARIAS</option>
+      <option value="EXTRAORDINARIAS" <?php if(isset($row['tipo_licencias']) && $row['tipo_licencias'] == 'EXTRAORDINARIAS'){ echo "selected";}?>>EXTRAORDINARIAS</option>    
+      <option value="MEDICAS" <?php if(isset($row['tipo_licencias']) && $row['tipo_licencias'] == 'MEDICAS'){ echo "selected";}?>>MEDICAS</option>   
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -129,8 +129,8 @@ if($_GET['id']!=0){
     <label for="sin_fecha_fin" class="form-label">Sin Fecha Fin<?php if($_GET['id']!=0) echo "[".$row['sin_fecha_fin']."]";?></label>
     <select class="form-control" id="sin_fecha_fin" name="sin_fecha_fin" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['sin_fecha_fin'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['sin_fecha_fin'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['sin_fecha_fin']) && $row['sin_fecha_fin'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['sin_fecha_fin']) && $row['sin_fecha_fin'] == 1){ echo "selected";}?>>SI</option>       
     </select>
     <div class="invalid-feedback">
       controlar el campo
@@ -141,8 +141,21 @@ if($_GET['id']!=0){
     <label for="cobra_presentismo" class="form-label">Cobra Presentismo<?php if($_GET['id']!=0) echo "[".$row['cobra_presentismo']."]";?></label>
     <select class="form-control" id="cobra_presentismo" name="cobra_presentismo" required>
       <option selected disabled value="">Seleccionar</option>
-      <option value="0" <?php if($row['cobra_presentismo'] == 0){ echo "selected";}?>>NO</option>
-      <option value="1" <?php if($row['cobra_presentismo'] == 1){ echo "selected";}?>>SI</option>       
+      <option value="0" <?php if(isset($row['cobra_presentismo']) && $row['cobra_presentismo'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['cobra_presentismo']) && $row['cobra_presentismo'] == 1){ echo "selected";}?>>SI</option>       
+    </select>
+    <div class="invalid-feedback">
+      controlar el campo
+    </div>
+  </div>  
+  
+  <!-- check para cargar manual el articulo en el calenario agente -->
+  <div class="col-md-2 position-relative">
+    <label for="c_manual" class="form-label">Carga Manual<?php if($_GET['id']!=0) echo "[".$row['c_manual']."]";?></label>
+    <select class="form-control" id="c_manual" name="c_manual" required >
+      <option selected disabled value="">Seleccionar</option>
+      <option value="0" <?php echo (isset($row['c_manual']) && $row['c_manual'] == 0) ? "selected" : ''; ?> >NO</option>
+      <option value="1" <?php echo (isset($row['c_manual']) && $row['c_manual'] == 1) ? "selected" : ''; ?> >SI</option>
     </select>
     <div class="invalid-feedback">
       controlar el campo
