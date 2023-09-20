@@ -23,7 +23,7 @@ $estados = pg_fetch_all($rs);
       <div class="modal-header">
         <h5 class="modal-title" id="estadosModalLabel">Estados </h5>
         <h4 id=""> </h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" onclick="cerrar_modal()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -64,7 +64,7 @@ $estados = pg_fetch_all($rs);
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" onclick="cerrar_modal()">Close</button>
         <button type="button" id="save-modal" onclick="guardarEvento()" class="btn btn-primary">Save changes</button>
       </div>
     </div>
