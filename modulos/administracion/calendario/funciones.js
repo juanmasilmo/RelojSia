@@ -1,5 +1,14 @@
 let calendar = '';
 
+function cerrar_modal() {
+  // reseto el input hidden del articulo 
+  $("#evento_fecha_configurado").val("");
+  
+  // cierro el modal
+  $("#estadosModal").modal("hide");
+  
+
+}
 
 document.addEventListener('DOMContentLoaded', function () {
 
