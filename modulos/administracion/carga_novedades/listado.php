@@ -267,11 +267,11 @@ $max = $year.'-'.$month.'-'.$ultimo_dia;
           <div class="row" >
             <br>
             <div class="col-md-6">
-              <label for="">Fecha Ingreso</label>
+              <label for="">Hora Ingreso</label>
               <input type="time" class="form-control inputs_fechas" name="fecha_ingreso" id="fecha_ingreso" value="06:30">
             </div>
             <div class="col-md-6">
-              <label for="">Fecha Salida</label>
+              <label for="">Hora Salida</label>
               <input type="time" class="form-control inputs_fechas" name="fecha_salida" id="fecha_salida" value="12:30">
             </div>
           </div>
