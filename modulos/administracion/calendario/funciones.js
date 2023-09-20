@@ -219,8 +219,8 @@ function guardarEvento() {
               },
               success: function (response) {
                 
-                document.getElementById("form_setting_calendar").reset();
-                $("#evento_fecha_configurado").val(0);
+                // reseto el input hidden del articulo 
+                $("#evento_fecha_configurado").val("");
                 
                 calendar.refetchEvents();
                 $("#estadosModal").modal("hide");
@@ -232,6 +232,8 @@ function guardarEvento() {
         No: {
           btnClass: 'btn-red',
           action: function () {
+            // reseto el input hidden del articulo 
+            $("#evento_fecha_configurado").val("");
             $("#estadosModal").modal("hide");
           }
         }
