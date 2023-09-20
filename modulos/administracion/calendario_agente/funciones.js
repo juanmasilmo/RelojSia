@@ -346,6 +346,7 @@ function guardarArticulo() {
             success: function (response) {
               calendar.refetchEvents();
               get_articulos_agente();
+              $("#id_db_articulo_configurado").val("")
               $("#modalSaveArticle").modal("hide");
             }
           });
@@ -355,6 +356,7 @@ function guardarArticulo() {
       No: {
         btnClass: 'btn-red',
         action: function () {
+          $("#id_db_articulo_configurado").val("")
           $("#modalSaveArticle").modal("hide");
         }
       }
