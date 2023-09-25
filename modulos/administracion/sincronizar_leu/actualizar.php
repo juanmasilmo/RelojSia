@@ -4,6 +4,7 @@ include("../../../inc/conexion.php");
 conectar();
 $bandera=0;
 
+
 $fecha_actual=date("Y-m-d");
 
 $fecha_desde= strtotime('-15 day', strtotime($fecha_actual));
@@ -12,16 +13,29 @@ $fecha_desdea = date('Y-m-d', $fecha_desde);
 $fecha_hasta= strtotime('+30 day', strtotime($fecha_actual));
 $fecha_hasta = date('Y-m-d', $fecha_hasta);
 
-$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
 
 $username = 'notificaciones-sia';
 $password = 'hEFPNu89bT';
 
-$context = stream_context_create(array(
-	'http' => array(
-		'header'  => "Authorization: Basic " . base64_encode("$username:$password")
-	)
-));
+if($_SESSION['ENTORNO'] == 'PRODUCCION'){
+
+	$html="https://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+	
+	$context = stream_context_create(array(
+		'https' => array(
+			'header'  => "Authorization: Basic " . base64_encode("$username:$password")
+		)
+	));
+}else{
+	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+	
+	$context = stream_context_create(array(
+		'http' => array(
+			'header'  => "Authorization: Basic " . base64_encode("$username:$password")
+		)
+	));
+
+}
 $data = @file_get_contents($html, true, $context);
 
 $items = json_decode($data, true);
