@@ -9,3 +9,7 @@ function actualizar(){
   });  
   
 }
+
+function log_sincronizar_leu(sql, co){
+  console.log(co +'  - '+ sql);
+}
