@@ -112,7 +112,7 @@ $month = date('m');
             <label for="">Año</label>
             <select name="id_anio" id="id_anio" class="form-control" onchange="filtro_anio()">
               <option value="0">Seleccionar...</option>
-              <?php if(!count($rs_anio) > 0){ ?>
+              <?php if(!count($res_anio) > 0){ ?>
                 <option value="<?php echo $year ?>" ><?php echo $year ?></option>
               <?php } ?>
 
