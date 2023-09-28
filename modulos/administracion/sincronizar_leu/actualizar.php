@@ -30,8 +30,8 @@ $context = stream_context_create(array(
 		'header'  => "Authorization: Basic " . base64_encode("$username:$password")
 		)
 	));
-// $html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
-$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea;
+$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+// $html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea;
 // }
 
 $data = @file_get_contents($html, true, $context);
