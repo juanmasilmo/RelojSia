@@ -69,7 +69,7 @@ function controlar(id) {
     .done(function (dato) {
       $("#mensaje").html(dato);
       $('#mensaje').fadeIn('slow');
-      cerrar();
+      cerrar_formulario();
       listado();
     });
 }

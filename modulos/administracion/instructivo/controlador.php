@@ -46,6 +46,7 @@ function editar($con)
     $id = $res[0];
   }
 
+  
   //controlo el documento
   $doc_name = $_FILES["documento"]["name"];
   // $docroot = $_SERVER['DOCUMENT_ROOT']."".$_SERVER['PHP_SELF'];
@@ -60,13 +61,12 @@ function editar($con)
   // }
 
   // preparo el directorio para guardar el pdf
-  $carpeta = DOCUMENTOS."reloj_instructivos/";
-
-  if (!file_exists($carpeta)) {
-    mkdir($carpeta, 0777, true);
-  }
-
-  $target_dir = $carpeta;
+  // $carpeta = DOCUMENTOS;
+  // if (!file_exists($carpeta)) {
+  //   mkdir($carpeta, 0777, true);
+  // }
+  
+  $target_dir = DOCUMENTOS;
   $target_file = $target_dir . basename($doc_name);
   $uploadOk = 1;
 
@@ -94,7 +94,7 @@ function editar($con)
       $mensaje.=" El Documento es muy Grande.";
       $uploadOk = 0;
     }
-        // verifico que sea pdf
+    // verifico que sea pdf
     $imageinfo = getimagesize($_FILES['documento']['tmp_name']);//consulto si no es una IMG con la extension modificada.
     if($tipo_archivo != "pdf" || !empty($imageinfo['mime']))
     {
@@ -106,11 +106,11 @@ function editar($con)
     {
       echo "<script>alertas('Error: ".$mensaje."');</script>";
     }
-        // si todo fue correcto guardo el archivo en su directorio
-        // guardo la url en la BD
-    elseif (move_uploaded_file($_FILES["documento"]["tmp_name"], $archivo_original))
-    { 
-        //cambio la version de compresion del pdf
+
+    // si todo fue correcto guardo el archivo en su directorio
+    // guardo la url en la BD
+    if (move_uploaded_file($_FILES["documento"]["tmp_name"], $archivo_original)){ 
+      //cambio la version de compresion del pdf
       $archivo_n=$archivo_original;
       $archivo_n=str_replace('.pdf','_xxx.pdf',$archivo_n);
 
@@ -142,13 +142,11 @@ function eliminar($con)
   if (pg_query($con, $sql)) {
     echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="glyphicon glyphicon-ok-sign"></i> <strong>¡OK!</strong> El registro se ELIMIN&Oacute; con &eacute;xito.</div>';
 ?>
-    <script>
-      listado();
-    </script>
+<script>
+  listado();
+</script>
 <?php
   } else {
     echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="glyphicon glyphicon-ok-sign"></i> <strong>¡ADVERTENCIA!</strong> No se pudo eliminar el registro.</div>';
   }
 }
-
-

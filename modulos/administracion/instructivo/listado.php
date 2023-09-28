@@ -4,6 +4,7 @@ include("../../../inc/conexion.php");
 include_once("../../../core/env.php");
 conectar();
 
+
 // busco los instructivos
 $sql = "SELECT * FROM instructivo ORDER BY id";
 $query = pg_query($con, $sql);
@@ -54,7 +55,7 @@ $orden = 0;
           <td>
             <?php
             if (!empty($row['url_documento'])) { ?>
-         <a class="btn btn-primary" target="_blank" href="<?php echo DOCUMENTOS.$row['url_documento'];?>" title="Ver Documentación"><span class="fa fa-file-pdf-o"></span> Documento</a>
+         <a class="btn btn-primary" target="_blank" href="modulos/administracion/instructivo/ver_documento.php?documento=<?php echo $row['url_documento'];?>" title="Ver Documentación"><span class="fa fa-file-pdf-o"></span> Documento</a>
             <?php
             } 
             ?>
