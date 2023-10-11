@@ -74,7 +74,7 @@ function armaTabla() {
   let url = 'modulos/administracion/carga_novedades/controlador.php?f=get_registros_agentes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
   
   $.get(url, function(data) {
-
+    // console.log(data);
     if(data != 'false'){
 
       var marcas = JSON.parse(data);
@@ -170,28 +170,28 @@ function armaTabla() {
                 }
                 
                 //verifico que tenga registro
-                if(registro.hora && registro.hora != 0){
+                // if(registro.hora && registro.hora != 0){
                   
-                  var minutos = registro.minutos;
-                  if(minutos < 9){
-                    minutos = '0'+minutos;
-                  }
-                  //pregunto si es mayor a 6hs am
-                  if(registro.hora+minutos > 640 && registro.hora+minutos < 1230 )
-                    //llega tarde o sale temprano (justificar)
-                    background_color = '#b3b300';
+                //   var minutos = registro.minutos;
+                //   if(minutos < 9){
+                //     minutos = '0'+minutos;
+                //   }
+                //   //pregunto si es mayor a 6hs am
+                //   if(registro.hora+minutos > 640 && registro.hora+minutos < 1230 )
+                //     //llega tarde o sale temprano (justificar)
+                //     background_color = '#b3b300';
 
-                    //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + registro.hora +':'+ minutos + '<br />';
+                //     //preparo un string para imprimir todo junto dsps
+                //     registro_marca += nro_articulo + registro.hora +':'+ minutos + '<br />';
                 
-                }else{
-                  if(nro_articulo){
-                    registro_marca += nro_articulo;
-                  }
-                }
+                // }else{
+                //   if(nro_articulo){
+                //     registro_marca += nro_articulo;
+                //   }
+                // }
   
+                registro_marca += nro_articulo;
               }
-              
               // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
               
             }); //fin foreach registros
