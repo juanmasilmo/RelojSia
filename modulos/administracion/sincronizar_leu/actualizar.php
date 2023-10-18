@@ -4,7 +4,7 @@ include("../../../inc/conexion.php");
 conectar();
 $bandera=0;
 
-
+/*
 $fecha_actual=date("Y-m-d");
 
 $fecha_desde= strtotime('-15 day', strtotime($fecha_actual));
@@ -12,6 +12,10 @@ $fecha_desdea = date('Y-m-d', $fecha_desde);
 
 $fecha_hasta= strtotime('+30 day', strtotime($fecha_actual));
 $fecha_hasta = date('Y-m-d', $fecha_hasta);
+*/
+
+$fecha_desdea=$_POST['fecha_desde'];
+$fecha_hasta=$_POST['fecha_hasta'];
 
 
 $username = 'notificaciones-sia';
@@ -85,7 +89,6 @@ if(count($vector) > 0){
 		}
 	}
 }
-
 if (pg_query($con, $insert_articulos)){
 	pg_query("COMMIT") or die("Transaction commit failed\n");
 	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las licencias desde '.$fecha_desdea.' hasta '.$fecha_hasta.'</div>';
