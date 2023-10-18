@@ -6,8 +6,29 @@ conectar();
 
 $id_usuario = $_SESSION['userid'];
 
-$sql_dep = "SELECT id_dependencia FROM usuario_dependencias WHERE id_usuario = $id_usuario";
+/**
+ * Articulos
+ */
+$sql_art = "SELECT id
+                    ,nro_articulo
+                    ,descripcion
+            FROM articulos
+            WHERE c_manual = 1
+            ORDER BY nro_articulo";
+$rs_art = pg_query($con, $sql_art);
+$res_art = pg_fetch_all($rs_art);
 
+
+ /**
+   * obtengo el dato del usuario si tiene permiso para cargar_registro (issue 40)
+   */ 
+$sql_cr = "SELECT carga_registro FROM usuarios WHERE id = $id_usuario";
+$rs_cr = pg_query($con,$sql_cr);
+$res = pg_fetch_array($rs_cr);
+$carga_registro = $res['carga_registro'];
+
+// obtengo las dependencias del usuario relacionadas al usuario
+$sql_dep = "SELECT id_dependencia FROM usuario_dependencias WHERE id_usuario = $id_usuario";
 $rs_dep = pg_query($con, $sql_dep);
 $res_dep = pg_fetch_all($rs_dep);
 $where = '';
@@ -79,6 +100,16 @@ $min = $year.'-'. $month_min .'-25';
 $max = $year.'-'.$month.'-'.$ultimo_dia;
 ?>
 
+<style>
+  .seleccionado{
+    border: 3px solid #36b9cc!important;
+  }
+  .table-bordered td,th{
+    border: 1px solid #000;
+  }
+</style>
+
+<div id="msj_response_query"></div>
 
 <!-- Formulario -->
 <?php include_once('inc/formulario.php') ?>

@@ -22,21 +22,21 @@ function editar($con){
   $usuario = $_POST['usuario'];
   $nombre_apellido = $_POST['nombre_apellido'];
   $id_grupo = $_POST['id_grupo'];
+  $carga_registro = $_POST['carga_registro'];
   $clave = password_hash($usuario, PASSWORD_DEFAULT);
   $usuario_abm=$_SESSION['username']; 
 
   if ($id > 0) {
-//update
-    $sql = "UPDATE usuarios SET usuario = '$usuario',nombre_apellido='$nombre_apellido', id_grupo = $id_grupo, usuario_abm='$usuario_abm' WHERE id = $id";
+    //update
+    $sql = "UPDATE usuarios SET usuario = '$usuario',nombre_apellido='$nombre_apellido', id_grupo = $id_grupo, carga_registro=$carga_registro,  usuario_abm='$usuario_abm' WHERE id = $id";
     $mesaje="El registro se modificó con éxito";
   }else {
-// insert
-
-    $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, usuario_abm) VALUES ('$usuario','$nombre_apellido',$id_grupo,'$clave', '$usuario_abm');";
+    // insert
+    $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, carga_registro, usuario_abm) VALUES ('$usuario','$nombre_apellido',$id_grupo,'$clave', $carga_registro, '$usuario_abm');";
     $mesaje="El registro se creó con éxito";
   }
 
-//ejecuto la consulta
+  //ejecuto la consulta
   $sql=pg_query($con,$sql);
   if(pg_result_status($sql))  {
 

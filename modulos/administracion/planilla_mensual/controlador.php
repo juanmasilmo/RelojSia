@@ -170,23 +170,23 @@ function calendarioDia($con){
   /**
    * si es 0, viene un evento nuevo
    */
-   if($id_estado_configurado == 0){
-    $sql = "INSERT INTO calendario_anual 
-            (id_estado, fecha_inicio, fecha_fin, usuario_abm)
-          VALUES 
-            ($id_estado, '$start_date', '$end_date', '$usuario_abm')
-          RETURNING id";
-  }else{
-    /**
-     * sino, reemplazo el actual por el nuevo evento
-     */
-    $sql = "UPDATE calendario_anual 
-            SET id_estado = $id_estado
-                ,fecha_inicio = '$start_date'
-                ,fecha_fin = '$end_date'
-                ,usuario_abm = '$usuario_abm'
-            WHERE id = $id_estado_configurado";
-  }
+  //  if($id_estado_configurado == 0){
+  //   $sql = "INSERT INTO calendario_anual 
+  //           (id_estado, fecha_inicio, fecha_fin, usuario_abm)
+  //         VALUES 
+  //           ($id_estado, '$start_date', '$end_date', '$usuario_abm')
+  //         RETURNING id";
+  // }else{
+  //   /**
+  //    * sino, reemplazo el actual por el nuevo evento
+  //    */
+  //   $sql = "UPDATE calendario_anual 
+  //           SET id_estado = $id_estado
+  //               ,fecha_inicio = '$start_date'
+  //               ,fecha_fin = '$end_date'
+  //               ,usuario_abm = '$usuario_abm'
+  //           WHERE id = $id_estado_configurado";
+  // }
   $rs = pg_query($con, $sql);
   echo json_encode('ok');
   
@@ -206,8 +206,8 @@ function eliminarEvento($con){
    */
   $id_evento = $_POST['id_evento'];
 
-  $sql = "DELETE FROM calendario_anual WHERE id = $id_evento";
-  $rs = pg_query($con, $sql);
+  // $sql = "DELETE FROM calendario_anual WHERE id = $id_evento";
+  // $rs = pg_query($con, $sql);
   echo json_encode('ok');
 
 }
