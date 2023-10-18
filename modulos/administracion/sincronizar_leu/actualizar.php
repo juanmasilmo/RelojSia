@@ -89,7 +89,6 @@ if(count($vector) > 0){
 		}
 	}
 }
-
 if (pg_query($con, $insert_articulos)){
 	pg_query("COMMIT") or die("Transaction commit failed\n");
 	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las licencias desde '.$fecha_desdea.' hasta '.$fecha_hasta.'</div>';

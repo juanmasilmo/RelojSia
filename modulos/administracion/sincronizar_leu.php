@@ -35,7 +35,7 @@
       </a>
     </div>
   </div>
-<p>Seleccionar un rango de fecha que <b>no</b> sea superior a 31 días</p>
+<p>Seleccionar un rango de fecha que <b>no</b> sea superior a 62 días</p>
 
 </div>
 

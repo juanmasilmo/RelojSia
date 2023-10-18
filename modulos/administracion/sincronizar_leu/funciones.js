@@ -20,7 +20,7 @@ function actualizar(){
 
   var diff = (fechaFin - fechaInicio)/(1000*60*60*24);
 
-  if(diff <=31){
+  if(diff <=62){
 
     showLightbox();
     $.post("modulos/administracion/sincronizar_leu/actualizar.php",{fecha_desde:fecha_desde,fecha_hasta:fecha_hasta,},function(dato){
