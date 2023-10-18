@@ -54,6 +54,19 @@ if($_GET['id']!=0){
     </div>
   </div>
 
+
+  <div class="col-md-3 position-relative">
+    <label for="grupo" class="form-label">Carga Registro</label>
+    <select class="form-control" id="carga_registro" name="carga_registro" required>
+      <option selected disabled value="">Seleccionar</option>
+      <option <?php echo (isset($row['carga_registro']) && ($row['carga_registro']) == 1) ? "selected" : "" ;?> value="1">SI</option>
+      <option <?php echo (isset($row['carga_registro']) && ($row['carga_registro']) == 0) ? "selected" : "" ;?> value="0">NO</option>
+    </select>
+    <div class="invalid-feedback">
+     controlar el campo
+    </div>
+  </div>
+
 </form>
 <div class="mt-4" align="center">
   <button type="submit" class="btn btn-primary" onclick="guardar()">Guardar</button>

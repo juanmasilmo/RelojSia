@@ -24,26 +24,44 @@
 
           <hr>
 
+          <!-- Cargo los ariticulos -->
           <div class="row">
             <div class="col-md-6">
               <label for="fecha"> Firma Planilla (FP)</label>
-              <input type="checkbox" class="form-control" onclick="cambiarVisibilidadInputsFechas()"  name="checked_fp_modificacion_registro" id="checked_fp_modificacion_registro" value="fp">
+              <select name="id_art" id="id_art" class="form-control">
+                <option value="null">Normal</option>
+                <?php foreach ($res_art as $articulo) { ?>
+                  <option value="<?php echo $articulo['id'] ?>"><?php echo $articulo['nro_articulo'] ?> <small>( <?php echo $articulo['descripcion'] ?>)</small> </option>
+                <?php } ?>
+              </select>
+              <!-- <input type="checkbox" class="form-control" onclick="cambiarVisibilidadInputsFechas()"  name="checked_fp_modificacion_registro" id="checked_fp_modificacion_registro" value="fp"> -->
             </div>
           </div>
 
-          <hr>
+          
+          <?php if($carga_registro == 1){ ?>
+            <hr>
 
-          <div class="row" >
-            <br>
-            <div class="col-md-6">
-              <label for="">Hora Ingreso</label>
-              <input type="time" class="form-control inputs_fechas" name="fecha_ingreso" id="fecha_ingreso" value="06:30">
+            <div class="row" >
+              <div class="col-md-6 form-group inline">
+                <label for="">Registrar Hora</label>
+              </div>
+              <div class="col-md-6 form-group inline">
+                <input type="checkbox" class="form-control" onclick="cambiarVisibilidadInputsFechas()"  name="checked_fp_modificacion_registro" id="checked_fp_modificacion_registro" value="fp">
+              </div>
+              <br>
+              <hr>
+              
+                <div class="col-md-6">
+                  <label for="">Hora Ingreso</label>
+                  <input type="time" disabled="disabled" class="form-control inputs_fechas" name="fecha_ingreso" id="fecha_ingreso" value="06:30">
+                </div>
+                <div class="col-md-6">
+                  <label for="">Hora Salida</label>
+                  <input type="time" disabled="disabled" class="form-control inputs_fechas" name="fecha_salida" id="fecha_salida" value="12:30">
+                </div>
             </div>
-            <div class="col-md-6">
-              <label for="">Hora Salida</label>
-              <input type="time" class="form-control inputs_fechas" name="fecha_salida" id="fecha_salida" value="12:30">
-            </div>
-          </div>
+          <?php } ?>
           
           <br>
           <!-- opciones a elegir -->

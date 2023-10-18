@@ -81,6 +81,7 @@ function armaTabla() {
 
       var agentes = marcas.legajos;
       var registros = marcas.registros;
+      var carga_registro = marcas.carga_registro;
 
       var total_dias = new Date(anio, mes, 0).getDate(); //obtengo la cantidad de dias del mes para armado de la tabla 
       
@@ -88,25 +89,31 @@ function armaTabla() {
        * chequeo si el mes seleccionado es igual al mes corriente 
        * si es el mismo dejo agregar registro sino oculto el btn
        */
-      var btn = '';
+      var btn = '<hr>';
       const month = new Date().getMonth();
       
-      if(month+1 == mes){
-      
-        //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
-        var btn = '<hr><div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
+      /**
+       * Verifico si tiene permiso para cargar registro
+       */
+      if(carga_registro == 1){
 
+        if(month+1 == mes){
+          
+          //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
+          //var btn = btn+'<div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
+          
+        }
       }
       
       /**
        * Cabecera Tabla
        */
-      var tabla = btn + "<table id='tabla_agentes_registros'  class='table table-responsive table-striped' ><thead bgcolor='#E6DFCF'><tr><th style='border: 1px solid black' rowspan='2'>Agentes</th><th style='border: 1px solid black' class='text-center' colspan='31'>Dias</th></tr><tr>";
+      var tabla = btn + "<div class='alert alert-info'><i class='fa fa-exclamation-triangle'> </i><strong> PD:</strong>La presente tabla solo muestra los Articulos relacionados al Agente, para verificar los registros de marcas del reloj, ver la Planilla Mensual</div><br><div class='table-responsive'><table style='' id='tabla_agentes_registros' class='table table-bordered table-striped' ><thead bgcolor='#E6DFCF'><tr><th rowspan='2'>Agentes</th><th class='text-center' colspan='31'>Dias</th></tr><tr>";
       
       for (var i = 1; i < total_dias+1; i++){
         
         //agrego los dias
-        tabla += "<th style='border: 1px solid black;font-size:10px'>" + i + "</th>";
+        tabla += "<th style='font-size:10px'>" + i + "</th>";
         
       }
       tabla += "</tr></thead><tbody style=''>";
@@ -116,7 +123,7 @@ function armaTabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr><td style='border: 1px solid black;font-size:10px' id='agentes_"+agente.legajo+"' >"+agente.nombre+"</td>";
+        tabla += "<tr id='"+agente.legajo+"'><td style='font-size:10px' id='agentes_"+agente.legajo+"' >"+agente.nombre+"</td>";
 
         if(!registros){
           
@@ -127,7 +134,7 @@ function armaTabla() {
              var fecha = anio+'/'+mes+'/'+dia;
              background_color = pintaSabadoDomingo(fecha);
             
-            tabla += "<td style='border: 1px solid black' id='"+agente.legajo+"' bgcolor='"+background_color+"' ondblclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")'> </td>";
+            tabla += "<td style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
           }
           tabla += "</tr>";
 
@@ -135,7 +142,7 @@ function armaTabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td style='border: 1px solid black' id='"+agente.legajo+"' ondblclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
+            tabla += "<td style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
 
@@ -214,7 +221,7 @@ function armaTabla() {
                    
       }); //fin foreach agentes        
              
-      tabla += "</tbody></table>";
+      tabla += "</tbody></table></div>";
       // console.log(tabla);
 
       $("#div_tabla_agentes_registros").html(tabla);
@@ -240,7 +247,7 @@ function pintaSabadoDomingo(fecha) {
 }
 
 
-function cargarRegistrosPersonal() {
+function cargarRegistrosPersonal(legajo,dia) {
   
   $("#modalCargaNovedades").modal("show");
 }
@@ -278,20 +285,28 @@ function guardarRegistroCompleto() {
 
 function modificarRegistroLegajo(dia,legajo){
 
-  if(dia < 10){
-    dia = '0'+dia;
-  }
-  var mes = $("#id_mes").val();
-  var anio = $("#id_anio").val();
-  var agente = $("#agentes_"+legajo).text();
+  var clas = $("#"+legajo+"-"+dia).attr("class");
+  if(clas != 'seleccionado'){
 
-  $("#modificacion_registro_nombre_agente").text(agente);
-  $("#input_modificacion_registro_legajo").val(legajo);
+    $("#"+legajo+"-"+dia).toggleClass("seleccionado");
+    if(dia < 10){
+      dia = '0'+dia;
+    }
+    var mes = $("#id_mes").val();
+    var anio = $("#id_anio").val();
+    var agente = $("#agentes_"+legajo).text();
   
-  $("#modificacion_registro_fecha").text(dia+'-'+mes+'-'+anio);
-  $("#input_modificacion_registro_fecha").val(anio+'-'+mes+'-'+dia);
+    $("#modificacion_registro_nombre_agente").text(agente);
+    $("#input_modificacion_registro_legajo").val(legajo);
+    
+    $("#modificacion_registro_fecha").text(dia+'-'+mes+'-'+anio);
+    $("#input_modificacion_registro_fecha").val(anio+'-'+mes+'-'+dia);
+  
+    $("#modalModificacionNovedades").modal("show");
+  }else{
+    $("#"+legajo+"-"+dia).toggleClass("seleccionado");
+  }
 
-  $("#modalModificacionNovedades").modal("show");
 }
 
 function cambiarVisibilidadInputsFechas() {
@@ -299,24 +314,71 @@ function cambiarVisibilidadInputsFechas() {
   var checkeds = document.getElementById('checked_fp_modificacion_registro');
   //si checked disabled sino enabled
   if (checkeds.checked){
-    $(".inputs_fechas").attr('disabled','disabled');
-  }else{
     $(".inputs_fechas").removeAttr('disabled');
+  }else{
+    $(".inputs_fechas").attr('disabled','disabled');
   }
 }
 
 function modificarRegistroCompleto() {
+
+  /**
+   * Recorrer los td para obtener rango de dias
+   */
+  var legajo = $("#input_modificacion_registro_legajo").val();
+
+  var tr = $("#"+legajo);
+
+  const ds = [];
+  $("#"+legajo).each(function (index) {
+    $(this).children("td").each(function (index2) {
+      if(this.className && this.className == 'seleccionado'){
+        ds.push(this.getAttribute('dia'));
+      };
+    });
+  });
   
-  $.ajax({
-    type: 'post',
-    url: "modulos/administracion/carga_novedades/controlador.php?f=modificar_registro_legajo",
-    dataType: 'json',
-    data : $('#formulario_modificacion_registros').serialize(),
-    success: function(response) {
-      
-      $("#modalModificacionNovedades").modal("hide");
-      armaTabla();
+  var id_mes = $('#id_mes').val(); 
+  var id_anio = $('#id_anio').val(); 
+  var d1 = ds[0];
+  var d2 = ds[1];
+
+  $.confirm({
+    title: 'Alertas!',
+    content: "Guardar articulos en las fechas seleccionadas?",
+    icon: 'glyphicon glyphicon-question-sign',
+    animation: 'scale',
+    closeAnimation: 'scale',
+    opacity: 0.5,
+    buttons: {
+      'confirm': {
+        text: 'Guardar',
+        btnClass: 'btn-green',
+        // envio de datos SIN Dependencia
+        action: function () {
+          $.ajax({
+            type: 'post',
+            url: "modulos/administracion/carga_novedades/controlador.php?f=modificar_registro_legajo&d1="+d1+"&d2="+d2+"&m="+id_mes+"&a="+id_anio,
+            dataType: 'json',
+            data : $('#formulario_modificacion_registros').serialize(),
+            success: function(response) {
+              $("#modalModificacionNovedades").modal("hide");
+              armaTabla();
+              $("#mensaje").html('<div class=" alert '+response.class_alert+' alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button><i class="far fa-check-circle"></i> '+response.msj+' </div>');
+            }
+          });
+
+        }
+      },
+      CANCELAR: {
+        btnClass: 'btn-default',
+        action: function () {
+          //$.alert('hiciste clic en <strong>NO</strong>');
+        }
+      }
     }
   });
+
+  
 
 }

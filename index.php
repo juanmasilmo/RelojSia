@@ -49,10 +49,11 @@ if (!isset($_SESSION['userid'])) {
 
 
     <script type="text/javascript">
-        function cerrar(){
+        function cerrar() {
             $('#popup').fadeOut('slow');
             $('.popup-overlay').fadeOut('slow');
         }
+
         function alertas(msj) {
             $.alert({
                 title: 'Alerta!',
@@ -85,13 +86,13 @@ if (!isset($_SESSION['userid'])) {
         }
 
         //fin Abrir configuracion
-        function abrir_version(tag) {    
-        localStorage.setItem("version", tag);
-        $.get("versiones.php", function(dato) {
-            $('#popup').html(dato);
-            $('#popup').fadeIn('slow');        
-            controlar_version(tag);
-        });
+        function abrir_version(tag) {
+            localStorage.setItem("version", tag);
+            $.get("versiones.php", function (dato) {
+                $('#popup').html(dato);
+                $('#popup').fadeIn('slow');
+                controlar_version(tag);
+            });
         }
 
         function validar_pass() {
@@ -170,8 +171,16 @@ if (!isset($_SESSION['userid'])) {
 
                     <?php
                     if(isset($_GET['pagina'])){
-
-                     $enlace=base64_decode($_GET['pagina']);     
+                        $enlace=base64_decode($_GET['pagina']);  
+                    }else{
+                        
+                        /**
+                         * aca es el index sin pagina
+                         */
+                        
+                         //por defecto muestro la planilla mensual
+                        $enlace="administracion/planilla_mensual";
+                    }   
 
                      $sqlc="SELECT i.*
                      FROM items i
@@ -195,9 +204,7 @@ if (!isset($_SESSION['userid'])) {
                         include("403.php");
                     }
 
-                }else{
-                    /////aca es el index sin pagina
-                }
+               
                 ?>
 
                 </div>
@@ -240,8 +247,8 @@ if (!isset($_SESSION['userid'])) {
         </div>
 
         <!-- Bootstrap core JavaScript-->
-    
-        
+
+
 
         <script src="inc/js/popper.min.js"></script>
         <script src="inc/js/moment.js"></script>

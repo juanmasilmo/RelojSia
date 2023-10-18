@@ -43,6 +43,16 @@ function get_agentes($con){
  */
 function get_registros_agentes($con)
 {
+
+  /**
+   * obtengo el dato del usuario si tiene permiso para cargar_registro (issue 40)
+   */ 
+  $id_u = $_SESSION['userid'];
+  $sql_cr = "SELECT carga_registro FROM usuarios WHERE id = $id_u";
+  $rs_cr = pg_query($con,$sql_cr);
+  $res = pg_fetch_array($rs_cr);
+  $carga_registro = $res['carga_registro'];
+
   $id_dependencia = $_GET['id_dependencia'];
   
   /**
@@ -105,11 +115,11 @@ function get_registros_agentes($con)
     //si tengo registros al menos 1, cargo el array
     if(pg_num_rows($rs_registro) > 0) {
     
-      echo json_encode(['legajos' => $res_legajo, 'registros' => $res_registro]);
+      echo json_encode(['legajos' => $res_legajo, 'registros' => $res_registro, 'carga_registro' => $carga_registro]);
 
     }else{
 
-      echo json_encode(['legajos' => $res_legajo, 'registros' => false]);
+      echo json_encode(['legajos' => $res_legajo, 'registros' => false, 'carga_registro' => $carga_registro]);
       
     }
     
@@ -167,6 +177,10 @@ echo json_encode($r);
 
 
 function guardar_registro_completo($con){
+
+  /**
+   * Llamada desde el btn "Agregar Registro" 
+   */
   
   $usuario_abm = $_SESSION['usuario'];
   $fecha = $_GET['fecha'];
@@ -198,7 +212,7 @@ function guardar_registro_completo($con){
     $query = '';
     
     // id_articulo Firma Planilla
-    if($opcion == 'fp') {
+    // if($opcion == 'fp') {
       
       //ontego el id del articulo Firma Planilla
       $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
@@ -214,21 +228,22 @@ function guardar_registro_completo($con){
   
       }
 
-    }else{
+    // }
+    // else{
       
-      // creo un strin query con la fecha entrada y salida x legajo
-      foreach ($res_legajos as $legajo) {
+    //   // creo un strin query con la fecha entrada y salida x legajo
+    //   foreach ($res_legajos as $legajo) {
         
-        $fecha1 = $fecha.' 6:30:00';
-        $fecha2 = $fecha.' 12:30:00';
-        $legajo = $legajo['legajo'];
+    //     $fecha1 = $fecha.' 6:30:00';
+    //     $fecha2 = $fecha.' 12:30:00';
+    //     $legajo = $legajo['legajo'];
 
-        $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
-        $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+    //     $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
+    //     $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
 
-      } //fin foreach legajos
+    //   } //fin foreach legajos
       
-    } // fin if opfcion
+    // } // fin if opfcion
     
     pg_query($con,$query);
 
@@ -240,38 +255,105 @@ function guardar_registro_completo($con){
 
 function modificar_registro_legajo($con){
 
+  // var_dump($_REQUEST);
+  // die();
+
+  $d1 = $_REQUEST['d1'];
+  $d2 = $_REQUEST['d2'];
+  if($d2 == 'undefined'){
+    $d2 = $d1;
+  }
+  $id_mes = $_REQUEST['m'];
+  $id_anio = $_REQUEST['a'];
+  $id_art = $_REQUEST['id_art'];
+
   $usuario_abm = $_SESSION['usuario'];
 
   $fecha = $_POST['input_modificacion_registro_fecha'];
   $legajo = $_POST['input_modificacion_registro_legajo'];
 
-  // elimino registro y cargo nuevamente
-  $sql_dlt = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo";
-  // pg_query($con,$sql_dlt); se comenta segun issues 28
+  // echo '<pre>';print_r($_REQUEST);die();
 
-  // pregunto si viene el check de FP
-  if(isset($_POST['checked_fp_modificacion_registro'])){
+  /**
+   * Recorro la/s fecha/s y elimino si hay articulo (no borro las marcas del reloj)
+   */
 
-    //ontego el id del articulo Firma Planilla
-    $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
-    $rs_art = pg_query($con, $sql_art);
-    $res_art = pg_fetch_array($rs_art);
-    $id_articulo = $res_art['id'];
+  $str_query = '';
+
+  for ($i=$d1; $i <= $d2; $i++) { 
+    //configuro la fecha
+    if($i < 10)
+      $i = '0'.$i;
+    $fecha = $id_anio.'-'.$id_mes.'-'.$i;
+
+    /**
+     * consulto si existe registro en la DB
+     */
+    $sql_select = "SELECT id,leu FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo";
+    $rs = pg_query($con, $sql_select);
+    $res = pg_fetch_array($rs);
+    $id = $res['id'];
+    $leu = $res['leu']; 
+    // $id_articulo = $res['id_articulo']; 
   
-    $sql_ist = "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES ($id_articulo, '$fecha 00:00:00', $legajo, now(), '$usuario_abm')";
-  
-  }else{
+
+
+    /**
+     * si tiene registro por leu no permito guardar ni editar el dia
+     */
+    $insert = 1;
+    if($id){
+      if(!$leu){
+        //elimino 
+        $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
+      }else{
+        $insert = 0;
+      }
+    }
     
-    $registro_inicio = $fecha . ' ' . $_POST['fecha_ingreso'];
-    $registro_fin = $fecha . ' ' . $_POST['fecha_salida'];
-    
-    $sql_ist = "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES (null, '$registro_inicio', $legajo, now(), '$usuario_abm');";
-    $sql_ist .= "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES (null, '$registro_fin', $legajo, now(), '$usuario_abm')";
-  
+    if($insert == 1){
+      if(isset($_REQUEST['fecha_ingreso'])){
+        $registro_inicio = $fecha . ' ' . $_REQUEST['fecha_ingreso'];
+        $registro_fin = $fecha . ' ' . $_REQUEST['fecha_salida'];
+        
+        $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_inicio', $legajo, now(), '$usuario_abm');";
+        $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_fin', $legajo, now(), '$usuario_abm');";
+      }else{
+        if($id_art != 'null'){
+          $str_query .= "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_art, $legajo, '$fecha', 'now()','$usuario_abm');";
+        }
+      }
+    }
   }
-  pg_query($con,$sql_ist);
+  if($str_query){
+    pg_query($con,$str_query); //se comenta segun issues 28
+    echo json_encode(["msj"=>"Guardado Correctamente...  Verificar la <strong><i>Planilla Mensual</i></strong> para registros de marcas.-","class_alert"=>"alert-success"]);
+  }else{
+    echo json_encode(["msj"=>"<strong>Error!</strong> en el guardado, consulte su administrador .-","class_alert"=>"alert-warning"]);
+  }
 
-  echo json_encode("ok");
+  // $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
+  // $rs_art = pg_query($con, $sql_art);
+  // $res_art = pg_fetch_array($rs_art);
+  // $id_articulo = $res_art['id'];
+
+
+  // $sql_ist = "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES ($id_articulo, '$fecha 00:00:00', $legajo, now(), '$usuario_abm')";
+
+    /**
+   * SE comenta el else ya que no van a poder cargar registros solo articulos
+   */
+  // else{
+    
+  //   $registro_inicio = $fecha . ' ' . $_POST['fecha_ingreso'];
+  //   $registro_fin = $fecha . ' ' . $_POST['fecha_salida'];
+    
+  //   $sql_ist = "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES (null, '$registro_inicio', $legajo, now(), '$usuario_abm');";
+  //   $sql_ist .= "INSERT INTO calendario_agente (id_articulo, registro, legajo, fecha_abm, usuario_abm) VALUES (null, '$registro_fin', $legajo, now(), '$usuario_abm')";
+  
+  // }
+  // pg_query($con,$sql_ist);
+
 }
 
 // ---------------------------------------------------------------- //
