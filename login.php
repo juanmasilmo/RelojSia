@@ -273,7 +273,7 @@ $con = conectar();
             <div class="user_card">
                 <div class="d-flex justify-content-center">
                     <div class="brand_logo_container">
-                        <br /><i class='fas fa-balance-scale' style="font-size:80px;color:#FFFFFF;"></i>
+                        <br /><i class='far fa-clock' style="font-size:110px;color:#FFFFFF;"></i>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center form_container">
