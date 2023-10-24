@@ -304,8 +304,8 @@ function modificar_registro_legajo($con){
     $insert = 1;
     if($id){
       if(!$leu){
-        //elimino 
-        $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
+        //elimino el articulo 
+        $str_query .= "UPDATE calendario_agente SET id_articulo = null WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
       }else{
         $insert = 0;
       }
@@ -316,6 +316,9 @@ function modificar_registro_legajo($con){
         $registro_inicio = $fecha . ' ' . $_REQUEST['fecha_ingreso'];
         $registro_fin = $fecha . ' ' . $_REQUEST['fecha_salida'];
         
+        if($id){
+          $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
+        }
         $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_inicio', $legajo, now(), '$usuario_abm');";
         $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_fin', $legajo, now(), '$usuario_abm');";
       }else{
