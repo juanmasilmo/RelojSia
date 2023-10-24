@@ -66,7 +66,7 @@ $orden = 0;
           <?php if($grupo == 1){ ?>
           <td>
             <a href="#" onclick="editar(<?php echo $row['id']; ?>)" class="btn btn-primary"><span class="fas fa-edit"></span> Editar</a>
-            <a class="btn btn-error" onclick="eliminar(<?php echo $row['id'];?>)">
+            <a class="btn btn-danger" onclick="eliminar(<?php echo $row['id'];?>)">
               <span class="icon text-white-50"></span> Eliminar
             </a>
           </td>
