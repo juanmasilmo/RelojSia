@@ -203,12 +203,12 @@ $con = conectar();
        /**
         * LDAP
         */
-        if($_SESSION['ENTORNO'] == 'PRODUCCION'){
-            $v = check_ldap($con,$user,$password);
-        }else{
+        // if($_SESSION['ENTORNO'] == 'PRODUCCION'){
+        //     $v = check_ldap($con,$user,$password);
+        // }else{
             //  si se trabaja en local o demo
             $v = true;
-        }
+        // }
        if($v){
             $sql="SELECT u.id,
                         u.usuario,
