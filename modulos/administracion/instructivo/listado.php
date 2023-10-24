@@ -4,6 +4,7 @@ include("../../../inc/conexion.php");
 include_once("../../../core/env.php");
 conectar();
 
+$grupo = $_SESSION['id_grupo'];
 
 // busco los instructivos
 $sql = "SELECT * FROM instructivo ORDER BY id";
@@ -21,7 +22,9 @@ $orden = 0;
         <th>Descripcion</th>
         <th>URL</th>
         <th>archivos</th>
-        <th class="controlar" id="editar_instructivo" data-column="6">
+        <?php if($grupo == 1){ ?>
+          <th class="controlar" id="editar_instructivo" data-column="6">
+        <?php } ?>
       </tr>
     </thead>
     <tbody>
@@ -60,12 +63,14 @@ $orden = 0;
             } 
             ?>
           </td>
+          <?php if($grupo == 1){ ?>
           <td>
             <a href="#" onclick="editar(<?php echo $row['id']; ?>)" class="btn btn-primary"><span class="fas fa-edit"></span> Editar</a>
             <a class="btn btn-error" onclick="eliminar(<?php echo $row['id'];?>)">
               <span class="icon text-white-50"></span> Eliminar
             </a>
           </td>
+          <?php } ?>
         </tr>
       <?php } ?>
     </tbody>
@@ -77,7 +82,9 @@ $orden = 0;
         <th>Descripcion</th>
         <th>URL</th>
         <th>archivos</th>
-        <th width="10%">Acciones</th>
+        <?php if($grupo == 1){ ?>
+          <th width="10%">Acciones</th>
+        <?php } ?>
       </tr>
     </tfoot>
   </table>
