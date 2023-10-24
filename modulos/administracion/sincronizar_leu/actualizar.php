@@ -17,7 +17,6 @@ $fecha_hasta = date('Y-m-d', $fecha_hasta);
 $fecha_desdea=$_POST['fecha_desde'];
 $fecha_hasta=$_POST['fecha_hasta'];
 
-
 $username = 'notificaciones-sia';
 $password = 'hEFPNu89bT';
 
@@ -34,7 +33,16 @@ $context = stream_context_create(array(
 		'header'  => "Authorization: Basic " . base64_encode("$username:$password")
 		)
 	));
-$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+
+if($fecha_hasta==''){
+	$where="";
+	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea;
+}else{
+	$where="and registro <='$fecha_hasta'";
+	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+}
+
+
 // $html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea;
 // }
 
@@ -51,7 +59,7 @@ $insert_articulos = '';
 
 pg_query("BEGIN") or die("Could not start transaction\n");
 
-$sql="delete from calendario_agente where registro >='$fecha_desdea' and registro <='$fecha_hasta' and leu=1";
+$sql="delete from calendario_agente where registro >='$fecha_desdea' $where and leu=1";
 $res=pg_query($con, $sql);
 
 if(count($vector) > 0){
