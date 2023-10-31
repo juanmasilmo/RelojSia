@@ -84,29 +84,29 @@ function get_registros_agentes($con)
       /**
        * Obtengo los registros (marcas reloj)
        */
-      // $sql_registro = "SELECT legajo
-      //                       ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
-      //                       ,EXTRACT(HOUR FROM registro) as hora
-      //                       ,EXTRACT(MINUTE FROM registro) as minutos
-      //                       ,to_char(registro_modificado, 'hh24:mi') as registro_modificado
-      //                       ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
-      //                       ,EXTRACT(DAY FROM registro) as dia
-      //                       ,EXTRACT(DAY FROM registro_modificado) as dia_m
-      //                   FROM calendario_agente
-      //                   WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
-      //                   ORDER BY legajo, hora";
+      $sql_registro = "SELECT legajo
+                            ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
+                            ,EXTRACT(HOUR FROM registro) as hora
+                            ,EXTRACT(MINUTE FROM registro) as minutos
+                            ,to_char(registro_modificado, 'hh24:mi') as registro_modificado
+                            ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
+                            ,EXTRACT(DAY FROM registro) as dia
+                            ,EXTRACT(DAY FROM registro_modificado) as dia_m
+                        FROM calendario_agente
+                        WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
+                        ORDER BY legajo, hora";
       
       /**
        * Issue 39
        */
-      $sql_registro = "SELECT legajo
-                             ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
-                             ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
-                             ,EXTRACT(DAY FROM registro) as dia
-                             ,EXTRACT(DAY FROM registro_modificado) as dia_m
-                         FROM calendario_agente
-                         WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
-                         ORDER BY legajo";
+      // $sql_registro = "SELECT legajo
+      //                        ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
+      //                        ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
+      //                        ,EXTRACT(DAY FROM registro) as dia
+      //                        ,EXTRACT(DAY FROM registro_modificado) as dia_m
+      //                    FROM calendario_agente
+      //                    WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
+      //                    ORDER BY legajo";
 
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
@@ -180,6 +180,7 @@ function guardar_registro_completo($con){
 
   /**
    * Llamada desde el btn "Agregar Registro" 
+   * Si ingresa a esta funcion solo guardaria "FP" o "6:30 - 12:30"
    */
   
   $usuario_abm = $_SESSION['usuario'];
@@ -192,58 +193,79 @@ function guardar_registro_completo($con){
   $rs = pg_query($con, $sql);
   $res_legajos = pg_fetch_all($rs);
 
-
-  /**
-   * se comenta segun issues 28
-   */
-  //verifico que la fecha ya no tenga nada cargado
-  // $sql_fecha = "SELECT * FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
-  // $rs_fecha = pg_query($con, $sql_fecha);
-  // $res_fecha = pg_fetch_all($rs_fecha);
-
-  // if(pg_num_rows($rs_fecha)){
-  //   $sql = "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha'";
-  //   pg_query($con,$sql); 
-  // }
-
   
   if(pg_num_rows($rs) > 0){
     
     $query = '';
     
     // id_articulo Firma Planilla
-    // if($opcion == 'fp') {
+    if($opcion == 'fp') {
       
       //ontego el id del articulo Firma Planilla
       $sql_art = "SELECT id FROM articulos WHERE nro_articulo = 'FP'";
       $rs_art = pg_query($con, $sql_art);
       $res_art = pg_fetch_array($rs_art);
-      $id_articulo = $res_art['id'];
+      $id_articulo_fp = $res_art['id'];
 
       // creo un strin query con la fecha y el articulo x legajo
       foreach ($res_legajos as $legajo) {
         
         $legajo = $legajo['legajo'];
-        $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo', now(), '$usuario_abm');";
+
+        //verifico si no existe articulos del leu
+        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha'";
+        $rs = pg_query($con,$sql_leu);
+
+        if(!pg_num_rows($rs) > 0) {
+          // si noy registros inserto
+          $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo_fp', now(), '$usuario_abm');";
+        }else{
+          //si hay registros del legajo verifico que no sea proveniente del leu
+          $res = pg_fetch_array($rs);
+          $leu = $res['leu'];
+          if(!$leu == 1){
+            // sino es del leu elimino el registro (6:30-12:30 ó FP)
+            $query .= "DELETE FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha';";
+            $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo_fp', now(), '$usuario_abm');";
+          } // fin leu
+
+        } //fin pg_num_rows
   
       }
 
-    // }
-    // else{
+    }
+    else{
       
-    //   // creo un strin query con la fecha entrada y salida x legajo
-    //   foreach ($res_legajos as $legajo) {
+      // creo un strin query con la fecha entrada y salida x legajo
+      foreach ($res_legajos as $legajo) {
         
-    //     $fecha1 = $fecha.' 6:30:00';
-    //     $fecha2 = $fecha.' 12:30:00';
-    //     $legajo = $legajo['legajo'];
+        $fecha1 = $fecha.' 6:30:00';
+        $fecha2 = $fecha.' 12:30:00';
+        $legajo = $legajo['legajo'];
 
-    //     $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
-    //     $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+        //verifico si no existe articulos del leu
+        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha'";
+        $rs = pg_query($con,$sql_leu);
 
-    //   } //fin foreach legajos
+        if(!pg_num_rows($rs) > 0) {
+          // si noy registros inserto
+          $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo_fp', now(), '$usuario_abm');";
+        }else{
+          //si hay registros del legajo verifico que no sea proveniente del leu
+          $res = pg_fetch_array($rs);
+          $leu = $res['leu'];
+          if(!$leu == 1){
+            // sino es del leu elimino el registro (6:30-12:30 ó FP)
+            $query .= "DELETE FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha';";
+            $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
+            $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+          } // fin leu
+
+        } //fin pg_num_rows
+
+      } //fin foreach legajos
       
-    // } // fin if opfcion
+    } // fin if opfcion
     
     pg_query($con,$query);
 
@@ -311,6 +333,7 @@ function modificar_registro_legajo($con){
       }
     }
     
+    //si la fecha no tiene carga proveniente de leu inserto.-
     if($insert == 1){
       if(isset($_REQUEST['fecha_ingreso'])){
         $registro_inicio = $fecha . ' ' . $_REQUEST['fecha_ingreso'];
@@ -329,7 +352,7 @@ function modificar_registro_legajo($con){
     }
   }
   if($str_query){
-    pg_query($con,$str_query); //se comenta segun issues 28
+    pg_query($con,$str_query); 
     echo json_encode(["msj"=>"Guardado Correctamente...  Verificar la <strong><i>Planilla Mensual</i></strong> para registros de marcas.-","class_alert"=>"alert-success"]);
   }else{
     echo json_encode(["msj"=>"<strong>Error!</strong> en el guardado, consulte su administrador .-","class_alert"=>"alert-warning"]);
