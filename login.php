@@ -170,7 +170,7 @@ $con = conectar();
     
     function insertar_user($con,$usuario,$password){
         $clave = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, usuario_abm) VALUES ('$usuario','$usuario',3,'$clave', 'ldap');";
+        $sql = "INSERT INTO usuarios (usuario,nombre_apellido,id_grupo,clave, usuario_abm) VALUES ('$usuario','$usuario',4,'$clave', 'ldap');";
         if(pg_query($con,$sql)){
             return true;
         }else{

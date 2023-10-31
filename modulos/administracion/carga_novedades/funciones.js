@@ -67,7 +67,7 @@ function procesar() {
 function armaTabla() {
   
   var id_dependencia  = $("#id_dependencia").val();
-  var mes = $("#id_mes").val();
+  var mes = parseInt($("#id_mes").val());
   var anio = $("#id_anio").val();
 
 
@@ -96,11 +96,10 @@ function armaTabla() {
        * Verifico si tiene permiso para cargar registro
        */
       if(carga_registro == 1){
-
-        if(month+1 == mes){
+        if(month+1 <= mes){
           
           //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
-          //var btn = btn+'<div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
+          var btn = btn+'<div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
           
         }
       }
@@ -177,27 +176,27 @@ function armaTabla() {
                 }
                 
                 //verifico que tenga registro
-                // if(registro.hora && registro.hora != 0){
+                if(parseInt(registro.hora) && parseInt(registro.hora) != 0){
                   
-                //   var minutos = registro.minutos;
-                //   if(minutos < 9){
-                //     minutos = '0'+minutos;
-                //   }
-                //   //pregunto si es mayor a 6hs am
-                //   if(registro.hora+minutos > 640 && registro.hora+minutos < 1230 )
-                //     //llega tarde o sale temprano (justificar)
-                //     background_color = '#b3b300';
+                  var minutos = parseInt(registro.minutos);
+                  if(minutos < 10){
+                    minutos = '0'+minutos;
+                  }
+                  //pregunto si es mayor a 6hs am
+                  if(parseInt(registro.hora)+minutos > 640 && parseInt(registro.hora)+minutos < 1230 )
+                    //llega tarde o sale temprano (justificar)
+                    background_color = '#b3b300';
 
-                //     //preparo un string para imprimir todo junto dsps
-                //     registro_marca += nro_articulo + registro.hora +':'+ minutos + '<br />';
+                    //preparo un string para imprimir todo junto dsps
+                    registro_marca += nro_articulo + parseInt(registro.hora) +':'+ minutos + '<br />';
                 
-                // }else{
-                //   if(nro_articulo){
-                //     registro_marca += nro_articulo;
-                //   }
-                // }
+                }else{
+                  if(nro_articulo){
+                    registro_marca += nro_articulo;
+                  }
+                }
   
-                registro_marca += nro_articulo;
+                // registro_marca += nro_articulo;
               }
               // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
               
@@ -255,19 +254,14 @@ function cargarRegistrosPersonal(legajo,dia) {
 function guardarRegistroCompleto() {
   
   var fecha =  $("#registro_fecha").val();
-  //control de fecha vacia
-  // if(!fecha){
-  
-  //   $("#registro_fecha").css('border', '1px solid red');
-  //   $("#msj_registro_fecha").css('display', 'block');
-  //   return false;
-  
-  // }else{
-  
-  //   $("#registro_fecha").css('border','1px solid #d1d3e2');
-  //   $("#msj_registro_fecha").css('display', 'none');
+  var fecha_min = $("#registro_fecha").attr('min');
 
-  // }
+  //controlo si la fecha agregada es menor al permitido
+  if(fecha < fecha_min){
+    $("#registro_fecha").css('border', '1px solid red');
+    $("#msj_registro_fecha").css('display', 'block');
+    return false;
+  }
 
   var opcion = $("input[type='radio'][name='registro_completo']:checked").val();
   var id_dependencia  = $("#id_dependencia").val();

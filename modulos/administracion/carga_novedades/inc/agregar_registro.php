@@ -20,7 +20,7 @@
                             <label for="fecha"> Cargar Asistencia de la Fecha : </label>
                             <input type="date" class="form-control" name="registro_fecha" min="<?php echo $min ?>"
                                 max="<?php echo $max ?>" id="registro_fecha" value="<?php echo $hoy; ?>">
-                            <div id="msj_registro_fecha" style="display:none;color:red">Campo Obligatorio</div>
+                            <div id="msj_registro_fecha" style="display:none;color:red">No se puede modificar registros antiguos</div>
                         </div>
 
                     </div>
