@@ -152,9 +152,10 @@ function arma_tabla() {
                   nro_articulo += '<br>';
                 
                 }
-                
+                var r_hora = parseInt(registro.hora);
+               
                 //verifico que tenga registro
-                if(parseInt(registro.hora) && parseInt(registro.hora) != 0){
+                if(r_hora && r_hora != 0){
 
                   var minutos = parseInt(registro.minutos);
                   if(minutos < 10){
@@ -162,13 +163,13 @@ function arma_tabla() {
                   }
                 
                   //pregunto si es mayor a 6hs am
-                  if(parseInt(registro.hora)+minutos > 640 && parseInt(registro.hora)+minutos < 1230 )
+                  if(`${r_hora}`+`${minutos}` > 640 && `${r_hora}`+`${minutos}` < 1230 )
                     
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
                     //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + parseInt(registro.hora) +':'+ minutos + '<br />';
+                    registro_marca += nro_articulo + r_hora +':'+ minutos + '<br />';
                 
                 }else{
                   if(nro_articulo){

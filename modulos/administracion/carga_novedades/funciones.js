@@ -127,6 +127,7 @@ function armaTabla() {
         if(!registros){
           
           //sino hay registro para mostrar cargo las celdas con vacio
+
           for (var dia = 1; dia < total_dias+1; dia++){
              
             //verifico si es fin de semana pinto de gris
@@ -138,9 +139,11 @@ function armaTabla() {
           tabla += "</tr>";
 
         }else{
+          // si tiene al menos 1 registro muestro
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
+            //voy cargando las celdas
             tabla += "<td style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
@@ -149,7 +152,7 @@ function armaTabla() {
             var fecha = anio+'/'+mes+'/'+dia;
             background_color = pintaSabadoDomingo(fecha);
   
-            //por cada dia recorro los registros 
+            //por cada dia => recorro los registros 
             registros.forEach(function(registro){
               
               // si el dia tiene registro muestro o articulo
@@ -175,20 +178,22 @@ function armaTabla() {
                 
                 }
                 
+                var r_hora = parseInt(registro.hora);
+               
                 //verifico que tenga registro
-                if(parseInt(registro.hora) && parseInt(registro.hora) != 0){
+                if(r_hora && r_hora != 0){
                   
                   var minutos = parseInt(registro.minutos);
                   if(minutos < 10){
                     minutos = '0'+minutos;
                   }
                   //pregunto si es mayor a 6hs am
-                  if(parseInt(registro.hora)+minutos > 640 && parseInt(registro.hora)+minutos < 1230 )
+                  if(`${r_hora}`+`${minutos}` > 640 && `${r_hora}`+`${minutos}` < 1230 )
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
                     //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + parseInt(registro.hora) +':'+ minutos + '<br />';
+                    registro_marca += nro_articulo + r_hora +':'+ minutos + '<br />';
                 
                 }else{
                   if(nro_articulo){
