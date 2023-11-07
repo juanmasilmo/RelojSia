@@ -183,12 +183,12 @@ function armaTabla() {
                 //verifico que tenga registro
                 if(r_hora && r_hora != 0){
                   
-                  var minutos = parseInt(registro.minutos);
-                  if(minutos < 10){
-                    minutos = '0'+minutos;
-                  }
+                  var minutos = `${registro.minutos}`.padStart(2, '0');
+                    // if(minutos < 10){
+                    //   minutos = '0'+`${minutos}`;
+                    // }
                   //pregunto si es mayor a 6hs am
-                  if(`${r_hora}`+`${minutos}` > 640 && `${r_hora}`+`${minutos}` < 1230 )
+                  if(parseInt(`${r_hora}`+`${minutos}`) > 640 && parseInt(`${r_hora}`+`${minutos}`) < 1230 )
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 

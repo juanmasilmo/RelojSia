@@ -197,7 +197,6 @@ function guardar_registro_completo($con){
   if(pg_num_rows($rs) > 0){
     
     $query = '';
-    
     // id_articulo Firma Planilla
     if($opcion == 'fp') {
       
@@ -213,7 +212,7 @@ function guardar_registro_completo($con){
         $legajo = $legajo['legajo'];
 
         //verifico si no existe articulos del leu
-        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha'";
+        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha' order by leu";
         $rs = pg_query($con,$sql_leu);
 
         if(!pg_num_rows($rs) > 0) {
@@ -244,21 +243,28 @@ function guardar_registro_completo($con){
         $legajo = $legajo['legajo'];
 
         //verifico si no existe articulos del leu
-        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha'";
+        echo $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha' order by leu";
         $rs = pg_query($con,$sql_leu);
 
         if(!pg_num_rows($rs) > 0) {
-          // si noy registros inserto
-          $query .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha 00:00:00', '$id_articulo_fp', now(), '$usuario_abm');";
+        
+          // si noy registros inserto sin drama
+          $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
+          $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+        
         }else{
+          
           //si hay registros del legajo verifico que no sea proveniente del leu
           $res = pg_fetch_array($rs);
           $leu = $res['leu'];
+          
           if(!$leu == 1){
+           
             // sino es del leu elimino el registro (6:30-12:30 ó FP)
             $query .= "DELETE FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha';";
             $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha1', now(), '$usuario_abm');";
             $query .= "INSERT INTO calendario_agente (legajo, registro, fecha_abm, usuario_abm) VALUES ($legajo, '$fecha2', now(), '$usuario_abm');";
+        
           } // fin leu
 
         } //fin pg_num_rows
@@ -267,11 +273,17 @@ function guardar_registro_completo($con){
       
     } // fin if opfcion
     
-    pg_query($con,$query);
+    if(pg_query($con,$query)){
+      echo json_encode("ok");
+    }else{
+      echo json_encode("error");
+    }
 
   } // fin num_rows legajos result
+  else{
+    echo json_encode("no tiene usuarios");
+  }
   
-  echo json_encode("ok");
 }
 
 
@@ -311,7 +323,7 @@ function modificar_registro_legajo($con){
     /**
      * consulto si existe registro en la DB
      */
-    $sql_select = "SELECT id,leu FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo";
+    $sql_select = "SELECT id,leu FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo order by leu";
     $rs = pg_query($con, $sql_select);
     $res = pg_fetch_array($rs);
     $id = $res['id'];

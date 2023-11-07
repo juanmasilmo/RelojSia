@@ -84,6 +84,7 @@ function get_registros_agentes($con)
                             ,EXTRACT(DAY FROM registro_modificado) as dia_m
                         FROM calendario_agente
                         WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
+                        -- WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo = 2806
                         ORDER BY legajo, hora";
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
