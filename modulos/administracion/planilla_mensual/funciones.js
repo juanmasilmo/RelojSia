@@ -128,8 +128,8 @@ function arma_tabla() {
             background_color = pinta_sabado_domingo(fecha);
   
             //por cada dia recorro los registros 
+            var band = 0;
             registros.forEach(function(registro){
-              
               // si el dia tiene registro muestro o articulo
               if(agente.legajo == registro.legajo && dia == registro.dia){
 
@@ -153,17 +153,20 @@ function arma_tabla() {
                 
                 }
                 var r_hora = parseInt(registro.hora);
-               
+                
                 //verifico que tenga registro
                 if(r_hora && r_hora != 0){
 
-                  var minutos = parseInt(registro.minutos);
-                  if(minutos < 10){
-                    minutos = '0'+minutos;
-                  }
-                
+                  //verifico cuantas veces ingresa por legajo/dia (tiene que tener 2 registros minimo entreda/salida)
+                  band = band + 1;
+
+                  var minutos = `${registro.minutos}`.padStart(2, '0');
+                  // if(minutos < 10){
+                  //   minutos = '0'+minutos;
+                  // }
+                  // console.log(minutos+'<br>');
                   //pregunto si es mayor a 6hs am
-                  if(`${r_hora}`+`${minutos}` > 640 && `${r_hora}`+`${minutos}` < 1230 )
+                  if(parseInt(`${r_hora}`+`${minutos}`) > 640 && parseInt(`${r_hora}`+`${minutos}`) < 1230 )
                     
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
@@ -172,11 +175,16 @@ function arma_tabla() {
                     registro_marca += nro_articulo + r_hora +':'+ minutos + '<br />';
                 
                 }else{
+                  // pregunto si tiene solo un registro con hora != 0
+                  // if(r_hora == 0){
+                  //   background_color = '#b3b300';
+                  // }
                   if(nro_articulo){
                     registro_marca += nro_articulo;
                   }
                 }
   
+                
               }
               
               // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
