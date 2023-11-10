@@ -58,8 +58,9 @@ $vector=$items;
 $insert_articulos = '';
 
 pg_query("BEGIN") or die("Could not start transaction\n");
-
-$sql="delete from calendario_agente where registro >='$fecha_desdea' $where and leu=1";
+////leu 1 reloj
+////leu 2 articulos de ws de leu
+$sql="delete from calendario_agente where registro >='$fecha_desdea' $where and leu=2";
 $res=pg_query($con, $sql);
 
 if(count($vector) > 0){
@@ -89,7 +90,7 @@ if(count($vector) > 0){
 					".$id_articulo.",
 					now(),		
 					'".$_SESSION['usuario']."',
-					1
+					2
 				);";
 				
 				
