@@ -23,7 +23,8 @@ function get_agentes($con){
   $sql = "SELECT legajo as legajo
                 ,CONCAT(apellido,' ',nombres) nombre
           FROM personas
-          WHERE id_dependencia = $id_dependencia";
+          WHERE id_dependencia = $id_dependencia
+          ORDER BY apellido";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_all($rs);
 
@@ -58,7 +59,7 @@ function get_registros_agentes($con)
   /**
    * Obtengo los legajos de la dependencia para filtrar los registros
    */ 
-  $sql_legajo = "SELECT legajo, concat(apellido, ' ', nombres) as nombre FROM personas WHERE id_dependencia = $id_dependencia ORDER BY legajo";
+  $sql_legajo = "SELECT legajo, concat(apellido, ' ', nombres) as nombre FROM personas WHERE id_dependencia = $id_dependencia ORDER BY apellido";
   $rs_legajo = pg_query($con, $sql_legajo);
   $res_legajo = pg_fetch_all($rs_legajo);
   
@@ -324,48 +325,89 @@ function modificar_registro_legajo($con){
      * consulto si existe registro en la DB
      */
     $sql_select = "SELECT id,leu FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo order by leu,registro";
-    $rs = pg_query($con, $sql_select);
-    $res = pg_fetch_array($rs);
-    $id = $res['id'];
-    $leu = $res['leu']; 
-    // $id_articulo = $res['id_articulo']; 
-  
-
-
-    /**
-     * si tiene registro por leu no permito guardar ni editar el dia
-     */
-    $insert = 1;
-    if($id){
-      
-      if($leu){
-        
-        //elimino el articulo << NO ELIMINO EL REGISTRO DEL DIA, POR QUE PUEDE TENER HORA INGRESO/SALIDA >>
-        // $str_query .= "UPDATE calendario_agente SET id_articulo = null WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
-        $insert = 0;
-      }
-      // else{
-      
-      //   $insert = 0;
-      
-      // }
-
-    }
     
-    //si la fecha no tiene carga proveniente de leu inserto.-
-    if($insert == 1){
-      
-      // Si viene registro de marca
+    $rs = pg_query($con, $sql_select);
+    $res_dias = pg_fetch_all($rs);
+
+    // recorro las fechas y edito solo las que no son leu
+    if(pg_num_rows($rs) > 0){
+    
+      foreach($res_dias as $row_dia) { 
+        
+        $id = $row_dia['id'];
+        $leu = $row_dia['leu'];
+
+        /**
+         * si tiene registro por leu no permito guardar ni editar el dia
+         */
+        // $insert = 1;
+        if($id){
+          
+          if(!$leu){
+
+            //si el registro no tiene carga proveniente de leu .-
+  
+            // Si viene registro de marca
+            if(isset($_REQUEST['checked_fp_modificacion_registro'])){
+              
+              // preungto si viene vacio 1 de las horas
+              // if(empty($_REQUEST['fecha_ingreso']) || empty($_REQUEST['fecha_salida'])){
+                
+                // si una de las 2 esta vacia, elimino los registros completos del dia y guardo el request
+                $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is null;";
+                
+              // }
+              
+              /**
+               * Inserto los datos del request
+               */ 
+              (!empty($_REQUEST['fecha_ingreso'])) ? $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$fecha " . $_REQUEST['fecha_ingreso'] . "', $legajo, now(), '$usuario_abm');" : '';
+
+              (!empty($_REQUEST['fecha_salida'])) ? $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$fecha " . $_REQUEST['fecha_salida'] . "', $legajo, now(), '$usuario_abm');" : '';
+
+            }
+            // if(isset($_REQUEST['fecha_ingreso'])){
+            
+            //   die();
+            //   $registro_inicio = $fecha . ' ' . $_REQUEST['fecha_ingreso'];
+            //   $registro_fin = $fecha . ' ' . $_REQUEST['fecha_salida'];
+              
+            //   if($id){
+            //     $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
+            //   }
+            
+            //   $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_inicio', $legajo, now(), '$usuario_abm');";
+            //   $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_fin', $legajo, now(), '$usuario_abm');";
+            
+            // }
+            else{
+
+              // si no viene por el lado de la marca horaria
+              if($id_art != 'null'){
+                //elimino los registro con articulos del dia y agrego el nuevo articulo
+                $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is not null and leu is null;";
+                $str_query .= "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_art, $legajo, '$fecha', 'now()','$usuario_abm');";
+              }
+              else{
+                // ahora si elimino registro si viene dia "normal"
+                $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is not null and leu is null;";
+              }
+            
+            } //fin else 
+
+          } // fin $insert == 1
+            
+            //elimino el articulo << NO ELIMINO EL REGISTRO DEL DIA, POR QUE PUEDE TENER HORA INGRESO/SALIDA >>
+            // $str_query .= "UPDATE calendario_agente SET id_articulo = null WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
+            
+        }
+          
+      }
+    }
+    else{
       if(isset($_REQUEST['checked_fp_modificacion_registro'])){
-        
-        // preungto si viene vacio 1 de las horas
-        // if(empty($_REQUEST['fecha_ingreso']) || empty($_REQUEST['fecha_salida'])){
-          
-          // si una de las 2 esta vacia, elimino los registros completos del dia y guardo el request
-          $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is null;";
-          
-        // }
-        
+        // si una de las 2 esta vacia, elimino los registros completos del dia y guardo el request
+        //$str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is null;";
         /**
          * Inserto los datos del request
          */ 
@@ -374,37 +416,21 @@ function modificar_registro_legajo($con){
         (!empty($_REQUEST['fecha_salida'])) ? $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$fecha " . $_REQUEST['fecha_salida'] . "', $legajo, now(), '$usuario_abm');" : '';
 
       }
-      // if(isset($_REQUEST['fecha_ingreso'])){
-      
-      //   die();
-      //   $registro_inicio = $fecha . ' ' . $_REQUEST['fecha_ingreso'];
-      //   $registro_fin = $fecha . ' ' . $_REQUEST['fecha_salida'];
-        
-      //   if($id){
-      //     $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo;";
-      //   }
-      
-      //   $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_inicio', $legajo, now(), '$usuario_abm');";
-      //   $str_query .= "INSERT INTO calendario_agente (registro, legajo, fecha_abm, usuario_abm) VALUES ('$registro_fin', $legajo, now(), '$usuario_abm');";
-      
-      // }
       else{
 
         // si no viene por el lado de la marca horaria
         if($id_art != 'null'){
+          //elimino los registro con articulos del dia y agrego el nuevo articulo
+          //$str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is not null and leu is null;";
           $str_query .= "INSERT INTO calendario_agente (id_articulo, legajo, registro, fecha_abm, usuario_abm) VALUES ($id_art, $legajo, '$fecha', 'now()','$usuario_abm');";
-        }
-        else{
-          // ahora si elimino registro si viene dia "normal"
-          $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and id_articulo is not null;";
         }
       
       } //fin else 
 
-    } // fin $insert == 1
-  
+    } // fin else pg_num_rows()
   } // fin for dias
 
+  // echo $str_query;die();
   if($str_query){
     
     echo (pg_query($con,$str_query)) ? json_encode(["msj"=>"Guardado Correctamente...  Verificar la <strong><i>Planilla Mensual</i></strong> para registros de marcas.-","class_alert"=>"alert-success"]) : json_encode(["msj"=>"Error de guardado... ","class_alert"=>"alert-warning"]);
@@ -412,7 +438,7 @@ function modificar_registro_legajo($con){
   }
   else{
   
-    echo json_encode(["msj"=>"<strong>Vacio!</strong> en el guardado, consulte su administrador .-","class_alert"=>"alert-warning"]);
+    echo json_encode(["msj"=>"<strong>Error!</strong> en el guardado, consulte su administrador .-","class_alert"=>"alert-warning"]);
   
   }
 
