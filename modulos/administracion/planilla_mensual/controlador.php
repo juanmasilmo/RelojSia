@@ -23,7 +23,8 @@ function get_agentes($con){
   $sql = "SELECT legajo as legajo
                 ,CONCAT(apellido,' ',nombres) nombre
           FROM personas
-          WHERE id_dependencia = $id_dependencia";
+          WHERE id_dependencia = $id_dependencia
+          ORDER BY apellido";
   $rs = pg_query($con, $sql);
   $res = pg_fetch_all($rs);
 
@@ -48,7 +49,7 @@ function get_registros_agentes($con)
   /**
    * Obtengo los legajos de la dependencia para filtrar los registros
    */ 
-  $sql_legajo = "SELECT legajo, concat(apellido, ' ', nombres) as nombre FROM personas WHERE id_dependencia = $id_dependencia ORDER BY legajo";
+  $sql_legajo = "SELECT legajo, concat(apellido, ' ', nombres) as nombre FROM personas WHERE id_dependencia = $id_dependencia ORDER BY apellido";
   $rs_legajo = pg_query($con, $sql_legajo);
   $res_legajo = pg_fetch_all($rs_legajo);
   
