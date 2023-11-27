@@ -316,7 +316,6 @@ $con = conectar();
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    t>
 
     <script src="inc/js/jquery.dataTables.min.js"></script>
 
