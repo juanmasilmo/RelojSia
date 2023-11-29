@@ -67,10 +67,12 @@ function calendario_agente() {
       right: 'next'
     },
     selectMirror: true,
-    hiddenDays: [0], //ocultar dias
+
+    // hiddenDays: [0], //ocultar dias => issues 53
+    // selectable: true, => issues 53
+    
     unselectAuto: true,
     // allDayDefault: false,
-    selectable: true,
     // editable: true, //drag and drop  
     // initialDate: '2023-01-01',
     // navLinks: true, // can click day/week names to navigate views
