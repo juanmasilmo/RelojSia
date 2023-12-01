@@ -10,11 +10,32 @@ function cerrar_modal() {
 
 }
 
+function showLightbox() {
+  document.getElementById('over').style.display = 'block';
+  document.getElementById('fade').style.display = 'block';
+}
+
+function hideLightbox() {
+  document.getElementById('over').style.display = 'none';
+  document.getElementById('fade').style.display = 'none';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
 
   var calendarEl = document.getElementById('calendar');
   calendar = new FullCalendar.Calendar(calendarEl, {
+
+    // loading: function (isLoading) {
+    //   if (isLoading) {
+    //     alert();
+    //     showLightbox();
+    //   }
+    //   else {                
+    //     hideLightbox();
+    //   }
+    // },
+
     // views: {
     //   listDay: { buttonText: 'list day' },
     //   listWeek: { buttonText: 'list week' }
@@ -26,7 +47,11 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     selectMirror: true,
     // hiddenDays: [0], //ocultar dias
-    allDayDefault: false,
+    
+    // allDayDefault: false,
+    initialView: 'multiMonthYear',
+
+    
     eventLimit: 1,
     selectable: true,
     locale: 'deLocale',
@@ -89,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // navLinks: true, // can click day/week names to navigate views
     businessHours: true, // display business hours
     // droppable: true, // this allows things to be dropped onto the calendar
-    initialView: 'dayGridMonth',
     themeSystem: 'bootstrap',
     locale: 'es', //
     dayMaxEvents: true, // allow "more" link when too many events

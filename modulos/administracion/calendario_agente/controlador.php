@@ -176,7 +176,6 @@ function get_articulos_agente($con)
             WHERE legajo = $id_agente
               and id_articulo is not null 
               and  EXTRACT(YEAR FROM registro) = $year
-              and  EXTRACT(MONTH FROM registro) = $month
               and borrado is null              
             GROUP BY id_articulo ";
   $rs = pg_query($con, $sql);

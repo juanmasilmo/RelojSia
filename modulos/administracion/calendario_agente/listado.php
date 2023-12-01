@@ -93,6 +93,9 @@ $estados = pg_fetch_all($rs);
   }
 </style>
 
+<div id="over" class="spinner" style="display:none"></div>
+<div id="fade" class="fadebox" style="display:none">&nbsp;</div>
+
 <!-- Tabla REFERENCIAS (costado del calendario) -->
 <div class="conten">
   <div class="row">
