@@ -70,9 +70,10 @@ $estados = pg_fetch_all($rs);
     </div>
   </div>
 </div>
-
-<!-- <div id="over" class="spinner"></div>
+<!-- 
+<div id="over" class="spinner"></div>
 <div id="fade" class="fadebox">&nbsp;</div> -->
+
 <div class="conten">
   <div class="row">
     <div class="col-md-10" id='calendar'>

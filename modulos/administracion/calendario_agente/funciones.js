@@ -4,6 +4,17 @@ let year;
 let clickedDayRef = [];
 let countClicked = 0;
 
+function showLightbox() {
+  document.getElementById('over').style.display = 'block';
+  document.getElementById('fade').style.display = 'block';
+}
+
+function hideLightbox() {
+  document.getElementById('over').style.display = 'none';
+  document.getElementById('fade').style.display = 'none';
+}
+
+
 function cerrar_formulario()
 {
     $("#formulario").css('display', 'none');
@@ -57,7 +68,7 @@ function listado_agentes(id_dependencia) {
 function calendario_agente() {
   
   var id_agente = $("#id_agente").val();
-  
+  // showLightbox();
   let calendarEl  = document.getElementById('calendar');
   calendar = new FullCalendar.Calendar(calendarEl, {
 
@@ -70,7 +81,7 @@ function calendario_agente() {
 
     // hiddenDays: [0], //ocultar dias => issues 53
     // selectable: true, => issues 53
-    
+    loading:  true,
     unselectAuto: true,
     // allDayDefault: false,
     // editable: true, //drag and drop  
@@ -78,7 +89,7 @@ function calendario_agente() {
     // navLinks: true, // can click day/week names to navigate views
     businessHours: true, // display business hours
     // droppable: true, // this allows things to be dropped onto the calendar
-    initialView: 'dayGridMonth',
+    initialView: 'multiMonthYear',
     themeSystem: 'bootstrap',
     locale: 'es', 
     
@@ -140,7 +151,13 @@ function calendario_agente() {
       calendar.unselect();
     },
 
-
+    loading: function(isLoading){
+      if(isLoading){
+        showLightbox();
+      }else{
+        hideLightbox();
+      }
+    },
     /**
      * Traigo los registro de la DB
      */
@@ -157,25 +174,31 @@ function calendario_agente() {
     ],
     eventOverlap: false
   });
-
   calendar.unselect();
   calendar.render();
-
+  
   //muestro la table de articulos al pie del calendario
   $('#div_articulos_agente').css('display','block');
-
+  
   //muestro referencia de los registros del calendario anual
   $('#tabla_estados_calendario_agente').css('display','block');
- 
-
+  
+  // document.getElementById('my-prev-button').addEventListener('click', function() {
+  //   calendar.prev();
+  // });
+  
   $('body').on('click', 'button.fc-prev-button', function () {
     get_articulos_agente();
   });
 
+  // $(".fc-prev-button").addEventListener("click", function (e) {
+  //   alert();
+  // })
+  
   $('body').on('click', 'button.fc-next-button', function () {
     get_articulos_agente();
   });
-
+  
   get_articulos_agente();
 }
 
@@ -221,12 +244,12 @@ function get_articulos_agente() {
   
 
   var month = month+1;
+  
   $.ajax({
     type: 'post',
     url: "modulos/administracion/calendario_agente/controlador.php?f=get_articulos_agente&id_agente=" + id_agente + "&month=" + month + "&year=" + year,
     dataType: 'json',
     success: function(response) {
-      
       if(!response == 0){
         var tabla = '';
         for (let index = 0; index < response.length; index++) {
