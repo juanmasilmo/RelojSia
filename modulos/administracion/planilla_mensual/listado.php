@@ -81,7 +81,8 @@ $month = date('m');
           <?php if(pg_num_rows($rs_dep) > 0){ ?>
             <div class="col-md-6">
               <label for="">Dependencia</label>
-              <select class="form-control" onchange="listado_agentes(this.value)" name="id_dependencia" id="id_dependencia">
+              <!-- <select class="form-control" onchange="listado_agentes(this.value)" name="id_dependencia" id="id_dependencia"> -->
+              <select class="form-control" name="id_dependencia" id="id_dependencia">
                 <option value="0">Seleccionar ....</option>
                 <?php foreach ($res_dependencia as $value) { ?>
                   <option value="<?php echo $value['id'] ?>"><?php echo $value['dep'] ?></option>  
@@ -110,7 +111,7 @@ $month = date('m');
           </div>
           <div class="col-md-2">
             <label for="">Año</label>
-            <select name="id_anio" id="id_anio" class="form-control" onchange="filtro_anio()">
+            <select name="id_anio" id="id_anio" class="form-control" >
               <option value="0">Seleccionar...</option>
               <?php if(!count($res_anio) > 0){ ?>
                 <option value="<?php echo $year ?>" ><?php echo $year ?></option>

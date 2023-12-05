@@ -45,7 +45,8 @@
                     <!-- Filtro Año -->
                     <div class="col-md-2">
                         <label for="">Año</label>
-                        <select name="id_anio" id="id_anio" class="form-control" onchange="filtro_anio()">
+                        <!-- <select name="id_anio" id="id_anio" class="form-control" onchange="filtro_anio()"> -->
+                        <select name="id_anio" id="id_anio" class="form-control" >
                             <option value="0">Seleccionar...</option>
                             <?php if(!count($res_anio) > 0){ ?>
                             <option value="<?php echo $year ?>"><?php echo $year ?></option>
