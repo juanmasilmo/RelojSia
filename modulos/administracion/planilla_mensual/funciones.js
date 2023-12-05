@@ -81,7 +81,7 @@ function arma_tabla() {
 
       var agentes = marcas.legajos;
       var registros = marcas.registros;
-
+      var feriados = marcas.feriados;
       var total_dias = new Date(anio, mes, 0).getDate(); //obtengo la cantidad de dias del mes para armado de la tabla 
     
       /**
@@ -92,8 +92,8 @@ function arma_tabla() {
       for (var i = 1; i < total_dias+1; i++){
         
           tabla += "<th style='border: 1px solid black'>" + i + "</th>";
-        
       }
+
       tabla += "</tr></thead><tbody style=''>";
         
       /**
@@ -108,10 +108,11 @@ function arma_tabla() {
           for (var dia = 1; dia < total_dias+1; dia++){
              
             //verifico si es fin de semana pinto de gris
-             var fecha = anio+'/'+mes+'/'+dia;
-             background_color = pinta_sabado_domingo(fecha);
-            
-            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
+            var fecha = anio+'/'+mes+'/'+dia;
+            background_color = pinta_sabado_domingo(fecha);
+              
+            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='border: 1px solid black' id='legajo"+agente.legajo+"' bgcolor='"+background_color+"'> </td>";
+            // background_color = '';
           }
           tabla += "</tr>";
 
@@ -119,17 +120,20 @@ function arma_tabla() {
 
           for (var dia = 1; dia < total_dias+1; dia++){
             
-            tabla += "<td style='border: 1px solid black' id='legajo"+agente.legajo+"' ";
+            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='border: 1px solid black' id='legajo"+agente.legajo+"' ";
             var registro_marca = '';
             var background_color = '';
 
             //verifico si es fin de semana pinto de gris
             var fecha = anio+'/'+mes+'/'+dia;
             background_color = pinta_sabado_domingo(fecha);
-  
+
             //por cada dia recorro los registros 
             var band = 0;
+            var title_dia = '';
+
             registros.forEach(function(registro){
+              
               // si el dia tiene registro muestro o articulo
               if(agente.legajo == registro.legajo && dia == registro.dia){
 
@@ -187,19 +191,17 @@ function arma_tabla() {
                 
               }
               
-              // tabla += nro_articulo + " <br> " + registro_marca + " <br> ";
-              
             }); //fin foreach registros
 
             //cierro el td de apertura
-            tabla += 'bgcolor="'+ background_color +'">';
+            tabla += 'bgcolor="'+ background_color +'" title="'+title_dia+'">';
 
             //imprimo los registros (string preparado)
             tabla += registro_marca.trim();
 
             //cierro el td
             tabla +=  "</td>";
-              
+
           } // fin for dias
   
           tabla += "</tr>";
@@ -212,23 +214,47 @@ function arma_tabla() {
       // console.log(tabla);
 
       $("#div_tabla_agentes_registros").html(tabla);
-
+      cargo_feriados_tabla(feriados);
+      
       // $('#tabla_agentes_registros').DataTable();
       
     }
-
+    
   }); // fin $.get
-
+  
 }
 
 function pinta_sabado_domingo(fecha) {
-
+  
   var today = new Date(fecha);
-
+  
   var bgcolor = '';
+  
   if(today.getDay() == 0 || today.getDay() == 6){
+    
     bgcolor = "#C0C0C0"
+    
   }
-
+  
   return bgcolor;
+}
+
+function cargo_feriados_tabla(feriados) {
+
+  var mes = 0;
+
+  if(feriados){
+
+    feriados.forEach(function(feriado) {
+
+      (feriado.feriado_mes < 10) ? mes = '0'+feriado.feriado_mes : mes = feriado.feriado_mes;
+
+      $(".carga_feriado_td_"+feriado.feriado_dia+mes)
+      .html('<strong>'+feriado.estado_letra+'</strong>')
+        .css('background-color',feriado.estado_color)
+        .attr('title',feriado.estado_descripcion);
+
+    });
+
+  }
 }

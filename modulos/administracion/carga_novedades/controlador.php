@@ -96,33 +96,36 @@ function get_registros_agentes($con)
                         FROM calendario_agente
                         WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
                         ORDER BY legajo, hora";
-      
-      /**
-       * Issue 39
-       */
-      // $sql_registro = "SELECT legajo
-      //                        ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
-      //                        ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
-      //                        ,EXTRACT(DAY FROM registro) as dia
-      //                        ,EXTRACT(DAY FROM registro_modificado) as dia_m
-      //                    FROM calendario_agente
-      //                    WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
-      //                    ORDER BY legajo";
-
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
+
+    /**
+    * Obtengo los feriados anuales
+    */
+    $sql_feriados = "SELECT (SELECT letra FROM estados WHERE id = id_estado) as estado_letra
+                        ,(SELECT color FROM estados WHERE id = id_estado) as estado_color
+                        ,(SELECT descripcion FROM estados WHERE id = id_estado) as estado_descripcion
+                        ,EXTRACT(MONTH FROM fecha_inicio) as feriado_mes
+                        ,EXTRACT(DAY FROM fecha_inicio) as feriado_dia
+                        FROM calendario_anual
+                        WHERE EXTRACT(YEAR FROM fecha_inicio) = $anio and EXTRACT(MONTH FROM fecha_inicio) = $mes";
+    $rs_feriados = pg_query($con, $sql_feriados);
+    $res_feriados = pg_fetch_all($rs_feriados);
+
+    (pg_num_rows($rs_registro) > 0) ? $registros = $res_registro : $registros = false;
+    (pg_num_rows($rs_feriados) > 0) ? $feriados = $res_feriados : $feriados = false;
     
     $count = 0;
     //si tengo registros al menos 1, cargo el array
-    if(pg_num_rows($rs_registro) > 0) {
+    // if(pg_num_rows($rs_registro) > 0) {
     
-      echo json_encode(['legajos' => $res_legajo, 'registros' => $res_registro, 'carga_registro' => $carga_registro]);
+    //   echo json_encode(['legajos' => $res_legajo, 'registros' => $res_registro, 'carga_registro' => $carga_registro]);
 
-    }else{
+    // }else{
 
-      echo json_encode(['legajos' => $res_legajo, 'registros' => false, 'carga_registro' => $carga_registro]);
+      echo json_encode(['legajos' => $res_legajo, 'registros' => $registros, 'carga_registro' => $carga_registro, 'feriados' => $feriados]);
       
-    }
+    // }
     
   }else{
 

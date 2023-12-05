@@ -81,6 +81,7 @@ function armaTabla() {
 
       var agentes = marcas.legajos;
       var registros = marcas.registros;
+      var feriados = marcas.feriados;
       var carga_registro = marcas.carga_registro;
 
       var total_dias = new Date(anio, mes, 0).getDate(); //obtengo la cantidad de dias del mes para armado de la tabla 
@@ -134,7 +135,7 @@ function armaTabla() {
              var fecha = anio+'/'+mes+'/'+dia;
              background_color = pintaSabadoDomingo(fecha);
             
-            tabla += "<td style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
+            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
           }
           tabla += "</tr>";
 
@@ -144,7 +145,7 @@ function armaTabla() {
           for (var dia = 1; dia < total_dias+1; dia++){
             
             //voy cargando las celdas
-            tabla += "<td style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
+            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
 
@@ -229,6 +230,7 @@ function armaTabla() {
       // console.log(tabla);
 
       $("#div_tabla_agentes_registros").html(tabla);
+      cargo_feriados_tabla(feriados);
 
       // $('#tabla_agentes_registros').DataTable();
       
@@ -380,4 +382,25 @@ function modificarRegistroCompleto() {
 
   
 
+}
+
+
+function cargo_feriados_tabla(feriados) {
+ 
+  // var mes = 0;
+ 
+  if(feriados){
+
+    feriados.forEach(function(feriado) {
+
+      // (feriado.feriado_mes < 10) ? mes = '0'+feriado.feriado_mes : mes = feriado.feriado_mes;
+
+      $(".carga_feriado_td_"+feriado.feriado_dia+feriado.feriado_mes)
+        .html('<strong>'+feriado.estado_letra+'</strong>')
+        .css('background-color',feriado.estado_color)
+        .attr('title',feriado.estado_descripcion);
+
+    });
+
+  }
 }
