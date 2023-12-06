@@ -135,7 +135,7 @@ function armaTabla() {
              var fecha = anio+'/'+mes+'/'+dia;
              background_color = pintaSabadoDomingo(fecha);
             
-            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
+            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
           }
           tabla += "</tr>";
 
@@ -145,7 +145,7 @@ function armaTabla() {
           for (var dia = 1; dia < total_dias+1; dia++){
             
             //voy cargando las celdas
-            tabla += "<td class='carga_feriado_td_"+dia+mes+"' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
+            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
 
@@ -287,6 +287,7 @@ function guardarRegistroCompleto() {
 function modificarRegistroLegajo(dia,legajo){
 
   var clas = $("#"+legajo+"-"+dia).attr("class");
+
   if(clas != 'seleccionado'){
 
     $("#"+legajo+"-"+dia).toggleClass("seleccionado");
@@ -391,11 +392,21 @@ function cargo_feriados_tabla(feriados) {
  
   if(feriados){
 
+    
     feriados.forEach(function(feriado) {
+      var x = feriado.feriado_dia+feriado.feriado_mes+"_carga_feriado_td";
+      console.log(x);
+      // $("table tr td[data-feriado="+x+"]").each(function(index) {
+      //   console.log('controlar');
+      //   //console.log($(this).attr("data-feriado"));
+      //     $(this).css("background-color", "red");
+      // });
+      // var h = $("[data-feriado='carga_feriado_td_" + feriado.feriado_dia+feriado.feriado_mes + "']");
+      // console.log(h);
 
       // (feriado.feriado_mes < 10) ? mes = '0'+feriado.feriado_mes : mes = feriado.feriado_mes;
 
-      $(".carga_feriado_td_"+feriado.feriado_dia+feriado.feriado_mes)
+      $("table tr td[data-feriado="+x+"]")
         .html('<strong>'+feriado.estado_letra+'</strong>')
         .css('background-color',feriado.estado_color)
         .attr('title',feriado.estado_descripcion);
