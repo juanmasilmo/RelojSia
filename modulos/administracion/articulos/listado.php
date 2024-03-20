@@ -19,7 +19,8 @@ conectar();
 						<th align="left">Inc.</th>
 						<th align="left">Me</th>
 						<th align="left">An</th>	
-						<th align="left">Presentismo</th>			
+						<th align="left">Presentismo</th>					
+						<th align="left">Desc. Pasajes</th>			
 						<th align="left">Observación</th>								
 						<th align="left">Tipo</th>						
 						<th align="left">ID_LEU</th>
@@ -35,6 +36,7 @@ conectar();
 						<th align="left">Me</th>
 						<th align="left">An</th>	
 						<th align="left">Presentismo</th>					
+						<th align="left">Desc. Pasajes</th>					
 						<th align="left">Observación</th>					
 						<th align="left">Tipo</th>
 						<th align="left">ID_LEU</th>
@@ -58,6 +60,7 @@ conectar();
 							<td align="center" ><?php echo $row['cantidad_mensual'];?></td>
 							<td align="center" ><?php echo $row['cantitad_anual'];?></td>
 							<td align="center" ><?php echo $row['cobra_presentismo'];?></td>
+							<td align="center" ><?php echo ($row['desc_pasajes'] == 1) ? "SI" : "NO";?></td>
 							<td align="left"><?php echo strtoupper($row['observacion']);?></td>
 							<td align="left"><?php echo $row['tipo_licencias'];?></td>
 							<td align="center"><?php echo $row['id_leu'];?></td>

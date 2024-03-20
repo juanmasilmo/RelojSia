@@ -395,7 +395,7 @@ function cargo_feriados_tabla(feriados) {
     
     feriados.forEach(function(feriado) {
       var x = feriado.feriado_dia+feriado.feriado_mes+"_carga_feriado_td";
-      console.log(x);
+      // console.log(x);
       // $("table tr td[data-feriado="+x+"]").each(function(index) {
       //   console.log('controlar');
       //   //console.log($(this).attr("data-feriado"));
@@ -410,7 +410,6 @@ function cargo_feriados_tabla(feriados) {
         .html('<strong>'+feriado.estado_letra+'</strong>')
         .css('background-color',feriado.estado_color)
         .attr('title',feriado.estado_descripcion);
-
     });
 
   }

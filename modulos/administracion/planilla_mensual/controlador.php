@@ -205,7 +205,7 @@ function calendarioDia($con){
   //               ,usuario_abm = '$usuario_abm'
   //           WHERE id = $id_estado_configurado";
   // }
-  $rs = pg_query($con, $sql);
+  // $rs = pg_query($con, $sql);
   echo json_encode('ok');
   
 }
