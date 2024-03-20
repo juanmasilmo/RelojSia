@@ -56,6 +56,15 @@ for ($i=0;$i<count($vector);$i++){
         $id_categoria_control="";
     }
 
+    if (($vector[$i]['legajo']!=null)||($vector[$i]['legajo']!="")){
+        $vector[$i]['legajo']=$vector[$i]['legajo'];
+    }    
+    else{
+        $vector[$i]['legajo']='';
+        //echo "entro ".$vector[$i]['apellido']." ".$vector[$i]['nombres']."<br>";
+    }
+
+
     $sql="SELECT COUNT(id_leu) as id_dependencia from dependencias where id_leu=".$dependencia_leu;
     $res=pg_query($con, $sql);
     $row=pg_fetch_array($res);  
@@ -217,7 +226,7 @@ for ($i=0;$i<count($vector);$i++){
 
     if($row['id_leu_dependencia']!=$dependencia_leu){
 
-        $sqlU="UPDATE personas SET id_dependencia=(select id from dependencias where id_leu=".$dependencia_leu."), legajo=".$vector[$i]['legajo']." WHERE id=".$row['id'];
+        $sqlU="UPDATE personas SET id_dependencia=(select id from dependencias where id_leu=".$dependencia_leu."), legajo='".$vector[$i]['legajo']."' WHERE id=".$row['id'];
         $res=pg_query($con, $sqlU);
         if ($res){
             echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i>Cambio en Dependencia: <strong>'.$vector[$i]['apellido'].','.$vector[$i]['nombres'].' - de '.$row['descripcion_dependencia'].' a '.$resdn['descripcion'].'</strong></div>';
@@ -230,7 +239,7 @@ for ($i=0;$i<count($vector);$i++){
 ////SI HAY CAMBIOS EN EL LEGAJO
     if($row['legajo']!=$vector[$i]['legajo']){
 
-        $sqlU="UPDATE personas SET legajo=".$vector[$i]['legajo']." WHERE id=".$row['id'];
+        $sqlU="UPDATE personas SET legajo='".$vector[$i]['legajo']."' WHERE id=".$row['id'];
         $res=pg_query($con, $sqlU);
         if ($res){
             echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i>Cambio en Legajo: <strong>'.$vector[$i]['apellido'].','.$vector[$i]['nombres'].' - de '.$row['legajo'].' a '.$vector[$i]['legajo'].'</strong></div>';
