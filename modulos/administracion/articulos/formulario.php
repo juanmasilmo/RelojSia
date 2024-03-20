@@ -4,7 +4,7 @@ include("../../../inc/conexion.php");
 conectar();
 
 if($_GET['id']!=0){
-  echo $sql="select * from articulos where id=".$_GET['id'];
+  $sql="SELECT * FROM articulos WHERE id=".$_GET['id'];
   $sql=pg_query($con,$sql);
   $row=pg_fetch_array($sql);  
 }
@@ -160,7 +160,20 @@ if($_GET['id']!=0){
     <div class="invalid-feedback">
       controlar el campo
     </div>
-  </div>  
+  </div> 
+  
+    <!-- check para VERFIFICAR si descuenta pasajes -->
+    <div class="col-md-2 position-relative">
+    <label for="desc_pasajes" class="form-label">Descuenta Pasajes<?php if($_GET['id']!=0) echo "[".$row['desc_pasajes']."]";?></label>
+    <select class="form-control" id="desc_pasajes" name="desc_pasajes" required >
+      <option selected disabled value="">Seleccionar</option>
+      <option value="0" <?php echo (isset($row['desc_pasajes']) && $row['desc_pasajes'] == 0) ? "selected" : ''; ?> >NO</option>
+      <option value="1" <?php echo (isset($row['desc_pasajes']) && $row['desc_pasajes'] == 1) ? "selected" : ''; ?> >SI</option>
+    </select>
+    <div class="invalid-feedback">
+      controlar el campo
+    </div>
+  </div> 
   
   <div class="col-md-6 position-relative">
     <label for="observacion" class="form-label">Observación</label>
