@@ -60,7 +60,7 @@ for ($i=0;$i<count($vector);$i++){
         $vector[$i]['legajo']=$vector[$i]['legajo'];
     }    
     else{
-        $vector[$i]['legajo']='';
+       $vector[$i]['legajo']=$vector[$i]['legajo_personal'];
         //echo "entro ".$vector[$i]['apellido']." ".$vector[$i]['nombres']."<br>";
     }
 
