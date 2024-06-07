@@ -18,6 +18,9 @@ conectar();
 						<th align="left">Descripción</th>
 						<th align="left">Código</th>
 						<th align="left">Tipo Categoria</th>
+						<th align="left">Listar Reportes</th>
+						<th align="left">Cobra Presentismo</th>
+						<th align="left">Cobra Pasajes</th>
 						<th align="left">ID_LEU</th>
 						<th width="10%">Acciones</th>
 					</tr>
@@ -29,6 +32,9 @@ conectar();
 						<th align="left">Descripción</th>
 						<th align="left">Código</th>
 						<th align="left">Tipo Categoria</th>
+						<th align="left">Listar Reportes</th>
+						<th align="left">Cobra Presentismo</th>
+						<th align="left">Cobra Pasajes</th>
 						<th align="left">ID_LEU</th>
 						<th>Acciones</th>
 					</tr>
@@ -48,6 +54,9 @@ conectar();
 							<td align="left" ><?php echo $row['descripcion'];?></td>
 							<td align="center" ><?php echo $row['cod_categoria'];?></td>
 							<td align="left"><?php echo $row['descripcion_tipo_categoria'];?></td>
+							<td align="left"><?php echo ($row['listar_reporte'] == 0) ? 'NO' : 'SI';?></td>
+							<td align="left"><?php echo ($row['presentismo'] == 0) ? 'NO' : 'SI';?></td>
+							<td align="left"><?php echo ($row['pasajes'] == 0) ? 'NO' : 'SI';?></td>
 							<td align="left"><?php echo $row['id_leu'];?></td>
 							<td align="center">
 								<a onclick="editar(<?php echo $row['id']; ?>)" class="btn btn-primary btn-icon-split" title="Editar">

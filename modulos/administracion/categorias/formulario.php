@@ -35,6 +35,42 @@ if($_GET['id']!=0){
       controlar el campo
     </div>
   </div>  
+  <br>
+  <div class="col-md-4 position-relative">
+    <label for="listar_reporte" class="form-label">Listar en Reporte<?php if($_GET['id']!=0) echo "[".$row['listar_reporte']."]";?></label>
+    <select class="form-control" id="listar_reporte" name="listar_reporte" required>
+      <option selected disabled value="">Seleccionar</option>
+      <option value="0" <?php if(isset($row['listar_reporte']) && $row['listar_reporte'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['listar_reporte']) && $row['listar_reporte'] == 1){ echo "selected";}?>>SI</option>       
+    </select>
+    <div class="invalid-feedback">
+      controlar el campo
+    </div>
+  </div> 
+
+  <div class="col-md-4 position-relative">
+    <label for="presentismo" class="form-label">Cobra Presentismo<?php if($_GET['id']!=0) echo "[".$row['presentismo']."]";?></label>
+    <select class="form-control" id="presentismo" name="presentismo" required>
+      <option selected disabled value="">Seleccionar</option>
+      <option value="0" <?php if(isset($row['presentismo']) && $row['presentismo'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['presentismo']) && $row['presentismo'] == 1){ echo "selected";}?>>SI</option>       
+    </select>
+    <div class="invalid-feedback">
+      controlar el campo
+    </div>
+  </div> 
+
+  <div class="col-md-4 position-relative">
+    <label for="pasajes" class="form-label">Cobra Pasajes<?php if($_GET['id']!=0) echo "[".$row['pasajes']."]";?></label>
+    <select class="form-control" id="pasajes" name="pasajes" required>
+      <option selected disabled value="">Seleccionar</option>
+      <option value="0" <?php if(isset($row['pasajes']) && $row['pasajes'] == 0){ echo "selected";}?>>NO</option>
+      <option value="1" <?php if(isset($row['pasajes']) && $row['pasajes'] == 1){ echo "selected";}?>>SI</option>       
+    </select>
+    <div class="invalid-feedback">
+      controlar el campo
+    </div>
+  </div> 
 
 
 </form>

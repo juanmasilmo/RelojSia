@@ -44,17 +44,20 @@ function editar($con){
 
   $descripcion = $_POST['descripcion'];    
   $cod_categoria = $_POST['cod_categoria'];
+  $listar_reporte = $_POST['listar_reporte'];
+  $presentismo = $_POST['presentismo'];
+  $pasajes = $_POST['pasajes'];
   $descripcion_tipo_categoria = $_POST['descripcion_tipo_categoria'];
   $usuario_abm=$_SESSION['username'];
   $id=$_POST['id'];
 
   if ($id > 0) {
 //update
-    $sql = "update categorias set descripcion='".$descripcion."', cod_categoria=".$cod_categoria.",descripcion_tipo_categoria='".$descripcion_tipo_categoria ."', usuario_abm='".$usuario_abm."' where id=".$id;
+    $sql = "update categorias set descripcion='$descripcion', listar_reporte = $listar_reporte, cod_categoria= $cod_categoria, descripcion_tipo_categoria='$descripcion_tipo_categoria', presentismo=$presentismo, pasajes=$pasajes,usuario_abm='".$usuario_abm."' where id = $id";
     $mesaje="El registro se modificó con éxito";
   }else {
 // insert
-    $sql = "INSERT INTO categorias(descripcion,cod_categoria,descripcion_tipo_categoria,usuario_abm) VALUES ('".$descripcion."',".$cod_categoria.",'".$descripcion_tipo_categoria."','".$usuario_abm."')";
+    $sql = "INSERT INTO categorias(descripcion,cod_categoria,descripcion_tipo_categoria,usuario_abm,listar_reporte, presentismo, pasajes) VALUES ('".$descripcion."',".$cod_categoria.",'".$descripcion_tipo_categoria."','".$usuario_abm."', $listar_reporte, $presentismo, $pasajes)";
     $mesaje="El registro se creó con éxito";
   }
 
