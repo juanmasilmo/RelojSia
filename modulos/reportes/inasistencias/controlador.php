@@ -57,7 +57,7 @@ function get_reportes($con)
   $rs_legajo = pg_query($con, $sql_legajo);
   $res_legajo = pg_fetch_all($rs_legajo);
 
-  $mes = $_GET['mes'];
+  $mes = $_GET['mes']-1;
   $anio = $_GET['anio'];
 
   /**
@@ -141,6 +141,7 @@ function encabezado($con,$legajos,$mes,$anio){
   $rs_encabezado = pg_query($con, $sql_encabezado);
   $res_encabezado = pg_fetch_all($rs_encabezado);
   
+  // creo un array para el encabezado 
   $cabecera['agente'] = 'Agentes';
   $cabecera['colspan'] = pg_num_rows($rs_encabezado);
   $cabecera['presentismo'] = 'presentismo';
@@ -152,6 +153,7 @@ function encabezado($con,$legajos,$mes,$anio){
       $cabecera[$value['id_articulo']] = $value['nro_articulo'];
     }
   } 
+  // FIN encabezado
 
 
   return $cabecera;
@@ -293,28 +295,23 @@ function total_articulos_usados($con, $legajo, $mes, $anio){
 function cobra_presentismo($con, $legajo, $mes, $anio){
 
   $sql_presentismo = "SELECT CASE 
-                                WHEN ( CAST(EXTRACT(HOUR FROM registro) AS INTEGER) > 0 ) THEN '1' 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 1 ) THEN '1' 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 0 ) THEN '0' 
-                                WHEN ( CAST(EXTRACT(HOUR FROM registro) as INTEGER) = 0 ) THEN '0' 
+                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 1 ) THEN 1 
+                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 0 ) THEN 0 
+                                ELSE 0
                               END as presentismo
                         FROM calendario_agente
                         WHERE EXTRACT(YEAR FROM registro) = $anio 
                           and EXTRACT(MONTH FROM registro) = $mes 
                           and borrado is null 
-                          and legajo = $legajo";
+                          and legajo = $legajo
+                        ORDER BY presentismo desc
+                        LIMIT 1 "; 
   $rs_presentismo = pg_query($con, $sql_presentismo);
-  $res_presentismo = pg_fetch_all($rs_presentismo);
+  $res_presentismo = pg_fetch_array($rs_presentismo);
 
-  $presentismo = 'si'; //por defecto cobra
-  if(pg_num_rows($rs_presentismo) > 0){
-    
-    foreach ($res_presentismo as $value) {
-      if($value['presentismo'] == 0){
-        $presentismo = 'no';
-      }
-    }
-    
+  $presentismo = 'SI'; //por defecto cobra
+  if($res_presentismo['presentismo'] == 1){
+    $presentismo = 'NO';
   }
   
   return $presentismo;
@@ -376,6 +373,11 @@ function dias_vespertinos($con, $legajo, $mes, $anio){
 
 function registros_html($legajos, $cabecera, $cuerpoTabla) {
   
+
+  // echo '<pre>';
+  // var_dump($cuerpoTabla);
+  // die();
+
   $colspan  = $cabecera['colspan'];
   unset($cabecera['colspan']);
 

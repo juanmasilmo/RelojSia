@@ -14,6 +14,7 @@ conectar();
 				<thead>
 					<tr>
 						<th>#</th>
+						<th>ID</th>
 						<th align="left">Descripción</th>
 						<th align="left">Art.</th>
 						<th align="left">Inc.</th>
@@ -30,6 +31,7 @@ conectar();
 				<tfoot>
 					<tr>
 						<th>#</th>
+						<th>ID</th>
 						<th align="left">Descripción</th>
 						<th align="left">Art.</th>
 						<th align="left">Inc.</th>
@@ -54,6 +56,7 @@ conectar();
 						?>
 						<tr>
 							<td><?php echo $orden++;?></td>
+							<td align="left" ><?php echo $row['id'];?></td>
 							<td align="left" ><?php echo $row['descripcion'];?></td>
 							<td align="center" ><?php echo $row['nro_articulo'];?></td>
 							<td align="center" ><?php echo $row['inciso'];?></td>

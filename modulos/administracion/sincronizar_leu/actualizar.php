@@ -84,7 +84,7 @@ if(count($vector) > 0){
 				
 
 
-				$insert_articulos .= "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm,usuario_abm,leu) VALUES 
+				$insert_articulos = "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm,usuario_abm,leu) VALUES 
 					((select cast(legajo as integer) from personas WHERE id_leu=".$vector[$i]['idagente']."),
 					'".$fecha."', 
 					".$id_articulo.",
@@ -93,6 +93,9 @@ if(count($vector) > 0){
 					2
 				);";
 				
+				if (!pg_query($con, $insert_articulos)){
+					echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> ' . $insert_articulos . '</div>';
+				}
 				
 			}
 		}
@@ -107,6 +110,6 @@ if (pg_query($con, $insert_articulos)){
 }
 else{              
 	pg_query("ROLLBACK") or die("Transaction rollback failed\n");
-	echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="fas fa-exclamation-triangle"></i> <strong>¡ADVERTENCIA!</strong> Hubo problemas en la sincronizacion.</div>';	
+	echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="fas fa-exclamation-triangle"></i> <strong>¡ADVERTENCIA!</strong> Hubo problemas en la sincronizacion. ' . $insert_articulos . '</div>';	
 }
 ?>
