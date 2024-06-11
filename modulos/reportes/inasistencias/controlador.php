@@ -48,16 +48,24 @@ function get_reportes($con)
 
   /**
    * Obtengo los legajos de la dependencia para filtrar los registros (columna 1 de la tabla)
+   * Filtro los agentes con categoria superiores que no se lista en los reportes.-
    */
   $sql_legajo = "SELECT legajo
-                        ,CONCAT(apellido,' ',nombres) as agente
+                        ,CONCAT(apellido,' ',nombres) as agente,
+                      CASE WHEN (SELECT presentismo FROM categorias WHERE id = id_categoria) = 1 THEN 'SI'
+                          WHEN (SELECT presentismo FROM categorias WHERE id = id_categoria) = 0 THEN 'NO'
+                        END as presentismo,
+                      CASE WHEN (SELECT pasajes FROM categorias WHERE id = id_categoria) = 1 THEN 'SI'
+                          WHEN (SELECT pasajes FROM categorias WHERE id = id_categoria) = 0 THEN 'NO'
+                        END as pasajes
                   FROM personas 
                   WHERE id_dependencia = $id_dependencia 
+                        AND (SELECT listar_reporte FROM categorias WHERE id = id_categoria) = 1
                   ORDER BY apellido";
   $rs_legajo = pg_query($con, $sql_legajo);
   $res_legajo = pg_fetch_all($rs_legajo);
 
-  $mes = $_GET['mes']-1;
+  $mes = $_GET['mes'];
   $anio = $_GET['anio'];
 
   /**
@@ -76,13 +84,6 @@ function get_reportes($con)
       }
     }
     
-    // Obtengo los feriados del mes 
-    // $feriados = feriados($con, $mes, $anio);
-
-    //total dias trabajados
-    // $cantidad_dias_laborables = count(dias_laborables($mes, $anio, $feriados));
-    // $dias_laborables = dias_laborables($mes, $anio, $feriados);
-
     // titulo de la tabla
     $cabecera = encabezado($con, $legajos, $mes, $anio);
 
@@ -98,13 +99,16 @@ function get_reportes($con)
       
       $legajo_actual = $legajo['legajo'];
       //articulos - cantidad
+
+      $dias_ausentes = dias_ausentes($con, $legajo_actual, $mes, $anio);
       $desc_pasajes = descuento_pasajes($con, $legajo_actual, $mes, $anio);
       $articulos = total_articulos_usados($con, $legajo_actual, $mes, $anio);
       $presentismo = cobra_presentismo($con, $legajo_actual, $mes, $anio);
       $vespertinos = dias_vespertinos($con, $legajo_actual, $mes, $anio);
 
-      $cuerpoTabla[$legajo_actual]['agente'] = $legajo['agente'];
+      $cuerpoTabla[$legajo_actual]['agente'] =  $legajo['agente'].'('.$legajo['presentismo'].'/'.$legajo['pasajes'].')';
       $cuerpoTabla[$legajo_actual]['presentismo'] = $presentismo;
+      $cuerpoTabla[$legajo_actual]['faltas'] = $dias_ausentes;
       $cuerpoTabla[$legajo_actual]['desc_pasajes'] = $desc_pasajes;
       $cuerpoTabla[$legajo_actual]['vespertinos'] = $vespertinos;
       $cuerpoTabla[$legajo_actual]['articulos'] = $articulos;
@@ -112,7 +116,7 @@ function get_reportes($con)
     } // FIN foreach($legajos)
 
     
-    registros_html($res_legajo, $cabecera, $cuerpoTabla);
+    registros_html($con, $anio, $mes, $res_legajo, $cabecera, $cuerpoTabla);
 
   } else {
 
@@ -144,7 +148,8 @@ function encabezado($con,$legajos,$mes,$anio){
   // creo un array para el encabezado 
   $cabecera['agente'] = 'Agentes';
   $cabecera['colspan'] = pg_num_rows($rs_encabezado);
-  $cabecera['presentismo'] = 'presentismo';
+  $cabecera['presentismo'] = 'Presentismo';
+  $cabecera['faltas'] = 'Faltas';
   $cabecera['desc_pasajes'] = 'Desc. Pasajes';
   $cabecera['vespertinos'] = 'Dias Vespertino';
 
@@ -154,7 +159,6 @@ function encabezado($con,$legajos,$mes,$anio){
     }
   } 
   // FIN encabezado
-
 
   return $cabecera;
 }
@@ -199,8 +203,8 @@ function feriados($con, $mes, $anio){
   
   $sql_feriados = "SELECT EXTRACT(DAY FROM fecha_inicio) as dia 
                     FROM calendario_anual 
-                    WHERE EXTRACT(MONTH FROM fecha_inicio) = '$mes'
-                        and EXTRACT(YEAR FROM fecha_inicio) = '$anio'";
+                    WHERE EXTRACT(MONTH FROM fecha_inicio) = $mes
+                        and EXTRACT(YEAR FROM fecha_inicio) = $anio";
   $rs_feriados = pg_query($con, $sql_feriados);
   $res_feriados = pg_fetch_all($rs_feriados);
   (pg_num_rows($rs_feriados) > 0) ? $feriados = $res_feriados : $feriados = false;
@@ -214,7 +218,7 @@ function feriados($con, $mes, $anio){
  */
 function dias_laborables($con, $mes, $anio){
   
-  $total_dias = cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+  $total_dias = cal_days_in_month(CAL_GREGORIAN, $mes, $anio); 
   $laborables = [];
 
   /**
@@ -281,12 +285,6 @@ function total_articulos_usados($con, $legajo, $mes, $anio){
 
   return $leg_art_dep;
 
-  // SALIDA ==>
-  
-  // legajo  id_articulo count 
-  //  5801     30 (293)    9   
-  //  5801     51 (FP)     1   
-
 }
 
 /**
@@ -294,27 +292,101 @@ function total_articulos_usados($con, $legajo, $mes, $anio){
  */
 function cobra_presentismo($con, $legajo, $mes, $anio){
 
-  $sql_presentismo = "SELECT CASE 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 1 ) THEN 1 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 0 ) THEN 0 
-                                ELSE 0
-                              END as presentismo
+    /**
+     * NO -> Cobra Presentismo en los siguientes casos
+     *  a) - Uso algun articulo que afecta al concepto.-
+     *  b) - Falto en el mes y no justifico.-
+     */
+    
+    // 0 = NO cobra / 1 = SI cobra
+    
+    /**
+     * caso - a
+     */  
+    $sql_presentismo = "SELECT (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) as presentismo
                         FROM calendario_agente
                         WHERE EXTRACT(YEAR FROM registro) = $anio 
                           and EXTRACT(MONTH FROM registro) = $mes 
+                          and id_articulo is not null
                           and borrado is null 
                           and legajo = $legajo
-                        ORDER BY presentismo desc
-                        LIMIT 1 "; 
-  $rs_presentismo = pg_query($con, $sql_presentismo);
-  $res_presentismo = pg_fetch_array($rs_presentismo);
-
-  $presentismo = 'SI'; //por defecto cobra
-  if($res_presentismo['presentismo'] == 1){
-    $presentismo = 'NO';
-  }
-  
+                        ORDER BY id asc
+                        LIMIT 1"; 
+    $rs_presentismo = pg_query($con, $sql_presentismo);
+    $res_presentismo = pg_fetch_array($rs_presentismo);
+    
+    $presentismo = 'SI'; //por defecto cobra
+    
+    // si ya ocupo un articulo, finalizo consulta.-
+    if(pg_num_rows($rs_presentismo) > 0 && $res_presentismo[0] == 0){
+      $presentismo = 'NO';
+    }
+    else{ // sino, chequeo si no tiene dias sin registro/articulos
+      
+      /**
+       * caso - b
+       */ 
+      $faltantes = 0;
+      
+      // traigo los dias que tiene registro.-
+      $sql_faltantes = "SELECT EXTRACT(DAY FROM registro)
+                          FROM calendario_agente
+                          WHERE EXTRACT(YEAR FROM registro) = $anio
+                              and EXTRACT(MONTH FROM registro) = $mes 
+                              and borrado is null 
+                              and legajo = $legajo
+                          GROUP BY EXTRACT(DAY FROM registro)";
+      $rs_faltantes = pg_query($con, $sql_faltantes);
+      $res_faltantes = pg_fetch_array($rs_faltantes);    
+      
+      // si obtengo registros
+      if(pg_num_rows($rs_faltantes) > 0){
+        
+        // obtengo el total trabajado
+        $total = pg_num_rows($rs_faltantes);
+        
+        // obtengo la cantidad de dias habiles del mes - los feriados (estados)
+        $x = count(dias_laborables($con, $mes, $anio));
+        
+        $faltantes = $x - $total;
+        
+        if($faltantes > 0)
+          $presentismo = 'NO';
+        
+      } // FIN faltantes
+      else {
+        // sino, quiere decir que no tiene registros, por lo tanto no vino en todo el mes
+        $presentismo = 'NO';
+      }
+    }
   return $presentismo;
+} // FIN presentismo
+  
+/**
+ *  REGISTRO DE FALTAS
+ */
+function dias_ausentes($con, $legajo, $mes, $anio){
+
+  // obtengo la cantidad de dias que trabajo
+  $sql_dias_ausentes = "SELECT distinct(extract (day from registro)) as day
+                      FROM calendario_agente 
+                      WHERE EXTRACT(YEAR FROM registro) = $anio
+                        AND EXTRACT(MONTH FROM registro) = $mes
+                        AND (id_articulo is null or id_articulo = (SELECT id FROM articulos WHERE nro_articulo = 'FP') or id_articulo not in (SELECT id FROM articulos WHERE desc_pasajes = 1))
+                        AND borrado is null 
+                        AND legajo = $legajo
+                      GROUP BY registro";
+  $rs_dias_ausentes = pg_query($con, $sql_dias_ausentes);
+  $res_dias_ausentes = pg_fetch_all($rs_dias_ausentes); 
+  $total_trabajados = pg_num_rows($rs_dias_ausentes);
+  
+  // Obtengo los dias habiles del mes en cuestion (menos los sabados/domingos/feriados)
+  $dias_laborables = count(dias_laborables($con, $mes, $anio));
+  
+  //total_trabajados nunca podria superar a dias_laborables
+  $dias_ausentes = $dias_laborables - $total_trabajados;
+  
+  return $dias_ausentes;
 }
 
 /**
@@ -322,32 +394,43 @@ function cobra_presentismo($con, $legajo, $mes, $anio){
  */
 function descuento_pasajes($con, $legajo, $mes, $anio){
 
-  // obtengo la cantidad de dias que trabajo
-  $sql_desc_pasajes = "SELECT distinct(extract (day from registro)) as day
+  // verifico que la categoria del agente cobre pasajes
+  $sql_categoria_pasajes = "SELECT (SELECT pasajes FROM categorias WHERE id = id_categoria) 
+                              FROM personas 
+                              WHERE legajo = '$legajo'";
+  $rs_categoria_pasajes = pg_query($con, $sql_categoria_pasajes);
+  $res_categoria_pasajes = pg_fetch_array($rs_categoria_pasajes);
+
+  // si hay registro, y cobra pasajes
+  if(pg_num_rows($rs_categoria_pasajes) > 0 && $res_categoria_pasajes['pasajes'] == 1){
+
+    // obtengo la cantidad de dias que trabajo
+    $sql_desc_pasajes = "SELECT distinct(extract (day from registro)) as day
                         FROM calendario_agente 
-                        WHERE EXTRACT(YEAR FROM registro) = $anio and 
-                          EXTRACT(MONTH FROM registro) = $mes
-                          and (id_articulo is null or id_articulo not in (SELECT id FROM articulos WHERE desc_pasajes = 1))
-                          and borrado is null 
-                          and legajo = $legajo
+                        WHERE EXTRACT(YEAR FROM registro) = $anio
+                          AND EXTRACT(MONTH FROM registro) = $mes
+                          AND (id_articulo is null or id_articulo = (SELECT id FROM articulos WHERE nro_articulo = 'FP') or id_articulo not in (SELECT id FROM articulos WHERE desc_pasajes = 1))
+                          AND borrado is null 
+                          AND legajo = $legajo
                         GROUP BY registro";
-  $rs_desc_pasajes = pg_query($con, $sql_desc_pasajes);
-  $res_desc_pasajes = pg_fetch_all($rs_desc_pasajes); 
-  $total_trabajados = pg_num_rows($rs_desc_pasajes);
-  // $total_trabajados = $res_desc_pasajes[0];
-  
-  
-  $dias_laborables = count(dias_laborables($con, $mes, $anio));
-
-  //total_trabajados nunca podria superar a dias_laborables
-  $desc_pasajes = $dias_laborables - $total_trabajados;
-
-  // x2
-  // $desc_pasajes = $desc_pasajes * 2;
-
+    $rs_desc_pasajes = pg_query($con, $sql_desc_pasajes);
+    $res_desc_pasajes = pg_fetch_all($rs_desc_pasajes); 
+    $total_trabajados = pg_num_rows($rs_desc_pasajes);
+    // $total_trabajados = $res_desc_pasajes[0];
+    
+    // Obtengo los dias habiles del mes en cuestion (menos los sabados/domingos/feriados)
+    $dias_laborables = count(dias_laborables($con, $mes, $anio));
+    
+    //total_trabajados nunca podria superar a dias_laborables
+    $desc_pasajes = $dias_laborables - $total_trabajados;
+    
+    // x2 (retorno la cantidad de pasajes a descontar, no la cantidad de dias)
+    $desc_pasajes = $desc_pasajes * 2;
+  }else{
+    $desc_pasajes = 0;
+  }
 
   return $desc_pasajes;
-
 }
 
 /**
@@ -371,7 +454,7 @@ function dias_vespertinos($con, $legajo, $mes, $anio){
   return $vespertinos;
 }
 
-function registros_html($legajos, $cabecera, $cuerpoTabla) {
+function registros_html($con, $anio, $mes, $legajos, $cabecera, $cuerpoTabla) {
   
 
   // echo '<pre>';
@@ -381,10 +464,13 @@ function registros_html($legajos, $cabecera, $cuerpoTabla) {
   $colspan  = $cabecera['colspan'];
   unset($cabecera['colspan']);
 
-  $tabla = '<table class="table table-striped" border="1px solid black"><thead><tr>';
+
+  $dias_laborables = count(dias_laborables($con, $mes, $anio));
+  $tabla = ' Dias habiles del mes : ' . $dias_laborables;
+  $tabla .= '<br><table class="table table-hover" ><thead><tr><th class="bg-secondary text-white">ID</th>';
   
   foreach ($cabecera as $key => $value) {
-    $tabla = $tabla . '<th>' . $value . '</th>'; 
+    $tabla = $tabla . '<th class="bg-secondary text-white">' . $value . '</th>'; 
   }
  
   $tabla = $tabla . '</tr></thead><tbody>'; 
@@ -392,6 +478,7 @@ function registros_html($legajos, $cabecera, $cuerpoTabla) {
 
   unset($cabecera['agente']);
   unset($cabecera['presentismo']);
+  unset($cabecera['faltas']);
   unset($cabecera['desc_pasajes']);
   unset($cabecera['vespertinos']);
 
@@ -403,8 +490,10 @@ function registros_html($legajos, $cabecera, $cuerpoTabla) {
       
       if($agenteLegajo == $legajo) /** si encuentra el agente */
       { 
-        $tr = $tr . '<tr><td>' . $agenteRegistros['agente'] . '</td>';
+        $tr = $tr . '<tr><td><b># ' . $legajo . '</b></td>';
+        $tr = $tr . '<td><b>' . $agenteRegistros['agente'] . '</b></td>';
         $tr = $tr . '<td>' . $agenteRegistros['presentismo'] . '</td>';
+        $tr = $tr . '<td>' . $agenteRegistros['faltas'] . '</td>';
         $tr = $tr . '<td>' . $agenteRegistros['desc_pasajes'] . '</td>';
         $tr = $tr . '<td>' . $agenteRegistros['vespertinos'] . '</td>';
 

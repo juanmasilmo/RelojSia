@@ -1,12 +1,21 @@
 let calendar = '';
 
 
+function showLightbox() {
+  document.getElementById('over').style.display='block';
+  document.getElementById('fade').style.display='block';
+}
+function hideLightbox() {
+  document.getElementById('over').style.display='none';
+  document.getElementById('fade').style.display='none';
+}
+
 function listado()
 {
      $('html').animate({
       scrollTop: $("html").offset().top
   }, 0);
-    $.get("modulos/administracion/planilla_mensual/listado.php",function(dato){
+    $.get("modulos/reportes/inasistencias/listado.php",function(dato){
         $("#listado").css('display', 'block');
         $("#listado").html(dato);
         $('#listado').fadeIn('slow');
@@ -14,14 +23,12 @@ function listado()
     });
 } 
 
-
-
-
 function listar_dependencia(cadena) {
   $.get("sistema/dependencias/listado_dependencias.php?cadena=" + cadena, function (dato) {
     $("#lista_dependencia").html(dato);
   });
 }
+
 function seleccionar_dependencia(id) {
   $.get("sistema/dependencias/dependencia_seleccionada.php?id=" + id, function (dato) {
    
@@ -32,12 +39,18 @@ function seleccionar_dependencia(id) {
 
 function procesar() {
   
+  showLightbox();
+  
   //controlar input dependencia
   if(!$("#id_dependencia").val() || $("#id_dependencia").val() == 'undefined'){
+ 
     $("#dependencia").css("border","1px solid red");
     return false;
+ 
   }else{
+ 
     $("#dependencia").css("border","1px solid #6e707e");
+ 
   }
   
   arma_tabla2();
@@ -50,9 +63,10 @@ function arma_tabla2() {
   var anio = $("#id_anio").val();
 
   let url = 'modulos/reportes/inasistencias/controlador.php?f=get_reportes&id_dependencia=' + id_dependencia + '&mes=' + mes + '&anio=' + anio;
-
   $.getJSON(url, function(data) {
+    console.log(data);
     $("#div_tabla_agentes_registros").html(data);
+    hideLightbox();
   });
 
 
@@ -126,7 +140,7 @@ function arma_tabla() {
         
         tabla += "</tr></tbody></table>";
         
-        $("#div_tabla_agentes_registros").html(tabla);
+       // $("#div_tabla_agentes_registros").html(tabla);
         cargo_legajos_count_articulos_tabla(registros);
         
       }else{

@@ -85,19 +85,19 @@
         <!-- VERSIONES -->
         <script>
 
-            function controlar_version(tag) {    
-                storageversion = localStorage.getItem("version");
-                if(storageversion != tag){           	
-                    // $(".version_tag").css('color','#ffc107');
-                    document.getElementById('version_tag').className ='parpadea';
-                    $('.parpadea').tooltip('show');
-                }else{
-                    // $(".parpadea").css('color','#ffffff');
-                    document.getElementById('version_tag').className ='sin_efecto';
-                    $('.sin_efecto').tooltip('disable');
+            // function controlar_version(tag) {    
+            //     storageversion = localStorage.getItem("version");
+            //     if(storageversion != tag){           	
+            //         // $(".version_tag").css('color','#ffc107');
+            //         document.getElementById('version_tag').className ='parpadea';
+            //         $('.parpadea').tooltip('show');
+            //     }else{
+            //         // $(".parpadea").css('color','#ffffff');
+            //         document.getElementById('version_tag').className ='sin_efecto';
+            //         $('.sin_efecto').tooltip('disable');
 
-                }		
-            }
+            //     }		
+            // }
         </script>
         <!-- FIN VERSIONES -->
 
