@@ -17,11 +17,12 @@
   <hr>
 </div>
 <!-- FIN Cabecera -->
-
+<div id="over" style="display:none" class="spinner"></div>
+<div id="fade" class="fadebox">&nbsp;</div>
 <script>listado();</script>
 
 <div id="formulario" style="display: none;"></div>
 <div id="mensaje" style="display: none;"></div>
 <div id="listado" style="display: none;"></div>
-<div class="col-md-12" id="div_tabla_agentes_registros"></div>
+
 <br>

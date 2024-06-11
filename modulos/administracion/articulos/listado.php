@@ -16,11 +16,11 @@ conectar();
 						<th>#</th>
 						<th>ID</th>
 						<th align="left">Descripción</th>
-						<th align="left">Art.</th>
-						<th align="left">Inc.</th>
+						<th align="left">Art. - Inc.</th>
+						<!-- <th align="left">Inc.</th> -->
 						<th align="left">Me</th>
 						<th align="left">An</th>	
-						<th align="left">Presentismo</th>					
+						<th align="left">Cobra Presentismo</th>					
 						<th align="left">Desc. Pasajes</th>			
 						<th align="left">Observación</th>								
 						<th align="left">Tipo</th>						
@@ -33,11 +33,11 @@ conectar();
 						<th>#</th>
 						<th>ID</th>
 						<th align="left">Descripción</th>
-						<th align="left">Art.</th>
-						<th align="left">Inc.</th>
+						<th align="left">Art. - Inc.</th>
+						<!-- <th align="left">Inc.</th> -->
 						<th align="left">Me</th>
 						<th align="left">An</th>	
-						<th align="left">Presentismo</th>					
+						<th align="left">Cobra Presentismo</th>					
 						<th align="left">Desc. Pasajes</th>					
 						<th align="left">Observación</th>					
 						<th align="left">Tipo</th>

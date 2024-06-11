@@ -257,13 +257,13 @@ else{
 if ($bandera==0){
     if ($bandera_dep==0){
         pg_query("COMMIT") or die("Transaction commit failed\n");
-        echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las personas con &eacute;xito</div>';?>
+        echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> gsdfgsdf gsdg  s Se sincronizaron las personas con &eacute;xito</div>';?>
         <script>listado()</script>
         <?php
     }
     else{
         pg_query("ROLLBACK") or die("Transaction rollback failed\n");
-        echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="fas fa-exclamation-triangle"></i> <strong>¡OK!</strong> Se sincronizaron personas, pero faltaron dependencias, por favor actualice las dependencias y vuelva a sincronizar personas</div>';
+        echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="fas fa-exclamation-triangle"></i> <strong>¡OK!</strong> Se sincronizaron personas, pero faltaron dependencias, por favor actualice las dependencias y vuelva a sincronizar personas</div>';
     }
 }
 else{
