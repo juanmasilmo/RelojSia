@@ -58,8 +58,7 @@ conectar();
 							<td><?php echo $orden++;?></td>
 							<td align="left" ><?php echo $row['id'];?></td>
 							<td align="left" ><?php echo $row['descripcion'];?></td>
-							<td align="center" ><?php echo $row['nro_articulo'];?></td>
-							<td align="center" ><?php echo $row['inciso'];?></td>
+							<td align="center" ><?php echo $row['nro_articulo'].'-'.$row['inciso'];?></td>
 							<td align="center" ><?php echo $row['cantidad_mensual'];?></td>
 							<td align="center" ><?php echo $row['cantitad_anual'];?></td>
 							<td align="center" ><?php echo $row['cobra_presentismo'];?></td>
