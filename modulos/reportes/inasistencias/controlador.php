@@ -65,7 +65,7 @@ function get_reportes($con)
   $rs_legajo = pg_query($con, $sql_legajo);
   $res_legajo = pg_fetch_all($rs_legajo);
 
-  $mes = $_GET['mes'];
+  $mes = $_GET['mes']-1;
   $anio = $_GET['anio'];
 
   /**

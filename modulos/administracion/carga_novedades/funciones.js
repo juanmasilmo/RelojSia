@@ -123,7 +123,7 @@ function armaTabla() {
        */
       agentes.forEach(function(agente){
         
-        tabla += "<tr id='"+agente.legajo+"'><td style='font-size:10px' id='agentes_"+agente.legajo+"' >"+agente.nombre+"</td>";
+        tabla += "<tr id='"+agente.legajo+"'><td style='font-size:10px; color:black; font-weight:bold' id='agentes_"+agente.legajo+"' >"+agente.nombre+"</td>";
 
         if(!registros){
           
@@ -135,7 +135,7 @@ function armaTabla() {
              var fecha = anio+'/'+mes+'/'+dia;
              background_color = pintaSabadoDomingo(fecha);
             
-            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
+            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")' bgcolor='"+background_color+"' > </td>";
           }
           tabla += "</tr>";
 
@@ -145,7 +145,7 @@ function armaTabla() {
           for (var dia = 1; dia < total_dias+1; dia++){
             
             //voy cargando las celdas
-            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick=' modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
+            tabla += "<td data-feriado='"+dia+mes+"_carga_feriado_td' style='font-size:10px; color:black' id='"+agente.legajo+"-"+dia+"' dia='"+dia+"' onclick='modificarRegistroLegajo("+ dia +", "+agente.legajo+")' ";
             var registro_marca = '';
             var background_color = '';
 
