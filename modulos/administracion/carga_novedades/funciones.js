@@ -164,7 +164,8 @@ function armaTabla() {
                 if(registro.nro_articulo){
                   
                   nro_articulo = registro.nro_articulo;
-                  background_color = registro.color;
+                  if(registro.color)
+                    background_color = registro.color;
                   nro_articulo += '<br>';
                 
                 }
