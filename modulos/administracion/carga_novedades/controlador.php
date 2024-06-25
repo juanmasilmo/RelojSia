@@ -90,7 +90,8 @@ function get_registros_agentes($con)
                             ,EXTRACT(HOUR FROM registro) as hora
                             ,EXTRACT(MINUTE FROM registro) as minutos
                             ,to_char(registro_modificado, 'hh24:mi') as registro_modificado
-                            ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
+                            ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo) as nro_articulo
+                            ,(SELECT color FROM articulos WHERE id = id_articulo) as color
                             ,EXTRACT(DAY FROM registro) as dia
                             ,EXTRACT(DAY FROM registro_modificado) as dia_m
                         FROM calendario_agente

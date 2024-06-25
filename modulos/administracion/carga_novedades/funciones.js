@@ -164,17 +164,7 @@ function armaTabla() {
                 if(registro.nro_articulo){
                   
                   nro_articulo = registro.nro_articulo;
-                  
-                  if(nro_articulo == '270'){
-                    // si es del grupo de los 200 (ej: 270)
-                    background_color = '#FF7777';
-                  }
-                  
-                  // si es compensacion de feria
-                  if(nro_articulo == 293){
-                    background_color = '#6BFF57';
-                  }
-
+                  background_color = registro.color;
                   nro_articulo += '<br>';
                 
                 }
