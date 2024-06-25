@@ -179,6 +179,16 @@ if($_GET['id']!=0){
     <label for="observacion" class="form-label">Observación</label>
     <textarea name="observacion" rows="6" id="observacion" placeholder="observacion" class="form-control"><?php if(isset($row)) echo $row['observacion'];?></textarea>
   </div>  
+  <div class="col-md-3">
+      <label for=" color" class="form-label">Color</label>
+      <div class=" col-md-4" style="baground:<?php if($_GET['id']!=0) echo $row['color'];?>">
+        <input type="color" class="form-control" id="color" name="color"
+          value="<?php if($_GET['id']!=0) echo $row['color'];?>" required>
+      </div>
+      <div class="invalid-feedback">
+        controlar el campo
+      </div>
+    </div>
 
 </form>
 <div class="mt-4" align="center">

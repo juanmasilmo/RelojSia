@@ -47,19 +47,21 @@ function editar($con){
   else
     $id_leu=$_POST['id_leu'];
 
+  
+    
   $nro_articulo=$_POST['nro_articulo'];
   $inciso=$_POST['inciso'];
   $descripcion=$_POST['descripcion'];
   if($_POST['cantidad_mensual']=='')
-    $cantidad_mensual='null';
+  $cantidad_mensual='null';
   else
-    $cantidad_mensual=$_POST['cantidad_mensual'];
-
+  $cantidad_mensual=$_POST['cantidad_mensual'];
+  
   if($_POST['cantitad_anual']=='')
-    $cantitad_anual='null';
+  $cantitad_anual='null';
   else
-    $cantitad_anual=$_POST['cantitad_anual'];
-
+  $cantitad_anual=$_POST['cantitad_anual'];
+  
   $observacion= $_POST['observacion'];
   $inasistencias= $_POST['inasistencias'];
   $licencias= $_POST['licencias'];
@@ -71,6 +73,11 @@ function editar($con){
   $cobra_presentismo=$_POST['cobra_presentismo'];
   $carga_manual=$_POST['c_manual'];
   $desc_pasajes=$_POST['desc_pasajes'];
+  
+  $color = $_POST['color'];
+  if ($color == '#000000')
+    $color = '#FFFFFF';
+  
   $usuario_abm=$_SESSION['username'];
   $id=$_POST['id'];
 
@@ -91,16 +98,17 @@ function editar($con){
                   excluye_feria=".$excluye_feria.",
                   tipo_licencias='".$tipo_licencias."',
                   sin_fecha_fin=".$sin_fecha_fin.",
-                  cobra_presentismo=".$cobra_presentismo.",
-                  c_manual=".$carga_manual.",
+                  cobra_presentismo=$cobra_presentismo,
+                  c_manual=$carga_manual,
+                  color = '$color',
                   desc_pasajes=".$desc_pasajes.",
-                  usuario_abm='".$usuario_abm."'
-            WHERE id=".$id;
+                  usuario_abm='$usuario_abm'
+            WHERE id=$id";
     $mesaje="El registro se modificó con éxito";
   }else {
 // insert
-    $sql = "INSERT INTO articulos(id_leu,nro_articulo,inciso,descripcion,cantidad_mensual,cantitad_anual,observacion,inasistencias,licencias,retiro,tardanza,excluye_feria,tipo_licencias,sin_fecha_fin,cobra_presentismo,c_manual,desc_pasajes,usuario_abm) 
-              VALUES (".$id_leu.",'".$nro_articulo."','".$inciso ."','".$descripcion."',".$cantidad_mensual.",".$cantitad_anual.",'".$observacion."',".$inasistencias.",".$licencias.",".$retiro.",".$tardanza.",".$excluye_feria.",'".$tipo_licencias."',".$sin_fecha_fin.",".$cobra_presentismo.",$carga_manual,$desc_pasajes,'".$usuario_abm."')";
+    $sql = "INSERT INTO articulos(id_leu,nro_articulo,inciso,descripcion,cantidad_mensual,cantitad_anual,observacion,inasistencias,licencias,retiro,tardanza,excluye_feria,tipo_licencias,sin_fecha_fin,cobra_presentismo,c_manual,desc_pasajes,COLOR,usuario_abm) 
+              VALUES (".$id_leu.",'".$nro_articulo."','".$inciso ."','".$descripcion."',".$cantidad_mensual.",".$cantitad_anual.",'".$observacion."',".$inasistencias.",".$licencias.",".$retiro.",".$tardanza.",".$excluye_feria.",'".$tipo_licencias."',".$sin_fecha_fin.",".$cobra_presentismo.",$carga_manual,$desc_pasajes,'$color','".$usuario_abm."')";
       $mesaje="El registro se creó con éxito";
     }
 
