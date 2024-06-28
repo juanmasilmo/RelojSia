@@ -159,10 +159,6 @@ function encabezado($con,$legajos,$mes,$anio){
     }
   } 
   // FIN encabezado
-<<<<<<< HEAD
-=======
-
->>>>>>> se agrga un echo en el actualizar.php para ver en demo el error
 
   return $cabecera;
 }
@@ -296,7 +292,6 @@ function total_articulos_usados($con, $legajo, $mes, $anio){
  */
 function cobra_presentismo($con, $legajo, $mes, $anio){
 
-<<<<<<< HEAD
     /**
      * NO -> Cobra Presentismo en los siguientes casos
      *  a) - Uso algun articulo que afecta al concepto.-
@@ -309,20 +304,12 @@ function cobra_presentismo($con, $legajo, $mes, $anio){
      * caso - a
      */  
     $sql_presentismo = "SELECT (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) as presentismo
-=======
-  $sql_presentismo = "SELECT CASE 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 1 ) THEN 1 
-                                WHEN ( (SELECT cobra_presentismo FROM articulos WHERE id = id_articulo) = 0 ) THEN 0 
-                                ELSE 0
-                              END as presentismo
->>>>>>> se agrga un echo en el actualizar.php para ver en demo el error
                         FROM calendario_agente
                         WHERE EXTRACT(YEAR FROM registro) = $anio 
                           and EXTRACT(MONTH FROM registro) = $mes 
                           and id_articulo is not null
                           and borrado is null 
                           and legajo = $legajo
-<<<<<<< HEAD
                         ORDER BY id asc
                         LIMIT 1"; 
     $rs_presentismo = pg_query($con, $sql_presentismo);
@@ -372,18 +359,7 @@ function cobra_presentismo($con, $legajo, $mes, $anio){
         $presentismo = 'NO';
       }
     }
-=======
-                        ORDER BY presentismo desc
-                        LIMIT 1 "; 
-  $rs_presentismo = pg_query($con, $sql_presentismo);
-  $res_presentismo = pg_fetch_array($rs_presentismo);
 
-  $presentismo = 'SI'; //por defecto cobra
-  if($res_presentismo['presentismo'] == 1){
-    $presentismo = 'NO';
-  }
-  
->>>>>>> se agrga un echo en el actualizar.php para ver en demo el error
   return $presentismo;
 } // FIN presentismo
   

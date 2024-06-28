@@ -44,6 +44,7 @@ function get_agentes($con){
  */
 function get_registros_agentes($con)
 {
+  
   $id_dependencia = $_GET['id_dependencia'];
   
   /**
@@ -55,6 +56,8 @@ function get_registros_agentes($con)
   
   $mes = $_GET['mes'];
   $anio = $_GET['anio'];
+  
+ 
 
   /**
    * Creo una cadena para el sql
@@ -64,28 +67,34 @@ function get_registros_agentes($con)
   //si la dependencia tiene agentes relacionados hago todo el chimi
   if(pg_num_rows($rs_legajo) > 0){
 
-      for ($i=0; $i < count($res_legajo); $i++) { 
-        if(isset($res_legajo[$i+1])){
-          $legajos .= $res_legajo[$i]['legajo'].',';
-        }else{
-          $legajos .= $res_legajo[$i]['legajo'];
-        }
+    for ($i=0; $i < count($res_legajo); $i++) { 
+      if(isset($res_legajo[$i+1])){
+        $legajos .= $res_legajo[$i]['legajo'].',';
+      }else{
+        $legajos .= $res_legajo[$i]['legajo'];
       }
-      
-      /**
-       * Obtengo los registros (marcas reloj)
-       */
-      $sql_registro = "SELECT legajo
-                            ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
-                            ,EXTRACT(HOUR FROM registro) as hora
-                            ,EXTRACT(MINUTE FROM registro) as minutos
-                            ,to_char(registro_modificado, 'hh24:mi') as registro_modificado
-                            ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo)
-                            ,EXTRACT(DAY FROM registro) as dia
-                            ,EXTRACT(DAY FROM registro_modificado) as dia_m
-                        FROM calendario_agente as cagente
-                        WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
-                        ORDER BY legajo, hora"; 
+    }
+    
+    /**
+     * Busco datos duplicados
+     */
+    buscar_registros_duplicados($con, $mes, $anio, $legajos);
+
+    /**
+     * Obtengo los registros (marcas reloj)
+     */
+    $sql_registro = "SELECT legajo
+                          ,EXTRACT(DAY FROM fecha_abm) as fecha_abm
+                          ,EXTRACT(HOUR FROM registro) as hora
+                          ,EXTRACT(MINUTE FROM registro) as minutos
+                          ,to_char(registro_modificado, 'hh24:mi') as registro_modificado
+                          ,(SELECT nro_articulo FROM articulos WHERE id = id_articulo) as nro_articulo
+                          ,(SELECT color FROM articulos WHERE id = id_articulo) as color
+                          ,EXTRACT(DAY FROM registro) as dia
+                          ,EXTRACT(DAY FROM registro_modificado) as dia_m
+                      FROM calendario_agente as cagente
+                      WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
+                      ORDER BY legajo, hora"; die();
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
 
@@ -104,19 +113,11 @@ function get_registros_agentes($con)
 
     (pg_num_rows($rs_registro) > 0) ? $registros = $res_registro : $registros = false;
     (pg_num_rows($rs_feriados) > 0) ? $feriados = $res_feriados : $feriados = false;
-    
-    // var_dump($feriados);
+
     $count = 0;
-    //si tengo registros al menos 1, cargo el array
-    // if(pg_num_rows($rs_registro) > 0) {
     
     echo json_encode(['legajos' => $res_legajo, 'registros' => $registros, 'feriados' => $feriados]);
 
-    // }else{
-
-    //   echo json_encode(['legajos' => $res_legajo, 'registros' => false, 'feriados' => false]);
-      
-    // }
     
   }else{
 
@@ -126,6 +127,56 @@ function get_registros_agentes($con)
   
 }
 
+/**
+  * Obtengo los registros (marcas reloj)
+  */
+function buscar_registros_duplicados($con, $mes, $anio, $legajos){
+
+   
+    $sql_registro = "SELECT id
+                          ,legajo
+                          ,to_char(registro, 'YYYY-MM-DD HH24:MI') as registro
+                      FROM calendario_agente as cagente
+                      WHERE EXTRACT(YEAR FROM registro) = $anio 
+                        and EXTRACT(MONTH FROM registro) = $mes
+                        and borrado is null 
+                        and id_articulo is null
+                        and legajo in ($legajos)
+                      ORDER BY registro,legajo"; 
+    $rs_registro = pg_query($con, $sql_registro);
+    $res_registro = pg_fetch_all($rs_registro);
+
+
+    // inicializo las variables 
+    $date = '';
+    $legajo = 0;
+    $sql_delete_duplicados = '';
+
+    if(pg_num_rows($rs_registro) > 0){
+
+      foreach ($res_registro as $key => $value) {
+        // echo $date; 
+        if($value['registro'] === $date and $value['legajo'] === $legajo){
+          // si es igual significa que esta duplicado
+          $id = $value['id'];
+          $sql_delete_duplicados .= "DELETE FROM calendario_agente WHERE id = $id;";
+      
+        } // FIN if()
+        
+        // seteo las variables
+        $date = $value['registro'];
+        $legajo = $value['legajo'];
+      
+      } // FIN foreach()
+    
+    } // FIN if()
+
+
+    // elimino los duplicados
+    if($sql_delete_duplicados)
+      pg_query($con,$sql_delete_duplicados);
+      
+}
 
 //-------------------------------------*------------*----------------
 
