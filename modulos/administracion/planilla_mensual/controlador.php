@@ -94,7 +94,7 @@ function get_registros_agentes($con)
                           ,EXTRACT(DAY FROM registro_modificado) as dia_m
                       FROM calendario_agente as cagente
                       WHERE EXTRACT(YEAR FROM registro) = $anio and EXTRACT(MONTH FROM registro) = $mes and borrado is null and legajo in ($legajos)
-                      ORDER BY legajo, hora"; die();
+                      ORDER BY legajo, hora"; 
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
 
@@ -117,7 +117,6 @@ function get_registros_agentes($con)
     $count = 0;
     
     echo json_encode(['legajos' => $res_legajo, 'registros' => $registros, 'feriados' => $feriados]);
-
     
   }else{
 
@@ -131,7 +130,6 @@ function get_registros_agentes($con)
   * Obtengo los registros (marcas reloj)
   */
 function buscar_registros_duplicados($con, $mes, $anio, $legajos){
-
    
     $sql_registro = "SELECT id
                           ,legajo
@@ -145,7 +143,6 @@ function buscar_registros_duplicados($con, $mes, $anio, $legajos){
                       ORDER BY registro,legajo"; 
     $rs_registro = pg_query($con, $sql_registro);
     $res_registro = pg_fetch_all($rs_registro);
-
 
     // inicializo las variables 
     $date = '';
@@ -186,39 +183,39 @@ function buscar_registros_duplicados($con, $mes, $anio, $legajos){
 function registros($con)
 {
 
-$sql = "SELECT id
-            ,id_estado
-            ,(SELECT descripcion FROM estados WHERE id = id_estado) title
-            ,(SELECT letra FROM estados WHERE id = id_estado) letra
-            ,(SELECT color FROM estados WHERE id = id_estado) color 
-            ,to_char(fecha_inicio,'YYYY-MM-DD') fecha_inicio
-            ,to_char(fecha_fin,'YYYY-MM-DD') fecha_fin
-          FROM calendario_anual";
-$rs = pg_query($con, $sql);
-$res = pg_fetch_all($rs);
+  $sql = "SELECT id
+              ,id_estado
+              ,(SELECT descripcion FROM estados WHERE id = id_estado) title
+              ,(SELECT letra FROM estados WHERE id = id_estado) letra
+              ,(SELECT color FROM estados WHERE id = id_estado) color 
+              ,to_char(fecha_inicio,'YYYY-MM-DD') fecha_inicio
+              ,to_char(fecha_fin,'YYYY-MM-DD') fecha_fin
+            FROM calendario_anual";
+  $rs = pg_query($con, $sql);
+  $res = pg_fetch_all($rs);
 
-  
-foreach ($res as $row) {
-  $r[] = [ 
-         
-          'id' => $row['id'],
-          'title' => $row['title'] . '(' . $row['letra'] . ')',
-          'start' => $row['fecha_inicio'],
-          'end' => $row['fecha_fin'],
-          'color' => $row['color'],
-          'id_estado' => $row['id_estado'],
-          // extendedProps
-          'tipo' => 'evento',
-          'event_id' => $row['id'],
-          'descripcion' => $row['title'] . '(' . $row['letra'] . ')',
-          'fecha_inicio' => $row['fecha_inicio'],
-          'fecha_fin' => $row['fecha_fin'],
+    
+  foreach ($res as $row) {
+    $r[] = [ 
+          
+            'id' => $row['id'],
+            'title' => $row['title'] . '(' . $row['letra'] . ')',
+            'start' => $row['fecha_inicio'],
+            'end' => $row['fecha_fin'],
+            'color' => $row['color'],
+            'id_estado' => $row['id_estado'],
+            // extendedProps
+            'tipo' => 'evento',
+            'event_id' => $row['id'],
+            'descripcion' => $row['title'] . '(' . $row['letra'] . ')',
+            'fecha_inicio' => $row['fecha_inicio'],
+            'fecha_fin' => $row['fecha_fin'],
 
-        ];
-}
+          ];
+  }
 
-echo json_encode($r);
-//return json_encode(['result' => $res]);
+  echo json_encode($r);
+  //return json_encode(['result' => $res]);
 }
 
 function calendarioDia($con){
