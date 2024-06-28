@@ -5,7 +5,7 @@ conectar();
 $bandera=0;
 
 
-$fecha_desdea=$_POST['fecha_desde'];
+$fecha_desde=$_POST['fecha_desde'];
 $fecha_hasta=$_POST['fecha_hasta'];
 
 $username = 'notificaciones-sia';
@@ -16,13 +16,16 @@ $context = stream_context_create(array(
 		'header'  => "Authorization: Basic " . base64_encode("$username:$password")
 		)
 	));
+	
 
 if($fecha_hasta==''){
-	$where="";
-	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea;
+	// $where="";
+	$params = "fecha_inicio_desde=$fecha_desde";
+	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias?".$params;
 }else{
-	$where="and registro <='$fecha_hasta'";
-	$html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias/".$fecha_desdea."?fecha_hasta=".$fecha_hasta;
+	// $where="and registro <='$fecha_hasta'";
+	$params = "fecha_fin_desde=$fecha_hasta&fecha_fin_hasta=$fecha_hasta&fecha_inicio_hasta=$fecha_desde&fecha_inicio_desde=$fecha_desde";
+	echo $html="http://jusmisiones.gov.ar/leu/rest/art_licencias/licencias?".$params;
 }
 
 
@@ -32,6 +35,9 @@ $items = json_decode($data, true);
 $vector=array();
 $vector=$items;
 
+// echo '<pre>';
+// print_r($vector);
+// die();
 /**
  * inicializo una variable para crear un string de los insert y ejecutar al final
  */
@@ -41,7 +47,7 @@ $msj = '';
 // pg_query("BEGIN") or die("Could not start transaction\n");
 // leu 1 reloj (script charly)
 // leu 2 articulos de ws de leu
-$sql="DELETE FROM calendario_agente WHERE registro >= '$fecha_desdea' $where and leu=2";
+$sql="DELETE FROM calendario_agente WHERE registro >= '$fecha_desde' and leu=2";
 $res=pg_query($con, $sql);
 
 // por cada licencia (posicion en el array) inserto la cantidad de dias y articulo
@@ -67,10 +73,11 @@ if(count($vector) > 0){
 
 		// busco el legajo del agente en la DB RELOJ2
 		$legajo = $licencia['idagente'];
-		$sql_legajo = "SELECT legajo FROM personas WHERE id_leu = $legajo";
+		$sql_legajo = "SELECT legajo, concat(apellido, ' ', nombres) as agente FROM personas WHERE id_leu = $legajo";
 		$rs = pg_query($con,$sql_legajo);
 		$res = pg_fetch_array($rs);
 		(int)$legajo = $res['legajo'];
+		$agente = $res['agente'];
 
 		$user_abm = $_SESSION['usuario'];
 		
@@ -86,13 +93,14 @@ if(count($vector) > 0){
 		
 		} // FIN for
 
-		// ejecuto la query por cada agente
+		// ejecuto la query por cada agente y muestor el agente que no se sincronizo
 		if (!pg_query($con, $sql_insert)){
-			echo '<div class="alert alert-primary alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡WARNING!</strong> .... '. $sql_legajo .'</div><br>';
-			echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong> WARNING </strong> ... '. $sql_insert .'</div><br>';
+			echo '<div class="alert alert-primary alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡WARNING!</strong> Problemas con sincronizar el agente '. $agente .'</div><br>';
+			// echo '<div class="alert alert-warning alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong> WARNING </strong> ... '. $sql_insert .'</div><br>';
 		}
 		else {
 			// echo '<div class="alert alert-primary alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> .... '. $sql_legajo .'</div><br>';
+			// echo '<div class="alert alert-primary alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> .... '. $sql_insert .'</div><br>';
 			$msj = '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Sincronización Exitosa </div><br>';
 		} // FIN if
 
@@ -141,7 +149,7 @@ echo $msj;
 // }
 // if (pg_query($con, $insert_articulos)){
 // 	pg_query("COMMIT") or die("Transaction commit failed\n");
-// 	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las licencias desde '.$fecha_desdea.' hasta '.$fecha_hasta.'</div>';
+// 	echo '<div class="alert alert-success alert-dismissable"> <button type="button" class="close" data-dismiss="alert">&times;</button> <i class="far fa-check-circle"></i> <strong>¡OK!</strong> Se sincronizaron las licencias desde '.$fecha_desde.' hasta '.$fecha_hasta.'</div>';
 
 // }
 // else{              
