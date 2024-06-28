@@ -120,9 +120,6 @@ echo $msj;
 // 				$x = pg_num_rows($resa);
 // 				$rowa=pg_fetch_array($resa);
 // 				$id_articulo=$rowa['id'];
-				
-
-
 // 				$insert_articulos = "INSERT INTO calendario_agente (legajo, registro, id_articulo, fecha_abm,usuario_abm,leu) VALUES 
 // 					((select cast(legajo as integer) from personas WHERE id_leu=".$vector[$i]['idagente']."),
 // 					'".$fecha."', 
