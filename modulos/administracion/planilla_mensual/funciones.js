@@ -141,59 +141,40 @@ function arma_tabla() {
                 var nro_articulo = '';
                 if(registro.nro_articulo){
                   
-                  nro_articulo = registro.nro_articulo;
-                  
-                  if(nro_articulo == '270'){
-                    // si es del grupo de los 200 (ej: 270)
-                    background_color = '#FF7777';
-                  }
-                  
-                  // si es compensacion de feria
-                  if(nro_articulo == 293){
-                    background_color = '#6BFF57';
-                  }
-
-                  nro_articulo += '<br>';
+                  nro_articulo = registro.nro_articulo+'<br>';
+                  background_color = registro.color;
                 
                 }
                 var r_hora = parseInt(registro.hora);
                 
-                //verifico que tenga registro
+                //verifico que tenga registro (si es > 0 presente / no es un articulo)
                 if(r_hora && r_hora != 0){
 
                   //verifico cuantas veces ingresa por legajo/dia (tiene que tener 2 registros minimo entreda/salida)
                   band = band + 1;
 
                   var minutos = `${registro.minutos}`.padStart(2, '0');
-                  // if(minutos < 10){
-                  //   minutos = '0'+minutos;
-                  // }
-                  // console.log(minutos+'<br>');
-                  //pregunto si es mayor a 6hs am
+
                   if(parseInt(`${r_hora}`+`${minutos}`) > 640 && parseInt(`${r_hora}`+`${minutos}`) < 1230 )
-                    
                     //llega tarde o sale temprano (justificar)
                     background_color = '#b3b300';
 
-                    //preparo un string para imprimir todo junto dsps
-                    registro_marca += nro_articulo + r_hora +':'+ minutos + '<br />';
+                  //preparo un string para imprimir todo junto dsps
+                  registro_marca += nro_articulo + r_hora +':'+ minutos + '<br />';
                 
-                }else{
-                  // pregunto si tiene solo un registro con hora != 0
-                  // if(r_hora == 0){
-                  //   background_color = '#b3b300';
-                  // }
-                  if(nro_articulo){
-                    registro_marca += nro_articulo;
-                  }
                 }
-  
-                
-              }
+
+                // pregunto si el articulo no esta vacio
+                if(nro_articulo)
+                  registro_marca += nro_articulo;
+
+              } // FIN if
               
             }); //fin foreach registros
 
-            //cierro el td de apertura
+
+            
+             //cierro el td de apertura
             tabla += 'bgcolor="'+ background_color +'" title="'+title_dia+'">';
 
             //imprimo los registros (string preparado)
