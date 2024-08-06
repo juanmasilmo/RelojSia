@@ -15,9 +15,9 @@
           <!-- agrego la fecha -->
           <div class="row">
               <div class="col-md-12">
-                <p id="modificacion_registro_nombre_agente"></p>
+                <p id="modificacion_registro_nombre_agente" class="text-primary font-weight-bold"></p>
                 <input type="hidden" name="input_modificacion_registro_legajo" id="input_modificacion_registro_legajo">
-                <p id="modificacion_registro_fecha"></p>
+                <p id="modificacion_registro_fecha" class="text-primary font-weight-bold"></p>
                 <input type="hidden" name="input_modificacion_registro_fecha" id="input_modificacion_registro_fecha">
             </div>
           </div>

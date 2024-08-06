@@ -97,7 +97,7 @@ function armaTabla() {
        * Verifico si tiene permiso para cargar registro
        */
       if(carga_registro == 1){
-        if(month+1 <= mes){
+        if(month+1 == mes){
           
           //agrego el boton (y vo') al dia para procesar la fecha de todo el personal
           var btn = btn+'<div><a class="btn btn-success controlar" id="cargarRegistrosPersonal" onclick="cargarRegistrosPersonal()">Agregar Registro </a></div><br>';
@@ -252,7 +252,7 @@ function cargarRegistrosPersonal(legajo,dia) {
 function guardarRegistroCompleto() {
   
   var fecha =  $("#registro_fecha").val();
-  var fecha_min = $("#registro_fecha").attr('min');
+  var fecha_min = $("#registro_hidden_min").val();
 
   //controlo si la fecha agregada es menor al permitido
   if(fecha < fecha_min){

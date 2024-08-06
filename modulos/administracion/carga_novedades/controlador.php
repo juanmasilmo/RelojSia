@@ -248,7 +248,7 @@ function guardar_registro_completo($con){
         $legajo = $legajo['legajo'];
 
         //verifico si no existe articulos del leu
-        echo $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha' order by leu";
+        $sql_leu = "SELECT * FROM calendario_agente WHERE legajo = $legajo and to_char(registro, 'YYYY-MM-DD') = '$fecha' order by leu";
         $rs = pg_query($con,$sql_leu);
 
         if(!pg_num_rows($rs) > 0) {
@@ -297,6 +297,7 @@ function modificar_registro_legajo($con){
   // obtengo los dias seleccionados
   $d1 = $_REQUEST['d1'];
   $d2 = $_REQUEST['d2'];
+  
   if($d2 == 'undefined'){
     $d2 = $d1;
   }
@@ -307,7 +308,7 @@ function modificar_registro_legajo($con){
 
   $usuario_abm = $_SESSION['usuario'];
 
-  $fecha = $_POST['input_modificacion_registro_fecha'];
+  // $fecha = $_POST['input_modificacion_registro_fecha'];
   $legajo = $_POST['input_modificacion_registro_legajo'];
 
   $str_query = '';
@@ -318,20 +319,14 @@ function modificar_registro_legajo($con){
     //configuro la fecha
     if($i < 10)
       $i = '0'.$i;
+    
     $fecha = $id_anio.'-'.$id_mes.'-'.$i;
-
-    /**
-     * consulto si existe registro en la DB
-     */
-    $sql_select = "SELECT id FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and leu is null ORDER BY leu,registro";
-    $rs = pg_query($con, $sql_select);
-    
-    // recorro las fechas y edito solo las que no son leu
-    if(pg_num_rows($rs) > 0){
-    
+   
+    // pregunto si se selecciono "Normal" para registrar - Elimino todo lo que hay cargado 
+    if (!isset($_REQUEST['checked_fp_modificacion_registro']) && $id_art == 'null') {
+      
       // si tengo registros los elimino (obviando los registros leu)
       $str_query .= "DELETE FROM calendario_agente WHERE TO_CHAR(registro, 'YYYY-MM-DD') = '$fecha' and legajo = $legajo and leu is null;";
-      
     } 
     
     if(isset($_REQUEST['checked_fp_modificacion_registro'])){ // si el check esta activo
@@ -359,14 +354,10 @@ function modificar_registro_legajo($con){
   } // fin for dias
 
   if($str_query){
-    
     echo (pg_query($con,$str_query)) ? json_encode(["msj"=>"Guardado Correctamente...  Verificar la <strong><i>Planilla Mensual</i></strong> para registros de marcas.-","class_alert"=>"alert-success"]) : json_encode(["msj"=>"Error de guardado... ","class_alert"=>"alert-warning"]);
-    
   }
   else{
-  
     echo json_encode(["msj"=>"<strong>Error!</strong> en el guardado, consulte su administrador .-","class_alert"=>"alert-warning"]);
-  
   }
 
 }

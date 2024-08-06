@@ -18,9 +18,14 @@
 
                         <div class="col-md-6">
                             <label for="fecha"> Cargar Asistencia de la Fecha : </label>
-                            <input type="date" class="form-control" name="registro_fecha" min="<?php echo $min ?>"
-                                max="<?php echo $max ?>" id="registro_fecha" value="<?php echo $hoy; ?>">
-                            <div id="msj_registro_fecha" style="display:none;color:red">No se puede modificar registros antiguos</div>
+                            <input type="date" 
+                                    class="form-control" 
+                                    name="registro_fecha" 
+                                    min="<?php echo $min ?>" 
+                                    max="<?php echo $max ?>" 
+                                    id="registro_fecha" value="<?php echo $hoy; ?>">
+
+                            <div id="msj_registro_fecha" style="display:none;color:red">No se puede modificar registros antiguos a la fecha <?php echo $min ?></div>
                         </div>
 
                     </div>
@@ -40,20 +45,24 @@
 
                         <div class="col-md-6">
                             <label for="fecha"> Firma Planilla (FP)</label>
-                            <input type="radio" class="form-control" checked name="registro_completo" id="registro_fp"
-                                value="fp">
+                            <input type="radio" class="form-control" checked name="registro_completo" id="registro_fp" value="fp">
                         </div>
 
                         <div class="col-md-6">
                             <label for="fecha_inicio">Hora (6:30 - 12:30)</label>
-                            <input type="radio" class="form-control" name="registro_completo" id="registro_hora"
-                                value="hs">
+                            <input type="radio" class="form-control" name="registro_completo" id="registro_hora" value="hs">
                         </div>
                         <div class="col-md-12 ">
-                            <small><strong><i>PD: El registro impactara en todo el personal de la
-                                        Dependencia.</i>-</strong></small>
+                            <small>
+                                <strong>
+                                    <i>PD: El registro impactara en todo el personal de la Dependencia.-</i>
+                                </strong>
+                            </small>
+                            <input type="hidden" name="registro_hidden_min" id="registro_hidden_min" value="<?php echo $min ?>">
+                            <input type="hidden" name="registro_hidden_max" id="registro_hidden_max" value="<?php echo $max ?>">
                         </div>
                     </div>
+
 
                 </form>
             </div>

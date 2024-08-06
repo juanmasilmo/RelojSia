@@ -95,8 +95,11 @@ $month_min = $month - 1;
 if($month_min < 10)
 $month_min = '0'.$month_min;
 
-//seteo los atributos del input
-$min = $year.'-'. $month_min .'-25';
+/**
+ * seteo los atributos del input  
+ * para el modal de agregar_registro
+ */
+$min = $year.'-'. $month_min .'-20';
 $max = $year.'-'.$month.'-'.$ultimo_dia;
 ?>
 
