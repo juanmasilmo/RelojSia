@@ -8,7 +8,6 @@ if (!isset($_SESSION['userid'])) {
  echo "<script>document.location='login.php';</script>";
  exit();
 }
-//hola
 /* prueba*/
 ?>
 
