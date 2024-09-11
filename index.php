@@ -8,7 +8,7 @@ if (!isset($_SESSION['userid'])) {
  echo "<script>document.location='login.php';</script>";
  exit();
 }
-/* Holis test*/
+/* Holis master*/
 ?>
 
 <!DOCTYPE html>
